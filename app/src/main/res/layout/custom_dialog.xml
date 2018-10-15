@@ -1,0 +1,78 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="300dp"
+    android:layout_height="300dp"
+    android:background="@drawable/curve_shape"
+    android:orientation="vertical" >
+
+    <TextView
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:gravity="center"
+        android:text="Volume"
+        android:textSize="25sp"/>
+    <Space
+        android:layout_width="match_parent"
+        android:layout_height="15dp" />
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal">
+        <Space
+            style="@style/spaceSeekbar"/>
+        <ImageView
+            android:layout_width="0dp"
+            android:layout_height="30dp"
+            android:layout_weight="0.1"
+            android:src="@drawable/music_seekbar"/>
+        <Space
+            style="@style/spaceSeekbar"/>
+        <SeekBar
+            android:id="@+id/seekbar_os_volume"
+            android:layout_width="0dp"
+            android:layout_height="match_parent"
+            android:layout_weight="0.81"
+            android:thumb="@drawable/thumb_seekbar"/>
+        <Space
+            style="@style/spaceSeekbar"/>
+    </LinearLayout>
+
+    <Space
+        android:layout_width="match_parent"
+        android:layout_height="30dp" />
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal">
+        <Space
+            style="@style/spaceSeekbar"/>
+        <ImageView
+            android:layout_width="0dp"
+            android:layout_height="30dp"
+            android:layout_weight="0.1"
+            android:src="@drawable/car_sound"/>
+        <Space
+            style="@style/spaceSeekbar"/>
+        <SeekBar
+            android:id="@+id/seekbar_car_volume"
+            android:layout_width="0dp"
+            android:layout_height="match_parent"
+            android:layout_weight="0.81"
+            android:thumb="@drawable/thumb_seekbar"/>
+        <Space
+            style="@style/spaceSeekbar"/>
+    </LinearLayout>
+
+    <Space
+        android:layout_width="match_parent"
+        android:layout_height="30dp" />
+    <ImageButton
+        android:id="@+id/ib_mute_cDialog"
+        android:layout_width="64dp"
+        android:layout_height="64dp"
+        android:layout_gravity="center"
+        style="?android:attr/borderlessButtonStyle"
+        android:src="@drawable/mute_off"/>
+</LinearLayout>

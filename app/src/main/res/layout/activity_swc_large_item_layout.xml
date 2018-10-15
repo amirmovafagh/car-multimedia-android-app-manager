@@ -1,0 +1,16 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="100dp"
+    android:layout_height="143dp"
+    android:layout_marginTop="8dp">
+
+    <ImageButton
+        android:id="@+id/ib_large_swc_item_icon"
+        android:layout_width="100dp"
+        android:layout_height="143dp"
+        android:background="@drawable/large_activity_swc_imgbtns_shape_defaultstate"
+        android:src="@drawable/ic_refresh_black_50dp"
+        />
+
+
+</RelativeLayout>

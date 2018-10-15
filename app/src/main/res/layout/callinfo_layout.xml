@@ -1,0 +1,73 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout
+    android:id="@+id/rl"
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:paddingTop="1dp"
+
+    xmlns:tools="http://schemas.android.com/tools">
+
+
+    <Button
+        android:id="@+id/btn_img_user"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        tools:background="@drawable/ic_person_black_32dp_known_user"/>
+
+
+
+    <TextView
+        android:id="@+id/tv_username"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        tools:text="(UNKNOWN)"
+        android:layout_toRightOf="@+id/btn_img_user"
+        android:paddingTop="5dp"
+        android:maxLength="16"
+        />
+
+    <TextView
+        android:id="@+id/tv_phonenumber"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_below="@id/tv_username"
+        android:layout_marginBottom="-10dp"
+        android:layout_toRightOf="@+id/img_calltype_icon"
+        android:layout_marginLeft="5dp"
+        tools:text="09132552211" />
+
+
+    <ImageView
+        android:id="@+id/img_calltype_icon"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        tools:src="@drawable/ic_call_received_black_16dp_call_recived"
+        android:layout_toRightOf="@+id/btn_img_user"
+        android:layout_alignTop="@id/tv_phonenumber"
+        android:layout_alignBottom="@id/tv_phonenumber"
+        />
+
+
+
+    <TextView
+        android:id="@+id/tv_date"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        tools:text="17/jan/2012"
+        android:layout_alignParentRight="true"
+        android:layout_alignBottom="@+id/tv_username"
+        android:paddingRight="7dp"
+        />
+    <TextView
+        android:id="@+id/tv_time"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        tools:text="17:56:22"
+        android:layout_alignTop="@id/tv_phonenumber"
+        android:layout_alignRight="@+id/tv_date"
+        android:layout_alignLeft="@+id/tv_date"
+        android:gravity="center"
+
+        />
+</RelativeLayout>

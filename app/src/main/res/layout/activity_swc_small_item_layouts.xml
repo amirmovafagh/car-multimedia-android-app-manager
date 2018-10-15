@@ -1,0 +1,32 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="100dp"
+    android:layout_height="70dp"
+    xmlns:tools="http://schemas.android.com/tools"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:background="@color/cardview_dark_background"
+    android:layout_marginTop="8dp">
+
+    <ImageButton
+        android:id="@+id/ib_small_swc_item_icon"
+        android:layout_width="100dp"
+        android:layout_height="40dp"
+        android:background="@drawable/small_activity_swc_imgbtns_shape_defaultstate"
+        android:src="@drawable/ic_power_settings_new_black_50dp"
+        />
+
+    <TextView
+        android:id="@+id/tv_swc_item_text"
+        android:layout_below="@id/ib_small_swc_item_icon"
+        android:layout_width="wrap_content"
+        android:layout_height="30dp"
+        android:textColor="@color/color_activity_steering_wheel_control_item_text"
+        tools:text="پوج-خالی"
+        android:layout_alignParentBottom="true"
+        android:layout_centerHorizontal="true"
+        android:textDirection="anyRtl"
+        android:layout_centerInParent="true"
+        />
+
+
+</RelativeLayout>

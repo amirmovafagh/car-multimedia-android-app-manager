@@ -1,0 +1,52 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent" android:layout_height="match_parent"
+
+    android:background="@android:color/darker_gray"
+    >
+
+
+
+    <Button
+        android:id="@+id/btn_add_audience"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:background="@drawable/ic_add_circle_outline_black_24dp"
+        android:layout_alignParentRight="true"
+        android:layout_marginRight="10dp"
+        android:layout_marginTop="5dp"
+        android:backgroundTint="@android:color/black"
+        />
+
+
+
+    <Button
+        android:id="@+id/btn_search_audience"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:background="@drawable/ic_search_black_24dp"
+        android:layout_toLeftOf="@id/btn_add_audience"
+        android:layout_marginRight="10dp"
+        android:layout_alignTop="@id/btn_add_audience"
+        android:layout_alignBottom="@+id/btn_add_audience"
+        />
+
+
+    <Button
+        android:id="@+id/btn_refresh"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:background="@drawable/ic_refresh_black_24dp"
+        android:layout_alignTop="@+id/btn_search_audience"
+        android:layout_alignBottom="@+id/btn_add_audience"
+        />
+
+
+    <android.support.v7.widget.RecyclerView
+        android:id="@+id/rv_audience"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:layout_below="@id/btn_add_audience"/>
+
+
+</RelativeLayout>

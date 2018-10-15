@@ -1,0 +1,84 @@
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="@color/activityBackground"
+    android:orientation="vertical"
+    tools:context=".MainActivity">
+    <include layout="@layout/toolbar"></include>
+
+    <Button
+        android:text="pine"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:id="@+id/pine"/>
+    <Button
+        android:text="aux"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:id="@+id/aux"/>
+    <Button
+        android:text="radio"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:id="@+id/radio"/>
+    <Button
+        android:text="Steering Wheel controller"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:id="@+id/bluetooth"/>
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="left_front"/>
+    <SeekBar
+        android:id="@+id/left_front"
+        style="@style/Widget.AppCompat.SeekBar.Discrete"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:max="32"
+        android:progress="0"
+        android:thumb="@drawable/thumb_seekbar"/>
+
+
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="right_front"/>
+    <SeekBar
+        android:id="@+id/right_front"
+        style="@style/Widget.AppCompat.SeekBar.Discrete"
+        android:layout_width="match_parent"
+        android:layout_height="20dp"
+        android:max="32"
+        android:progress="0"
+        android:thumb="@drawable/thumb_seekbar"/>
+
+
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="20dp"
+        android:text="left_rear"/>
+    <SeekBar
+
+        android:id="@+id/left_rear"
+        style="@style/Widget.AppCompat.SeekBar.Discrete"
+        android:layout_width="match_parent"
+        android:layout_height="20dp"
+        android:max="32"
+        android:progress="0"
+        android:thumb="@drawable/thumb_seekbar"/>
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="right_rear"/>
+    <SeekBar
+        android:id="@+id/right_rear"
+        style="@style/Widget.AppCompat.SeekBar.Discrete"
+        android:layout_width="match_parent"
+        android:layout_height="20dp"
+        android:max="32"
+        android:progress="0"
+        android:thumb="@drawable/thumb_seekbar"/>
+
+</LinearLayout>

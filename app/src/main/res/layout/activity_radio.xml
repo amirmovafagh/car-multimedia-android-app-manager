@@ -1,0 +1,127 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:background="@color/activityBackground"
+    android:orientation="vertical"
+    tools:context="ir.dev_roid.testusb.RadioActivity">
+
+    <include layout="@layout/toolbar"/>
+
+    <com.warkiz.widget.IndicatorSeekBar
+        android:id="@+id/seekbar_frequency"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="18dp"
+        app:isb_progress="98"
+        android:padding="12dp"
+        android:scaleY="2"
+        android:background="@drawable/radio_bar"
+        app:isb_thumb_drawable="@drawable/thumb_seekbar_radio"
+        app:isb_show_indicator="false"
+        app:isb_text_color="@color/transparent"
+        app:isb_track_background_bar_color="@color/transparent"
+        app:isb_track_progress_bar_color="@color/transparent"
+        app:isb_clear_default_padding="false"
+        app:isb_seek_bar_type="continuous"
+        app:isb_min="88"
+        app:isb_max="108"
+
+        app:isb_progress_value_float="true" />
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="0dp"
+        android:layout_weight="0.7"
+        android:orientation="horizontal">
+
+        <ImageButton
+            android:id="@+id/previous_img_btn"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_weight="0.33"
+            android:src="@drawable/previous_track_button"
+            android:layout_gravity="center"
+            style="?android:attr/borderlessButtonStyle"/>
+
+        <TextView
+            android:id="@+id/txt_frequency"
+            android:layout_width="0dp"
+            android:layout_height="match_parent"
+            android:layout_weight="0.33"
+            android:gravity="center"
+            android:textAlignment="center"
+            android:text="98.0"
+            android:maxLines="1"
+            android:maxLength="5"
+            android:textSize="50sp"/>
+
+        <ImageButton
+            android:id="@+id/next_img_btn"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_weight="0.33"
+            android:src="@drawable/next_track_button"
+            android:layout_gravity="center"
+            style="?android:attr/borderlessButtonStyle"/>
+
+    </LinearLayout>
+
+
+    <android.support.v7.widget.CardView
+        app:cardBackgroundColor="@color/cards_dialogs"
+        android:layout_width="match_parent"
+        android:layout_height="0dp"
+        android:layout_weight="0.5"
+        app:cardCornerRadius="5dp"
+        android:layout_margin="5dp"
+        >
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:orientation="vertical"
+            >
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="0dp"
+                android:layout_weight="0.5"
+                android:orientation="horizontal"
+                >
+                <Button
+                    android:id="@+id/fav_radio_btn1"
+                    style="@style/fav_buttons_radio" />
+                <Button
+                    android:id="@+id/fav_radio_btn2"
+                    style="@style/fav_buttons_radio" />
+                <Button
+                    android:id="@+id/fav_radio_btn3"
+                    style="@style/fav_buttons_radio" />
+            </LinearLayout>
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="0dp"
+                android:layout_weight="0.5"
+                android:orientation="horizontal"
+                >
+                <Button
+                    android:id="@+id/fav_radio_btn4"
+                    style="@style/fav_buttons_radio" />
+                <Button
+                    android:id="@+id/fav_radio_btn5"
+                    style="@style/fav_buttons_radio" />
+                <Button
+                    android:id="@+id/fav_radio_btn6"
+                    style="@style/fav_buttons_radio" />
+            </LinearLayout>
+
+        </LinearLayout>
+
+
+    </android.support.v7.widget.CardView>
+
+
+</LinearLayout>

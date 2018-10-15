@@ -1,0 +1,51 @@
+<FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:background="@color/bgMedia"
+    android:layout_width="1000dp"
+    android:layout_height="match_parent"
+    tools:context="ir.dev_roid.testusb.bluetoothFragments.MediaFragment">
+
+    <LinearLayout
+
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:orientation="horizontal">
+
+        <LinearLayout
+            android:layout_width="0dp"
+            android:layout_height="match_parent"
+            android:orientation="vertical"
+            android:layout_weight="0.3">
+
+
+        </LinearLayout>
+
+        <RelativeLayout
+            android:layout_width="0dp"
+            android:layout_height="match_parent"
+
+            android:orientation="horizontal"
+            android:layout_weight="0.7">
+
+            <ImageView
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:paddingRight="200dp"
+                android:src="@drawable/equlizer" />
+
+            <ImageView
+
+                android:id="@+id/img_disk"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+
+                android:layout_marginTop="-30dp"
+                android:layout_marginBottom="-30dp"
+                android:src="@drawable/disk" />
+
+
+        </RelativeLayout>
+
+    </LinearLayout>
+
+</FrameLayout>
