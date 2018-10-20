@@ -1,6 +1,7 @@
 package ir.dev_roid.testusb.steeringWheelController;
 
 import android.content.Context;
+import android.content.Intent;
 import android.support.design.widget.TabLayout;
 import android.util.Log;
 import android.widget.Toast;
@@ -14,8 +15,9 @@ import static ir.dev_roid.testusb.MyHandler.steeringWheelData;
 import static ir.dev_roid.testusb.MyHandler.steeringWheelDataStatus;
 
 public class SteeringWheelControllerPresenter implements RequiredPresenterOps, ProvidedPresenterOps {
-    private static final String TAG = SteeringWheelControllerPresenter.class.getSimpleName();
+    private static final String tag = SteeringWheelControllerPresenter.class.getSimpleName();
     private static SteeringWheelControllerPresenter steeringWheelControllerPresenter;
+    public static Boolean SteeringWheelControllerActivityIsRun = false;
 
     private Context ctx;
     private final RequiredViewOps viewOps;
@@ -41,6 +43,7 @@ public class SteeringWheelControllerPresenter implements RequiredPresenterOps, P
         modelOps.createAllDaosIfNotExsit();
         List<ControllerOption> options = modelOps.getAllControllerOptions();
         viewOps.reloadRecyclerView(options);
+        SteeringWheelControllerActivityIsRun = true;
     }
 
     @Override
@@ -53,15 +56,19 @@ public class SteeringWheelControllerPresenter implements RequiredPresenterOps, P
 
         options = modelOps.getAllControllerOptions();
         viewOps.reloadRecyclerView(options);
+
+
+
     }
 
     @Override
     public void clickedOnOptionsTouchDown(Options itemTouchDown) {
+
         if(steeringWheelDataStatus){
-            List<ControllerOption> options = modelOps.readFieldValue(String.valueOf((steeringWheelData - 3)) , String.valueOf((steeringWheelData + 3)));
+            List<ControllerOption> options = modelOps.checkValueBetween(String.valueOf((steeringWheelData - 3)) , String.valueOf((steeringWheelData + 3)));
 
             for (ControllerOption co : options) {
-                Log.i(TAG, " " + co.getValue());
+                Log.i(tag, " " + co.getValue());
                 Toast.makeText(ctx, "خطا در مقدار دهی دوباره سعی کنید", Toast.LENGTH_SHORT).show();
                 return;
 
@@ -71,7 +78,7 @@ public class SteeringWheelControllerPresenter implements RequiredPresenterOps, P
             for (ControllerOption co : options) {
                 if (co.getId() == itemTouchDown) {
                     if (co.getValue() != null) {
-                        Log.i(TAG, " " + 2);
+                        Log.i(tag, " " + 2);
                         int i = co.getValue();
                         if (i - 3 <= steeringWheelData && steeringWheelData <= i + 3) {
 
@@ -79,11 +86,15 @@ public class SteeringWheelControllerPresenter implements RequiredPresenterOps, P
                             return;
                         }
                     }
-                    co.setValue(steeringWheelData);
-                    modelOps.updateControllerOptions(options);
+                    if(steeringWheelData !=999){
+                        co.setValue(steeringWheelData);
+                        modelOps.updateControllerOptions(options);
 
-                    options = modelOps.getAllControllerOptions();
-                    viewOps.reloadRecyclerView(options);
+                        options = modelOps.getAllControllerOptions();
+                        viewOps.reloadRecyclerView(options);
+
+                    }
+
 
                 }
             }
@@ -94,7 +105,7 @@ public class SteeringWheelControllerPresenter implements RequiredPresenterOps, P
 
     @Override
     public void clickedOnOptionsTouchUp(Options itemTouchUp) {
-        steeringWheelData = 0;
+        steeringWheelData = 999;
     }
 
 

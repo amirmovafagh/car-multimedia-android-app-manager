@@ -109,13 +109,13 @@ public class SteeringWheelControllerModel extends OrmLiteSqliteOpenHelper implem
     }
 
     @Override
-    public List<ControllerOption> readFieldValue(String low, String high) {
+    public List<ControllerOption> checkValueBetween(String min, String max) {
         List<ControllerOption> list = null;
         try {
 
             QueryBuilder<ControllerOption, Integer> queryBuilder = getControllerOptionRuntimeExceptionDao().queryBuilder();
             Where where = queryBuilder.where();
-            where.between("value", low,high);
+            where.between("value", min,max);
 
             PreparedQuery<ControllerOption> preparedQuery = queryBuilder.prepare();
             list = getControllerOptionRuntimeExceptionDao().query(preparedQuery);

@@ -47,8 +47,9 @@ public class MyHandler extends Handler {
                 try{
                     int i = Integer.parseInt(buffer);
                     if(i<3350){
-                        steeringWheelData = i/10 ;
                         steeringWheelDataStatus = true;
+                        steeringWheelData = i/10 ;
+
                         Log.i(TAG, " "+steeringWheelData);
                     }else steeringWheelDataStatus = false;
 

@@ -9,7 +9,7 @@ public interface ProvidedModelOps {
 
     List<ControllerOption> getAllControllerOptions();
     List<ControllerOption> checkIfEQ(String fieldName, Object value);
-    List<ControllerOption> readFieldValue(String low, String high);
+    List<ControllerOption> checkValueBetween(String min, String max);
 
     void updateControllerOptions(List<ControllerOption> options);
 }
