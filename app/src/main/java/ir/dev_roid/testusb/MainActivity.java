@@ -1,7 +1,10 @@
 package ir.dev_roid.testusb;
 
+import android.content.ContentResolver;
+import android.content.Context;
 import android.content.Intent;
 import android.os.Handler;
+import android.provider.Settings;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.support.v7.widget.Toolbar;
@@ -9,6 +12,7 @@ import android.util.DisplayMetrics;
 import android.util.Log;
 import android.view.MotionEvent;
 import android.view.View;
+import android.view.Window;
 import android.widget.Button;
 import android.widget.ImageView;
 import android.widget.SeekBar;
@@ -24,6 +28,12 @@ import ir.dev_roid.testusb.steeringWheelController.SteeringWheelContorllerActivi
 
 
 public class MainActivity extends AppCompatActivity {
+    //Variable to store brightness value
+    private int brightness;
+    //Content resolver used as a handle to the system's settings
+    private ContentResolver cResolver;
+    //Window object, that will store a reference to the current window
+    private Window window;
 
     private ResideMenu resideMenu;
     private ToolBar_ResideMenu toolBarResideMenu;
@@ -34,7 +44,7 @@ public class MainActivity extends AppCompatActivity {
 
     private SeekBar lf,rf,lr,rr;
 
-
+    Context mContext;
     private Button aux,pine,radio,bluetooth;
 
     private ConnectUsbService connectUsbService;
@@ -185,6 +195,9 @@ public class MainActivity extends AppCompatActivity {
                 pref.setVolumeValue(4, p);
             }
         });
+
+        mContext = getApplicationContext();
+        //setScreenBrightness(0);
 
     }
 
