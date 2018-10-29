@@ -35,6 +35,8 @@ public class PrefManager {
     private static final String KEY_X_CORDINATE="xCordinate";
     private static final String KEY_Y_CORDINATE="yCordinate";
 
+    private static final String BRIGHTNESS_VALUE = "brightnessValue";
+
 
     public PrefManager(Context context) {
 
@@ -101,5 +103,16 @@ public class PrefManager {
     public Float getYcordinate (){
 
         return pref.getFloat(KEY_Y_CORDINATE,  222);
+    }
+
+    public void setBrightnessValue(int value){
+        editor.putInt(BRIGHTNESS_VALUE, value);
+        editor.commit();
+
+        Log.d(TAG, "BRIGHTNESS_VALUE : "+value);
+    }
+
+    public int getBrightnessValue(){
+        return pref.getInt(BRIGHTNESS_VALUE,  255);
     }
 }

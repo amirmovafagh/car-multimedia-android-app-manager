@@ -31,6 +31,7 @@ import ir.dev_roid.testusb.bluetoothFragments.contacts.Pojo.CallType;
 import ir.dev_roid.testusb.bluetoothFragments.contacts.Pojo.PhoneNumber;
 
 
+
 import static ir.dev_roid.testusb.MyHandler.buffer;
 
 
@@ -75,6 +76,7 @@ public class DialFragment extends Fragment implements View.OnClickListener {
 
     public DialFragment() {
         // Required empty public constructor
+        dialFragmentIsRun = true;
     }
 
     @Override
@@ -333,15 +335,20 @@ public class DialFragment extends Fragment implements View.OnClickListener {
                 String number = String.valueOf(buffer.charAt(0));
 
                 if(number.equalsIgnoreCase("0") || number.equalsIgnoreCase("+")){
-                    String pnumber = buffer;
-                    if(pnumber.length()>4){
-                        txtNumber.setText(pnumber.trim());
-                    }
 
-                    visibleObj("Incoming Call...");
-                    startRipple();
-                    incomingCallStatus = true;
-                    checkCallGetNumber = true;
+                        String pnumber = buffer;
+                        if(pnumber.length()>4){
+                            txtNumber.setText(pnumber.trim());
+                        }
+
+                        visibleObj("Incoming Call...");
+                        startRipple();
+                        incomingCallStatus = true;
+                        checkCallGetNumber = true;
+                        Log.i(tag,"amir");
+
+
+
                 }
 
                 if(buffer.equalsIgnoreCase("MG4")){
@@ -351,6 +358,7 @@ public class DialFragment extends Fragment implements View.OnClickListener {
                     stopTimer();
                     outCallStatus = true;
                     checkCallGetNumber = true;
+                    Log.i(tag,"Outgoing Call...");
                 }
                 if(checkCallGetNumber){
                     if(buffer.equalsIgnoreCase("MG6")){
@@ -358,11 +366,13 @@ public class DialFragment extends Fragment implements View.OnClickListener {
                     txtCallSituation.setText("On Call...");
                     }else if(buffer.equalsIgnoreCase("MG3")){
                         Toast.makeText(getActivity(), "end call", Toast.LENGTH_SHORT).show();
+                        Log.i(tag,"end call");
                         endCall2();
                         stopTimer();
                         checkCallGetNumber = false;
                     }else if(buffer.equalsIgnoreCase("MG2") || buffer.equalsIgnoreCase("MG1")){
                         Toast.makeText(getActivity(), "Error", Toast.LENGTH_SHORT).show();
+                        Log.i(tag,"Error");
                         endCall2();
                         stopTimer();
                         checkCallGetNumber = false;
@@ -476,6 +486,7 @@ public class DialFragment extends Fragment implements View.OnClickListener {
     @Override
     public void onAttach(Context context) {
         super.onAttach(context);
+        dialFragmentIsRun = true;
 
     }
 
@@ -506,6 +517,7 @@ public class DialFragment extends Fragment implements View.OnClickListener {
     @Override
     public void onResume() {
         super.onResume();
+        dialFragmentIsRun = true;
         incomingCallHandler.postDelayed(runnableIncomingCall, 0);
 
     }

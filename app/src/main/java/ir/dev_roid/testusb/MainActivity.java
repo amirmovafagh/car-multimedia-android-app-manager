@@ -1,40 +1,24 @@
 package ir.dev_roid.testusb;
 
-import android.content.ContentResolver;
-import android.content.Context;
 import android.content.Intent;
 import android.os.Handler;
-import android.provider.Settings;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
-import android.support.v7.widget.Toolbar;
 import android.util.DisplayMetrics;
 import android.util.Log;
-import android.view.MotionEvent;
 import android.view.View;
-import android.view.Window;
 import android.widget.Button;
-import android.widget.ImageView;
 import android.widget.SeekBar;
-import android.widget.TextView;
 import android.widget.Toast;
 import com.special.ResideMenu.ResideMenu;
-import com.special.ResideMenu.ResideMenuItem;
 import ir.dev_roid.testusb.app.ConnectUsbService;
-import ir.dev_roid.testusb.app.CustomDialog;
+import ir.dev_roid.testusb.app.ObservableInteger;
 import ir.dev_roid.testusb.app.PrefManager;
 import ir.dev_roid.testusb.app.ToolBar_ResideMenu;
 import ir.dev_roid.testusb.steeringWheelController.SteeringWheelContorllerActivity;
 
 
-public class MainActivity extends AppCompatActivity {
-    //Variable to store brightness value
-    private int brightness;
-    //Content resolver used as a handle to the system's settings
-    private ContentResolver cResolver;
-    //Window object, that will store a reference to the current window
-    private Window window;
-
+public class MainActivity extends AppCompatActivity  {
     private ResideMenu resideMenu;
     private ToolBar_ResideMenu toolBarResideMenu;
     private Handler handlerHardwareInitializing;
@@ -43,8 +27,8 @@ public class MainActivity extends AppCompatActivity {
     int i = 0;
 
     private SeekBar lf,rf,lr,rr;
+    private ObservableInteger mListener;
 
-    Context mContext;
     private Button aux,pine,radio,bluetooth;
 
     private ConnectUsbService connectUsbService;
@@ -54,6 +38,15 @@ public class MainActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
 
+        mListener = new ObservableInteger();
+        mListener.setOnIntegerChangeListener(new ObservableInteger.OnIntegerChangeListener()
+        {
+            @Override
+            public void onIntegerChanged(int newValue)
+            {
+                Toast.makeText(MainActivity.this, "chanfe: "+newValue, Toast.LENGTH_SHORT).show();
+            }
+        });
 
         lf = (SeekBar) findViewById(R.id.left_front);
         rf = (SeekBar) findViewById(R.id.right_front);
@@ -125,7 +118,6 @@ public class MainActivity extends AppCompatActivity {
             public void onProgressChanged(SeekBar seekBar, int progress, boolean fromUser) {
                 p=progress;
                 connectUsbService.write("aud-vlf-"+(223-progress)+"?");
-
             }
 
             @Override
@@ -187,7 +179,6 @@ public class MainActivity extends AppCompatActivity {
 
             @Override
             public void onStartTrackingTouch(SeekBar seekBar) {
-
             }
 
             @Override
@@ -195,9 +186,6 @@ public class MainActivity extends AppCompatActivity {
                 pref.setVolumeValue(4, p);
             }
         });
-
-        mContext = getApplicationContext();
-        //setScreenBrightness(0);
 
     }
 

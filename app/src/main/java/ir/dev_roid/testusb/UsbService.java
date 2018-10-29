@@ -26,6 +26,9 @@ import java.util.HashMap;
 import java.util.Iterator;
 import java.util.Map;
 
+import ir.dev_roid.testusb.app.Brightness;
+import ir.dev_roid.testusb.app.ObservableInteger;
+import ir.dev_roid.testusb.app.PrefManager;
 import ir.dev_roid.testusb.steeringWheelController.SteeringWheelControllerService;
 
 /**
@@ -51,9 +54,11 @@ public class UsbService extends Service {
     public static boolean SERVICE_CONNECTED = false;
     private static int ONGOING_NOTIFICATION_ID = 1 ;
 
+    private PrefManager prefManager;
     private IBinder binder = new UsbBinder();
     private Handler checkCallStatushandler;
-
+    private ObservableInteger obsInit;
+    private Brightness brightness;
     private Context context;
     private Handler mHandler;
     private MyHandler myHandler;
@@ -133,7 +138,9 @@ public class UsbService extends Service {
         this.context = this;
         serialPortConnected = false;
 
-
+        prefManager = new PrefManager(context);
+        brightness = new Brightness(context);
+        obsInit = new ObservableInteger();
         UsbService.SERVICE_CONNECTED = true;
         changeBaudRate(BAUD_RATE);
         setFilter();
@@ -144,7 +151,15 @@ public class UsbService extends Service {
         foregroundNotification();
         CheckCallStatus();
         startService(new Intent(getBaseContext(), SteeringWheelControllerService.class));
-
+        obsInit.setOnIntegerChangeListener(new ObservableInteger.OnIntegerChangeListener() {
+            @Override
+            public void onIntegerChanged(int newValue) {
+                if(newValue != prefManager.getBrightnessValue()){
+                    Log.i(TAG,""+newValue);
+                    prefManager.setBrightnessValue(newValue);
+                }
+            }
+        });
 
     }
 
@@ -176,6 +191,9 @@ public class UsbService extends Service {
 
                     String data= "blt-cll-chk?";
                     write(data.getBytes());
+                    Log.i(TAG, "CheckCallStatus");
+                    obsInit.set(brightness.getScreenBrightness());
+
 
 
             }

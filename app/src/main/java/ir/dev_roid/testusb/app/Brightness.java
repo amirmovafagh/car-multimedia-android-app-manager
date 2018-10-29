@@ -57,7 +57,7 @@ public class Brightness {
     }
 
     // Get the screen current brightness
-    protected int getScreenBrightness(){
+    public int getScreenBrightness(){
         /*
             public static int getInt (ContentResolver cr, String name, int def)
                 Convenience function for retrieving a single system settings value as an integer.
