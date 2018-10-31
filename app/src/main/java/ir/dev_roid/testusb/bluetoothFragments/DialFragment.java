@@ -182,6 +182,10 @@ public class DialFragment extends Fragment implements View.OnClickListener {
 
                 break;
             case R.id.btn_end_call:
+                if (incomingCallStatus){
+                    connectUsbService.write("blt-cll-rjt");
+                    incomingCallStatus = false;
+                }else
                 endCall();
                 break;
             case R.id.backspace:
@@ -354,8 +358,16 @@ public class DialFragment extends Fragment implements View.OnClickListener {
 
                         String pnumber = buffer;
                         if(pnumber.length()>4){
+                            //dar surati ke buffer ersali az mcu daray harf k bud an ra hazf konad
+                            /*char lastChar = pnumber.charAt(pnumber.length()) ;
+                            if( lastChar == 'k' ){
+                                pnumber = pnumber.trim();
+                                pnumber = pnumber.substring(0, pnumber.length()-2);
+                                txtNumber.setText(pnumber);
+                            }else {
+
+                            }*/
                             pnumber = pnumber.trim();
-                            //pnumber = pnumber.substring(0, pnumber.length()-2);
                             txtNumber.setText(pnumber);
                         }
 
