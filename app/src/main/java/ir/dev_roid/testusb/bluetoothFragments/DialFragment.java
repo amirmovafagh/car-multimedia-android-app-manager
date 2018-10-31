@@ -13,7 +13,6 @@ import android.view.ViewGroup;
 import android.widget.Button;
 import android.widget.ImageButton;
 import android.widget.ImageView;
-import android.widget.Switch;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -46,8 +45,8 @@ public class DialFragment extends Fragment implements View.OnClickListener {
     private boolean checkCall= false;
     private long startTime = 0;
     private ConnectUsbService connectUsbService ;
-    private Handler incomingCallHandler;
-    private Runnable runnableIncomingCall;
+    private Handler callStatusHandler;
+    private Runnable runnableCallStatus;
     public static boolean dialFragmentIsRun = false;
     boolean checkCallGetNumber = false;
     boolean checkTimer = false;
@@ -175,6 +174,10 @@ public class DialFragment extends Fragment implements View.OnClickListener {
                 }
                 break;
             case R.id.btn_call:
+                if(incomingCallStatus){
+                    connectUsbService.write("blt-cll-ans");
+                    incomingCallStatus = false;
+                }else
                 makeCall();
 
                 break;
@@ -236,12 +239,14 @@ public class DialFragment extends Fragment implements View.OnClickListener {
 
     }
 
+    //enable ripple circle
     public void startRipple(){
         if(!rippleBackground.isRippleAnimationRunning()){
             rippleBackground.startRippleAnimation();
         }
     }
 
+    //disable ripple circle
     public void stopRipple(){
         if(rippleBackground.isRippleAnimationRunning()){
             rippleBackground.stopRippleAnimation();
@@ -250,8 +255,12 @@ public class DialFragment extends Fragment implements View.OnClickListener {
 
     public Boolean makeCall(){
 
+        /**
+         * in function barghari tamas anjam mishavad
+         * */
+
         if(!txtNumber.getText().toString().isEmpty() && !checkCall){
-            connectUsbService.disableCheckCallStatus();
+            connectUsbService.disableCheckCallStatus(); //turn off usb service checker bluetooth
             stopTimer();
             connectUsbService.write("blt-cll-"+txtNumber.getText().toString()+"?");
 
@@ -268,11 +277,13 @@ public class DialFragment extends Fragment implements View.OnClickListener {
                         //startTimer();
                         //BtnCallOutputOnClick();
                         startRipple();
-                        connectUsbService.enableCheckCallStatus();
+                        outCallStatus=true;
+                        connectUsbService.enableCheckCallStatus(); //turn on usb service checker bluetooth
                     }else {
                         connectUsbService.enableCheckCallStatus();
                         Toast.makeText(getActivity(), "خطا در خواندن اطلاعات بلوتوث", Toast.LENGTH_SHORT).show();
                         Log.i(tag,"outgoing call read buffer ERROR");
+                        outCallStatus=false;
                         endCall();
                     }
                 }
@@ -327,9 +338,14 @@ public class DialFragment extends Fragment implements View.OnClickListener {
     
     private void checkCallStatus()
     {
+        /**
+         * in function bA ejraye activity ba method on create farakhani shode
+         * ba handler vazeiat mokaleme ke az noe tamas vorudi, khoruji, payan tamas ra
+         * moshakhas mikonad
+         */
 
-        incomingCallHandler = new Handler();
-        runnableIncomingCall = new Runnable() {
+        callStatusHandler = new Handler();
+        runnableCallStatus = new Runnable() {
             @Override
             public void run() {
                 String number = String.valueOf(buffer.charAt(0));
@@ -338,16 +354,15 @@ public class DialFragment extends Fragment implements View.OnClickListener {
 
                         String pnumber = buffer;
                         if(pnumber.length()>4){
-                            txtNumber.setText(pnumber.trim());
+                            pnumber = pnumber.trim();
+                            //pnumber = pnumber.substring(0, pnumber.length()-2);
+                            txtNumber.setText(pnumber);
                         }
 
                         visibleObj("Incoming Call...");
                         startRipple();
                         incomingCallStatus = true;
                         checkCallGetNumber = true;
-                        Log.i(tag,"amir");
-
-
 
                 }
 
@@ -360,26 +375,33 @@ public class DialFragment extends Fragment implements View.OnClickListener {
                     checkCallGetNumber = true;
                     Log.i(tag,"Outgoing Call...");
                 }
+                //dar soorati ke tamas az noe vorudi ya khoruji bargharar shavad in shart ejra mishavad
                 if(checkCallGetNumber){
                     if(buffer.equalsIgnoreCase("MG6")){
                     startTimer();
                     txtCallSituation.setText("On Call...");
+                    incomingCallStatus = false;
+                    outCallStatus = false;
                     }else if(buffer.equalsIgnoreCase("MG3")){
                         Toast.makeText(getActivity(), "end call", Toast.LENGTH_SHORT).show();
                         Log.i(tag,"end call");
                         endCall2();
                         stopTimer();
+                        incomingCallStatus = false;
+                        outCallStatus = false;
                         checkCallGetNumber = false;
                     }else if(buffer.equalsIgnoreCase("MG2") || buffer.equalsIgnoreCase("MG1")){
                         Toast.makeText(getActivity(), "Error", Toast.LENGTH_SHORT).show();
                         Log.i(tag,"Error");
                         endCall2();
                         stopTimer();
+                        incomingCallStatus = false;
+                        outCallStatus = false;
                         checkCallGetNumber = false;
                     }
 
                 }
-                incomingCallHandler.postDelayed(runnableIncomingCall, 500);
+                callStatusHandler.postDelayed(runnableCallStatus, 500);
             }
         };
         //incomingCallHandler.postDelayed(runnableIncomingCall, 0);
@@ -499,7 +521,7 @@ public class DialFragment extends Fragment implements View.OnClickListener {
     public void onStop() {
         super.onStop();
         dialFragmentIsRun = false;
-        incomingCallHandler.removeCallbacksAndMessages(null);
+        callStatusHandler.removeCallbacksAndMessages(null);
     }
     @Override
     public void onDestroyView() {
@@ -511,14 +533,14 @@ public class DialFragment extends Fragment implements View.OnClickListener {
     public void onPause() {
         super.onPause();
         dialFragmentIsRun = false;
-        incomingCallHandler.removeCallbacksAndMessages(null);
+        callStatusHandler.removeCallbacksAndMessages(null);
     }
 
     @Override
     public void onResume() {
         super.onResume();
         dialFragmentIsRun = true;
-        incomingCallHandler.postDelayed(runnableIncomingCall, 0);
+        callStatusHandler.postDelayed(runnableCallStatus, 0);
 
     }
 
