@@ -12,6 +12,7 @@
         <item name="android:textColor">@android:color/white</item>
         <item name="android:windowDrawsSystemBarBackgrounds">false</item>
 
+
     </style>
 
     <style name="dialButton" parent="Theme.AppCompat">
@@ -58,8 +59,9 @@
 
     </style>
 
-    <style name="PauseDialog" parent="@android:style/Theme.Material.Dialog">
+    <style name="PauseDialog" parent="@style/Theme.AppCompat.DayNight.Dialog.Alert">
         <item name="android:windowAnimationStyle">@style/PauseDialogAnimation</item>
+        <item name="android:windowCloseOnTouchOutside">true</item>
     </style>
 
     <style name="PauseDialogAnimation">

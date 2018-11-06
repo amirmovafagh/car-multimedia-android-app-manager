@@ -22,6 +22,7 @@ public class CustomDialog extends Activity {
     private AudioManager audioManager;
     private ConnectUsbService connectUsbService;
     private PrefManager pref;
+    private Brightness brightness;
     private int frqSeekVal;
 
     public CustomDialog (Activity activity){
@@ -39,18 +40,25 @@ public class CustomDialog extends Activity {
 
     public void show (){
         Dialog dialog = new Dialog(activity, R.style.PauseDialog);
+
         dialog.requestWindowFeature(Window.FEATURE_NO_TITLE);
         dialog.setContentView(R.layout.custom_dialog);
         dialog.getWindow().setBackgroundDrawable(new ColorDrawable(Color.TRANSPARENT));
-
+        dialog.setCanceledOnTouchOutside(true);
         audioManager = (AudioManager) activity.getSystemService(Context.AUDIO_SERVICE);
         mute = (ImageButton) dialog.findViewById(R.id.ib_mute_cDialog);
         SeekBar carVolumeSeek = (SeekBar) dialog.findViewById(R.id.seekbar_car_volume);
         SeekBar osVolumeSeek = (SeekBar) dialog.findViewById(R.id.seekbar_os_volume);
+        SeekBar brightnessSeek = (SeekBar) dialog.findViewById(R.id.seekbar_brightness);
+        brightnessSeek.setMax(255);
         osVolumeSeek.setMax(audioManager.getStreamMaxVolume(AudioManager.STREAM_MUSIC));
         osVolumeSeek.setProgress(audioManager.getStreamVolume(AudioManager.STREAM_MUSIC));
         carVolumeSeek.setMax(63);
         carVolumeSeek.setProgress(pref.getVolumeValue(0));
+
+
+        brightness = new Brightness(activity);
+        brightnessSeek.setProgress(brightness.getScreenBrightness());
 
 
 
@@ -100,6 +108,24 @@ public class CustomDialog extends Activity {
             }
         });
         dialog.show();
+
+        brightnessSeek.setOnSeekBarChangeListener(new SeekBar.OnSeekBarChangeListener() {
+            @Override
+            public void onProgressChanged(SeekBar seekBar, int i, boolean b) {
+                brightness.setScreenBrightness(i);
+                connectUsbService.write("aud-brg-"+i/5+"?");
+            }
+
+            @Override
+            public void onStartTrackingTouch(SeekBar seekBar) {
+
+            }
+
+            @Override
+            public void onStopTrackingTouch(SeekBar seekBar) {
+
+            }
+        });
 
     }
 

@@ -25,6 +25,8 @@ import java.io.UnsupportedEncodingException;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.Map;
+import java.util.Timer;
+import java.util.TimerTask;
 
 import ir.dev_roid.testusb.app.Brightness;
 import ir.dev_roid.testusb.app.ObservableInteger;
@@ -153,9 +155,18 @@ public class UsbService extends Service {
         startService(new Intent(getBaseContext(), SteeringWheelControllerService.class));
         obsInit.setOnIntegerChangeListener(new ObservableInteger.OnIntegerChangeListener() {
             @Override
-            public void onIntegerChanged(int newValue) {
+            public void onIntegerChanged(final int newValue) {
                 if(newValue != prefManager.getBrightnessValue()){
-                    Log.i(TAG,""+newValue);
+
+                    new Timer().schedule(new TimerTask() {
+                        @Override
+                        public void run() {
+                            //Do something after 100ms
+                            String data= "aud-brg-"+newValue/5+"?";
+                            write(data.getBytes());
+                        }
+                    }, 100);
+
                     prefManager.setBrightnessValue(newValue);
                 }
             }

@@ -10,6 +10,7 @@ import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.view.animation.TranslateAnimation;
 import android.widget.Button;
 import android.widget.ImageButton;
 import android.widget.ImageView;
@@ -30,22 +31,21 @@ import ir.dev_roid.testusb.bluetoothFragments.contacts.Pojo.CallType;
 import ir.dev_roid.testusb.bluetoothFragments.contacts.Pojo.PhoneNumber;
 
 
-
 import static ir.dev_roid.testusb.MyHandler.buffer;
 
 
 public class DialFragment extends Fragment implements View.OnClickListener {
     private static String tag = DialFragment.class.getSimpleName();
-    private View view;
+    private View view, dialpadView;
     private RippleBackground rippleBackground;
     private ImageView imageView;
     private Button numPadBtn;
-    private TextView txtNumber, txtCallSituation,txtCallTimer;
+    private TextView txtNumber, txtCallSituation, txtCallTimer;
     private ImageButton upVolume, downVolume, mute, btConnection, backSpaceBtn, imgBtnDialPad;
-    private boolean checkCall= false;
+    private boolean checkCall, isVisible = false;
     private long startTime = 0;
-    private ConnectUsbService connectUsbService ;
-    private Handler callStatusHandler;
+    private ConnectUsbService connectUsbService;
+    private Handler callStatusHandler,handlerData;
     private Runnable runnableCallStatus;
     public static boolean dialFragmentIsRun = false;
     boolean checkCallGetNumber = false;
@@ -76,13 +76,14 @@ public class DialFragment extends Fragment implements View.OnClickListener {
     public DialFragment() {
         // Required empty public constructor
         dialFragmentIsRun = true;
+
     }
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        dialFragmentIsRun= true;
-
+        dialFragmentIsRun = true;
+        isVisible = false;
     }
 
     @Override
@@ -95,113 +96,168 @@ public class DialFragment extends Fragment implements View.OnClickListener {
 
     }
 
+    // slide the view from below itself to the current position
+    public void slideUp(View view){
+        view.setVisibility(View.VISIBLE);
+        TranslateAnimation animate = new TranslateAnimation(
+                0,                 // fromXDelta
+                0,                 // toXDelta
+                view.getHeight(),  // fromYDelta
+                0);                // toYDelta
+        animate.setDuration(500);
+        animate.setFillAfter(true);
+        view.startAnimation(animate);
+    }
 
-    private void startTimer(){
-        if(!checkTimer){
+    // slide the view from its current position to below itself
+    public void slideDown(View view){
+        TranslateAnimation animate = new TranslateAnimation(
+                0,                 // fromXDelta
+                0,                 // toXDelta
+                0,                 // fromYDelta
+                view.getHeight()); // toYDelta
+        animate.setDuration(500);
+        animate.setFillAfter(true);
+        view.startAnimation(animate);
+    }
+
+    public void onSlideViewButtonClick(View view) {
+        if (isVisible) {
+            slideDown(dialpadView);
+        } else {
+            slideUp(dialpadView);
+        }
+        isVisible = !isVisible;
+    }
+
+
+    private void startTimer() {
+        if (!checkTimer) {
             startTime = System.currentTimeMillis();
             timerHandler.postDelayed(timerRunnable, 0);
             checkTimer = true;
         }
 
     }
-    private void stopTimer(){
+
+    private void stopTimer() {
         timerHandler.removeCallbacks(timerRunnable);
-        checkTimer= false;
+        checkTimer = false;
     }
 
     @Override
     public void onClick(View view) {
 
-        switch (view.getId()){
+        switch (view.getId()) {
             case R.id.btn_star:
-                if(!checkCall){
+                if (!checkCall) {
                     txtNumber.append("*");
                 }
                 break;
             case R.id.btn_sharp:
-                if(!checkCall){
+                if (!checkCall) {
                     txtNumber.append("#");
                 }
                 break;
             case R.id.zero:
-                if(!checkCall){
+                if (!checkCall) {
                     txtNumber.append("0");
                 }
                 break;
             case R.id.one:
-                if(!checkCall){
+                if (!checkCall) {
                     txtNumber.append("1");
                 }
                 break;
             case R.id.two:
-                if(!checkCall){
+                if (!checkCall) {
                     txtNumber.append("2");
                 }
                 break;
             case R.id.three:
-                if(!checkCall){
+                if (!checkCall) {
                     txtNumber.append("3");
                 }
                 break;
             case R.id.four:
-                if(!checkCall){
+                if (!checkCall) {
                     txtNumber.append("4");
                 }
                 break;
             case R.id.five:
-                if(!checkCall){
+                if (!checkCall) {
                     txtNumber.append("5");
                 }
                 break;
             case R.id.six:
-                if(!checkCall){
+                if (!checkCall) {
                     txtNumber.append("6");
                 }
                 break;
             case R.id.seven:
-                if(!checkCall){
+                if (!checkCall) {
                     txtNumber.append("7");
                 }
                 break;
             case R.id.eight:
-                if(!checkCall){
+                if (!checkCall) {
                     txtNumber.append("8");
                 }
                 break;
             case R.id.nine:
-                if(!checkCall){
+                if (!checkCall) {
                     txtNumber.append("9");
                 }
                 break;
             case R.id.btn_call:
-                if(incomingCallStatus){
+                if (incomingCallStatus) {
                     connectUsbService.write("blt-cll-ans");
                     incomingCallStatus = false;
-                }else
-                makeCall();
+                } else
+                    makeCall();
 
                 break;
             case R.id.btn_end_call:
-                if (incomingCallStatus){
+                if (incomingCallStatus) {
                     connectUsbService.write("blt-cll-rjt");
                     incomingCallStatus = false;
-                }else
-                endCall();
+                } else
+                    endCall();
                 break;
             case R.id.backspace:
 
-                String s=txtNumber.getText().toString();
-                if(!s.isEmpty()){
-                    s=s.substring(0, s.length() - 1);
+                String s = txtNumber.getText().toString();
+                if (!s.isEmpty() && !checkCall) {
+                    s = s.substring(0, s.length() - 1);
                     txtNumber.setText(s);
+
+
                 }
 
                 break;
+
+            case R.id.ib_down_volume:
+                sendCommand("blt-mus-vdn");
+                Log.i(tag, "down");
+                break;
+            case R.id.ib_up_volume:
+                sendCommand("blt-mus-vup");
+                break;
+            case R.id.ib_mute:
+                sendCommand("blt-mus-mut");
+                break;
+            case R.id.ib_bluetooth_connection_call:
+                sendCommand("blt-cll-atr");
+
         }
         backSpaceBtn.setOnLongClickListener(new View.OnLongClickListener() {
             @Override
             public boolean onLongClick(View view) {
-                txtNumber.setText(null);
+                String s = txtNumber.getText().toString();
+                if (!s.isEmpty() && !checkCall) {
+                    txtNumber.setText(null);
+                }
+
                 return false;
             }
         });
@@ -212,61 +268,66 @@ public class DialFragment extends Fragment implements View.OnClickListener {
                              Bundle savedInstanceState) {
         // Inflate the layout for this fragment
         view = inflater.inflate(R.layout.fragment_dial, container, false);
+        dialpadView = view.findViewById(R.id.dialpad_view);
         rippleBackground = view.findViewById(R.id.content);
-        imageView= view.findViewById(R.id.centerImage);
-        txtNumber= view.findViewById(R.id.txt_number);
-        txtCallSituation= (TextView)view.findViewById(R.id.txt_call_situation);
-        txtCallTimer= (TextView)view.findViewById(R.id.txt_call_timer);
-        upVolume= (ImageButton)view.findViewById(R.id.ib_up_volume);
-        downVolume= (ImageButton)view.findViewById(R.id.ib_down_volume);
-        mute= (ImageButton)view.findViewById(R.id.ib_mute);
-        btConnection= (ImageButton)view.findViewById(R.id.ib_bluetooth_connection_call);
+        imageView = view.findViewById(R.id.centerImage);
+        txtNumber = view.findViewById(R.id.txt_number);
+        txtCallSituation = (TextView) view.findViewById(R.id.txt_call_situation);
+        txtCallTimer = (TextView) view.findViewById(R.id.txt_call_timer);
+        upVolume = (ImageButton) view.findViewById(R.id.ib_up_volume);
+        upVolume.setOnClickListener(this);
+        downVolume = (ImageButton) view.findViewById(R.id.ib_down_volume);
+        downVolume.setOnClickListener(this);
+        mute = (ImageButton) view.findViewById(R.id.ib_mute);
+        mute.setOnClickListener(this);
+        btConnection = (ImageButton) view.findViewById(R.id.ib_bluetooth_connection_call);
+        btConnection.setOnClickListener(this);
         invisibleObj();
 
-        final int[] dialpadBtnsID={R.id.btn_star, R.id.btn_sharp, R.id.zero, R.id.one, R.id.two,
+        final int[] dialpadBtnsID = {R.id.btn_star, R.id.btn_sharp, R.id.zero, R.id.one, R.id.two,
                 R.id.three, R.id.four, R.id.five, R.id.six, R.id.seven, R.id.eight, R.id.nine};
 
-        for (int i=0;i<dialpadBtnsID.length;i++){
+        for (int i = 0; i < dialpadBtnsID.length; i++) {
             numPadBtn = view.findViewById(dialpadBtnsID[i]);
             numPadBtn.setOnClickListener(this);
         }
 
-        final int[] imgBtnID={R.id.btn_end_call, R.id.btn_call, R.id.backspace};
-        for(int i=0 ;i<imgBtnID.length; i++){
+        final int[] imgBtnID = {R.id.btn_end_call, R.id.btn_call, R.id.backspace};
+        for (int i = 0; i < imgBtnID.length; i++) {
             imgBtnDialPad = view.findViewById(imgBtnID[i]);
             imgBtnDialPad.setOnClickListener(this);
         }
 
-        backSpaceBtn=(ImageButton)view.findViewById(R.id.backspace);
+        backSpaceBtn = (ImageButton) view.findViewById(R.id.backspace);
         checkCallStatus();
         return view;
 
     }
 
     //enable ripple circle
-    public void startRipple(){
-        if(!rippleBackground.isRippleAnimationRunning()){
+    public void startRipple() {
+        if (!rippleBackground.isRippleAnimationRunning()) {
             rippleBackground.startRippleAnimation();
         }
     }
 
     //disable ripple circle
-    public void stopRipple(){
-        if(rippleBackground.isRippleAnimationRunning()){
+    public void stopRipple() {
+        if (rippleBackground.isRippleAnimationRunning()) {
             rippleBackground.stopRippleAnimation();
         }
     }
 
-    public Boolean makeCall(){
+    public Boolean makeCall() {
 
         /**
          * in function barghari tamas anjam mishavad
          * */
 
-        if(!txtNumber.getText().toString().isEmpty() && !checkCall){
+        if (!txtNumber.getText().toString().isEmpty() && !checkCall) {
             connectUsbService.disableCheckCallStatus(); //turn off usb service checker bluetooth
             stopTimer();
-            connectUsbService.write("blt-cll-"+txtNumber.getText().toString()+"?");
+            connectUsbService.write("blt-cll-" + txtNumber.getText().toString() + "?");
 
 
             visibleObj("Calling out...");
@@ -275,52 +336,36 @@ public class DialFragment extends Fragment implements View.OnClickListener {
             new Handler().postDelayed(new Runnable() {
                 @Override
                 public void run() {
-                    if(buffer.equalsIgnoreCase("IR")){
+                    if (buffer.equalsIgnoreCase("IR")) {
                         //this.SaveCallInfoLog(phone.getText().toString(), new CallType(2,CallType.Type.OUTPUT));
                         //Toast.makeText(getActivity(), "output call", Toast.LENGTH_SHORT).show();
                         //startTimer();
                         //BtnCallOutputOnClick();
                         startRipple();
-                        outCallStatus=true;
+                        outCallStatus = true;
                         connectUsbService.enableCheckCallStatus(); //turn on usb service checker bluetooth
-                    }else {
+                    } else {
                         connectUsbService.enableCheckCallStatus();
                         Toast.makeText(getActivity(), "خطا در خواندن اطلاعات بلوتوث", Toast.LENGTH_SHORT).show();
-                        Log.i(tag,"outgoing call read buffer ERROR");
-                        outCallStatus=false;
+                        Log.i(tag, "outgoing call read buffer ERROR");
+                        outCallStatus = false;
                         endCall();
                     }
                 }
-            },100);
+            }, 100);
             //checkEndCallStatus();
-            checkCall=true;
-        }else {Toast.makeText(getActivity(), "Please Enter Number", Toast.LENGTH_SHORT).show();
+            checkCall = true;
+        } else {
+            Toast.makeText(getActivity(), "Please Enter Number", Toast.LENGTH_SHORT).show();
             return false;
         }
         return true;
     }
 
-    public void checkEndCallStatus(){
-        final Handler handler = new Handler();
-        handler.postDelayed(new Runnable() {
-            @Override
-            public void run() {
-
-                if(buffer.equalsIgnoreCase("MG3")){
-                    endCall2();
-                }else
-                    {
-                        //connectUsbService.write("blt-cll-chk?");
-                        handler.postDelayed(this,1000);
-                    }
-            }
-        },5000);
-
-    }
-    public void endCall(){
+    public void endCall() {
 
         connectUsbService.write("blt-cll-end?");
-        checkCall=false;
+        checkCall = false;
         stopRipple();
         txtCallSituation.setText("");
         txtNumber.setText("");
@@ -328,10 +373,10 @@ public class DialFragment extends Fragment implements View.OnClickListener {
         invisibleObj();
 
     }
-    public void endCall2()
-    {
+
+    public void endCall2() {
         //connectUsbService.write("blt-cll-end?");
-        checkCall=false;
+        checkCall = false;
         rippleBackground.stopRippleAnimation();
         txtCallSituation.setText("");
         txtNumber.setText("");
@@ -339,9 +384,8 @@ public class DialFragment extends Fragment implements View.OnClickListener {
         invisibleObj();
 
     }
-    
-    private void checkCallStatus()
-    {
+
+    private void checkCallStatus() {
         /**
          * in function bA ejraye activity ba method on create farakhani shode
          * ba handler vazeiat mokaleme ke az noe tamas vorudi, khoruji, payan tamas ra
@@ -354,11 +398,11 @@ public class DialFragment extends Fragment implements View.OnClickListener {
             public void run() {
                 String number = String.valueOf(buffer.charAt(0));
 
-                if(number.equalsIgnoreCase("0") || number.equalsIgnoreCase("+")){
+                if (number.equalsIgnoreCase("0") || number.equalsIgnoreCase("+")) {
 
-                        String pnumber = buffer;
-                        if(pnumber.length()>4){
-                            //dar surati ke buffer ersali az mcu daray harf k bud an ra hazf konad
+                    String pnumber = buffer;
+                    if (pnumber.length() > 4) {
+                        //dar surati ke buffer ersali az mcu daray harf k bud an ra hazf konad
                             /*char lastChar = pnumber.charAt(pnumber.length()) ;
                             if( lastChar == 'k' ){
                                 pnumber = pnumber.trim();
@@ -367,44 +411,44 @@ public class DialFragment extends Fragment implements View.OnClickListener {
                             }else {
 
                             }*/
-                            pnumber = pnumber.trim();
-                            txtNumber.setText(pnumber);
-                        }
+                        pnumber = pnumber.trim();
+                        txtNumber.setText(pnumber);
+                    }
 
-                        visibleObj("Incoming Call...");
-                        startRipple();
-                        incomingCallStatus = true;
-                        checkCallGetNumber = true;
+                    visibleObj("Incoming Call...");
+                    startRipple();
+                    incomingCallStatus = true;
+                    checkCallGetNumber = true;
 
                 }
 
-                if(buffer.equalsIgnoreCase("MG4")){
+                if (buffer.equalsIgnoreCase("MG4")) {
 
                     visibleObj("Outgoing Call...");
                     startRipple();
                     stopTimer();
                     outCallStatus = true;
                     checkCallGetNumber = true;
-                    Log.i(tag,"Outgoing Call...");
+                    Log.i(tag, "Outgoing Call...");
                 }
                 //dar soorati ke tamas az noe vorudi ya khoruji bargharar shavad in shart ejra mishavad
-                if(checkCallGetNumber){
-                    if(buffer.equalsIgnoreCase("MG6")){
-                    startTimer();
-                    txtCallSituation.setText("On Call...");
-                    incomingCallStatus = false;
-                    outCallStatus = false;
-                    }else if(buffer.equalsIgnoreCase("MG3")){
+                if (checkCallGetNumber) {
+                    if (buffer.equalsIgnoreCase("MG6")) {
+                        startTimer();
+                        txtCallSituation.setText("On Call...");
+                        incomingCallStatus = false;
+                        outCallStatus = false;
+                    } else if (buffer.equalsIgnoreCase("MG3")) {
                         Toast.makeText(getActivity(), "end call", Toast.LENGTH_SHORT).show();
-                        Log.i(tag,"end call");
+                        Log.i(tag, "end call");
                         endCall2();
                         stopTimer();
                         incomingCallStatus = false;
                         outCallStatus = false;
                         checkCallGetNumber = false;
-                    }else if(buffer.equalsIgnoreCase("MG2") || buffer.equalsIgnoreCase("MG1")){
+                    } else if (buffer.equalsIgnoreCase("MG2") || buffer.equalsIgnoreCase("MG1")) {
                         Toast.makeText(getActivity(), "Error", Toast.LENGTH_SHORT).show();
-                        Log.i(tag,"Error");
+                        Log.i(tag, "Error");
                         endCall2();
                         stopTimer();
                         incomingCallStatus = false;
@@ -413,13 +457,25 @@ public class DialFragment extends Fragment implements View.OnClickListener {
                     }
 
                 }
-                callStatusHandler.postDelayed(runnableCallStatus, 500);
+                callStatusHandler.postDelayed(runnableCallStatus, 10);
             }
         };
         //incomingCallHandler.postDelayed(runnableIncomingCall, 0);
     }
 
-    private void invisibleObj(){
+    private void sendCommand (final String data){
+        connectUsbService.disableCheckCallStatus();
+        handlerData = new Handler();
+        handlerData.postDelayed(new Runnable() {
+            @Override
+            public void run() {
+                connectUsbService.write(data+"?");
+                connectUsbService.enableCheckCallStatus();
+            }
+        },10);
+    }
+
+    private void invisibleObj() {
         txtCallSituation.setVisibility(View.INVISIBLE);
         txtCallTimer.setVisibility(View.INVISIBLE);
         rippleBackground.setVisibility(View.INVISIBLE);
@@ -429,7 +485,7 @@ public class DialFragment extends Fragment implements View.OnClickListener {
         btConnection.setVisibility(View.INVISIBLE);
     }
 
-    private void visibleObj(String CallSituation){
+    private void visibleObj(String CallSituation) {
         txtCallSituation.setVisibility(View.VISIBLE);
         txtCallSituation.setText(CallSituation);
         txtCallTimer.setVisibility(View.VISIBLE);
@@ -441,19 +497,18 @@ public class DialFragment extends Fragment implements View.OnClickListener {
     }
 
 
-
     private void BtnMissCallOnClick() {
-        this.SaveCallInfoLog(txtNumber.getText().toString(), new CallType(3,CallType.Type.MISSING));
+        this.SaveCallInfoLog(txtNumber.getText().toString(), new CallType(3, CallType.Type.MISSING));
         Toast.makeText(getActivity(), "misscall", Toast.LENGTH_SHORT).show();
     }
 
     private void BtnCallOutputOnClick() {
-        this.SaveCallInfoLog(txtNumber.getText().toString(), new CallType(2,CallType.Type.OUTPUT));
+        this.SaveCallInfoLog(txtNumber.getText().toString(), new CallType(2, CallType.Type.OUTPUT));
         Toast.makeText(getActivity(), "output call", Toast.LENGTH_SHORT).show();
     }
 
     private void BtnCallInputOnClick() {
-        this.SaveCallInfoLog(txtNumber.getText().toString(), new CallType(1,CallType.Type.INPUT));
+        this.SaveCallInfoLog(txtNumber.getText().toString(), new CallType(1, CallType.Type.INPUT));
         Toast.makeText(getActivity(), "input call", Toast.LENGTH_SHORT).show();
     }
 
@@ -481,12 +536,12 @@ public class DialFragment extends Fragment implements View.OnClickListener {
         Database db = new Database(getActivity());
         PhoneNumber phoneNumber = null;
         try {
-            List<PhoneNumber> phoneNumbers= db.getPhoneNumberRuntimeExceptionDao().query(
+            List<PhoneNumber> phoneNumbers = db.getPhoneNumberRuntimeExceptionDao().query(
                     db.getPhoneNumberRuntimeExceptionDao().queryBuilder().where()
                             .eq(PhoneNumber.PHONE_FEILD_NAME, s)
                             .prepare()
             );
-            phoneNumber = phoneNumbers.size()>0?phoneNumbers.get(0):null;
+            phoneNumber = phoneNumbers.size() > 0 ? phoneNumbers.get(0) : null;
         } catch (SQLException e) {
             e.printStackTrace();
         }
@@ -499,9 +554,9 @@ public class DialFragment extends Fragment implements View.OnClickListener {
 
         PhoneNumber result = null;
 
-        if ((result=getExistedPhoneNumber(phon)) != null){
+        if ((result = getExistedPhoneNumber(phon)) != null) {
             return result;
-        }else {
+        } else {
             PhoneNumber phoneNumber = new PhoneNumber();
             phoneNumber.setPhone(phon);
 
@@ -512,9 +567,6 @@ public class DialFragment extends Fragment implements View.OnClickListener {
         }
 
     }
-
-
-
 
 
     @Override
@@ -529,12 +581,14 @@ public class DialFragment extends Fragment implements View.OnClickListener {
         super.onDetach();
         dialFragmentIsRun = false;
     }
+
     @Override
     public void onStop() {
         super.onStop();
         dialFragmentIsRun = false;
         callStatusHandler.removeCallbacksAndMessages(null);
     }
+
     @Override
     public void onDestroyView() {
         super.onDestroyView();

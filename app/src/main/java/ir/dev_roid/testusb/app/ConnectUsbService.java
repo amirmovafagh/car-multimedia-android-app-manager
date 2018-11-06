@@ -65,7 +65,7 @@ public class ConnectUsbService {
             activity.startService(startService);
         }
         Intent bindingIntent = new Intent(activity, service);
-        activity.bindService(bindingIntent, serviceConnection, Context.BIND_AUTO_CREATE);
+        activity.bindService(bindingIntent, serviceConnection, activity.BIND_AUTO_CREATE);
 
     }
 
