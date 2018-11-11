@@ -10,6 +10,8 @@ import android.content.IntentFilter;
 import android.hardware.usb.UsbDevice;
 import android.hardware.usb.UsbDeviceConnection;
 import android.hardware.usb.UsbManager;
+import android.media.AudioManager;
+import android.media.MediaPlayer;
 import android.os.Binder;
 import android.os.Handler;
 import android.os.HandlerThread;
@@ -21,6 +23,7 @@ import com.felhr.usbserial.CDCSerialDevice;
 import com.felhr.usbserial.UsbSerialDevice;
 import com.felhr.usbserial.UsbSerialInterface;
 
+import java.io.IOException;
 import java.io.UnsupportedEncodingException;
 import java.util.HashMap;
 import java.util.Iterator;
@@ -32,6 +35,8 @@ import ir.dev_roid.testusb.app.Brightness;
 import ir.dev_roid.testusb.app.ObservableInteger;
 import ir.dev_roid.testusb.app.PrefManager;
 import ir.dev_roid.testusb.steeringWheelController.SteeringWheelControllerService;
+
+import static ir.dev_roid.testusb.MyHandler.buffer;
 
 /**
  * Created by hirad on 3/1/18.
@@ -54,9 +59,10 @@ public class UsbService extends Service {
     private static final String ACTION_USB_PERMISSION = "com.android.example.USB_PERMISSION";
     private static final int BAUD_RATE = 19200; // BaudRate. Change this value if you need
     public static boolean SERVICE_CONNECTED = false;
-    private static int ONGOING_NOTIFICATION_ID = 1 ;
+    private static int ONGOING_NOTIFICATION_ID = 1;
 
     private PrefManager prefManager;
+    private AudioManager audioManager;
     private IBinder binder = new UsbBinder();
     private Handler checkCallStatushandler;
     private ObservableInteger obsInit;
@@ -92,7 +98,6 @@ public class UsbService extends Service {
     };
 
 
-
     /*
      * Different notifications from OS will be received here (USB attached, detached, permission responses...)
      * About BroadcastReceiver: http://developer.android.com/reference/android/content/BroadcastReceiver.html
@@ -117,7 +122,7 @@ public class UsbService extends Service {
                 if (!serialPortConnected)
                     findSerialPortDevice(); // A USB device has been attached. Try to open it as a Serial port
             } else if (arg1.getAction().equals(ACTION_USB_DETACHED)) {
-                if(!checkUsbID()){
+                if (!checkUsbID()) {
                     //Toast.makeText(context, "USB disconnected", Toast.LENGTH_SHORT).show();
                     // Usb device was disconnected. send an intent to the Main Activity
                     Intent intent = new Intent(ACTION_USB_DISCONNECTED);
@@ -156,13 +161,13 @@ public class UsbService extends Service {
         obsInit.setOnIntegerChangeListener(new ObservableInteger.OnIntegerChangeListener() {
             @Override
             public void onIntegerChanged(final int newValue) {
-                if(newValue != prefManager.getBrightnessValue()){
+                if (newValue != prefManager.getBrightnessValue()) {
 
                     new Timer().schedule(new TimerTask() {
                         @Override
                         public void run() {
                             //Do something after 100ms
-                            String data= "aud-brg-"+newValue/5+"?";
+                            String data = "aud-brg-" + newValue / 5 + "?";
                             write(data.getBytes());
                         }
                     }, 100);
@@ -172,18 +177,20 @@ public class UsbService extends Service {
             }
         });
 
+        audioManager = (AudioManager)context.getSystemService(Context.AUDIO_SERVICE);
+
     }
 
-    public void enableCheckCallStatus(){
+    public void enableCheckCallStatus() {
         threadStatus = true;
         //thread.start();
     }
 
-    public void CheckCallStatus(){
+    public void CheckCallStatus() {
         thread = new Thread() {
             @Override
             public void run() {
-                while (threadStatus){
+                while (threadStatus) {
                     try {
                         sleep(2500);
                         threadRunnable.run();
@@ -200,10 +207,17 @@ public class UsbService extends Service {
             @Override
             public void run() {
 
-                    String data= "blt-cll-chk?";
-                    write(data.getBytes());
-                    Log.i(TAG, "CheckCallStatus");
-                    obsInit.set(brightness.getScreenBrightness());
+
+                if(audioManager.isMusicActive())
+                {
+                    // do something - or do it not
+                    Log.i(TAG, "AAAAAA");
+                }
+                String data = "blt-cll-chk?";
+                write(data.getBytes());
+                Log.i(TAG, "CheckCallStatus");
+                checkBluetoothMusic();
+                obsInit.set(brightness.getScreenBrightness());
 
 
 
@@ -214,7 +228,28 @@ public class UsbService extends Service {
 
     }
 
-    public void disableCheckCallStatus(){
+    private void checkBluetoothMusic() {
+
+        if (buffer.equalsIgnoreCase("MB") || buffer.equalsIgnoreCase("MR")) {
+            delayTimer("mod-rad?");
+        } else if (buffer.equalsIgnoreCase("MP")) {
+            delayTimer("mod-pin?");
+        } else if (buffer.equalsIgnoreCase("MA")) {
+            delayTimer("mod-pin?");
+        }
+    }
+
+    private void delayTimer(final String data) {
+        new Timer().schedule(new TimerTask() {
+            @Override
+            public void run() {
+                //Do something after 100ms
+                write(data.getBytes());
+            }
+        }, 100);
+    }
+
+    public void disableCheckCallStatus() {
         threadStatus = false;
     }
 
@@ -251,8 +286,8 @@ public class UsbService extends Service {
      * This function baud rate
      */
 
-    public void changeBaudRate(int baudRate){
-        if(serialPort != null)
+    public void changeBaudRate(int baudRate) {
+        if (serialPort != null)
             serialPort.setBaudRate(baudRate);
     }
 
@@ -273,10 +308,11 @@ public class UsbService extends Service {
 
                 if (deviceVID != 0x1d6b && (devicePID != 0x0001 && devicePID != 0x0002 && devicePID != 0x0003)) {
                     // There is a device connected to our Android device. Try to open it as a Serial Port.
-                    if(devicePID==29987 && deviceVID==6790){
+                    if (devicePID == 29987 && deviceVID == 6790) {
                         requestUserPermission();
                         keep = false;
-                    }else Toast.makeText(context, "serial device dont recognize", Toast.LENGTH_SHORT).show();
+                    } else
+                        Toast.makeText(context, "serial device dont recognize", Toast.LENGTH_SHORT).show();
 
                 } else {
                     connection = null;
@@ -298,11 +334,11 @@ public class UsbService extends Service {
         }
     }
 
-    private boolean checkUsbID(){
-        boolean check=false;
+    private boolean checkUsbID() {
+        boolean check = false;
 
-        int vendorId=6790;
-        int productId=29987;
+        int vendorId = 6790;
+        int productId = 29987;
         UsbManager usbManager = (UsbManager) context.getSystemService(Context.USB_SERVICE);
 
         if (usbManager.getDeviceList().isEmpty()) {
@@ -362,7 +398,7 @@ public class UsbService extends Service {
     private class ConnectionThread extends Thread {
         @Override
         public void run() {
-            serialPort = UsbSerialDevice.createUsbSerialDevice (device, connection);
+            serialPort = UsbSerialDevice.createUsbSerialDevice(device, connection);
             if (serialPort != null) {
                 if (serialPort.syncOpen()) {
                     serialPortConnected = true;
@@ -412,10 +448,10 @@ public class UsbService extends Service {
     private class ReadThread extends Thread {
         @Override
         public void run() {
-            while(true){
+            while (true) {
                 byte[] buffer = new byte[100];
                 int n = serialPort.syncRead(buffer, 0);
-                if(n > 0) {
+                if (n > 0) {
                     byte[] received = new byte[n];
                     System.arraycopy(buffer, 0, received, 0, n);
                     String receivedStr = new String(received);
@@ -425,10 +461,10 @@ public class UsbService extends Service {
         }
     }
 
-    public void foregroundNotification(){
-        Intent notificationIntent = new Intent(this,UsbService.class);
+    public void foregroundNotification() {
+        Intent notificationIntent = new Intent(this, UsbService.class);
         PendingIntent pendingIntent = PendingIntent.getActivity(this, 0, notificationIntent, 0);
-        Notification notification= null;
+        Notification notification = null;
         if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.JELLY_BEAN) {
             notification = new Notification.Builder(this).setContentTitle("multimedia service")
                     .setContentText("multimedia")

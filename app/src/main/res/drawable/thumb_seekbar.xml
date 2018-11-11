@@ -4,8 +4,8 @@
     <item>
         <shape>
             <size
-                android:height="15dp"
-                android:width="15dp" />
+                android:height="@dimen/seek_bar_thumb_size"
+                android:width="@dimen/seek_bar_thumb_size" />
 
             <solid android:color="@android:color/transparent" />
         </shape>

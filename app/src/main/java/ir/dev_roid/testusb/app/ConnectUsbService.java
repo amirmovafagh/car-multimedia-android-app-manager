@@ -15,6 +15,7 @@ import ir.dev_roid.testusb.UsbService;
 public class ConnectUsbService {
     private Activity activity;
 
+
     private UsbService usbService;
 
     public ConnectUsbService(Activity activity){

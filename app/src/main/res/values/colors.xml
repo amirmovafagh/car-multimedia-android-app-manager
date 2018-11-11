@@ -10,4 +10,8 @@
     <color name="dark_green">#2e3837</color>
     <color name="transparent">#00ff0000</color>
     <color name="color_activity_steering_wheel_control_item_text">#DCDCDC</color>
+
+    <color name="seek_bar_background">#ababab</color>
+    <color name="seek_bar_progress">#ff0000</color>
+    <color name="seek_bar_secondary_progress">#3399CC</color>
 </resources>

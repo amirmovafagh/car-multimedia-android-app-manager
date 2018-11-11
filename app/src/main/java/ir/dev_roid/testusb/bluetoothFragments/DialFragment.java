@@ -98,14 +98,15 @@ public class DialFragment extends Fragment implements View.OnClickListener {
 
     // slide the view from below itself to the current position
     public void slideUp(View view){
-        view.setVisibility(View.VISIBLE);
+        view.setVisibility(View.INVISIBLE);
         TranslateAnimation animate = new TranslateAnimation(
-                0,                 // fromXDelta
+                view.getWidth(),                 // fromXDelta
                 0,                 // toXDelta
-                view.getHeight(),  // fromYDelta
+                0,               // fromYDelta
                 0);                // toYDelta
         animate.setDuration(500);
         animate.setFillAfter(true);
+        view.setClickable(true);
         view.startAnimation(animate);
     }
 
@@ -113,22 +114,16 @@ public class DialFragment extends Fragment implements View.OnClickListener {
     public void slideDown(View view){
         TranslateAnimation animate = new TranslateAnimation(
                 0,                 // fromXDelta
-                0,                 // toXDelta
+                view.getWidth(),                 // toXDelta
                 0,                 // fromYDelta
-                view.getHeight()); // toYDelta
+                0); // toYDelta
         animate.setDuration(500);
         animate.setFillAfter(true);
+        view.setClickable(false);
         view.startAnimation(animate);
     }
 
-    public void onSlideViewButtonClick(View view) {
-        if (isVisible) {
-            slideDown(dialpadView);
-        } else {
-            slideUp(dialpadView);
-        }
-        isVisible = !isVisible;
-    }
+
 
 
     private void startTimer() {
@@ -142,6 +137,7 @@ public class DialFragment extends Fragment implements View.OnClickListener {
 
     private void stopTimer() {
         timerHandler.removeCallbacks(timerRunnable);
+        txtCallTimer.setText("0:00");
         checkTimer = false;
     }
 
@@ -417,6 +413,7 @@ public class DialFragment extends Fragment implements View.OnClickListener {
 
                     visibleObj("Incoming Call...");
                     startRipple();
+
                     incomingCallStatus = true;
                     checkCallGetNumber = true;
 
@@ -428,6 +425,7 @@ public class DialFragment extends Fragment implements View.OnClickListener {
                     startRipple();
                     stopTimer();
                     outCallStatus = true;
+
                     checkCallGetNumber = true;
                     Log.i(tag, "Outgoing Call...");
                 }

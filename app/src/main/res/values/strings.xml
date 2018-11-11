@@ -20,4 +20,6 @@
     <string name="title_activity_bt">bt</string>
     <string name="title_activity_main2">Main2Activity</string>
 
+    <string name="title_custom_dialog">Volume And Brightness</string>
+
 </resources>

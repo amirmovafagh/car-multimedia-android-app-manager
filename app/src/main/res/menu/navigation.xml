@@ -2,23 +2,23 @@
 <menu xmlns:android="http://schemas.android.com/apk/res/android">
 
     <item android:id="@+id/action_settings"
-        android:title="@string/settings"
+
         android:icon="@drawable/settings" />
 
     <item android:id="@+id/action_dialler"
-        android:title="@string/dialler"
+
         android:icon="@drawable/dialpad" />
 
     <item android:id="@+id/action_contacts"
-        android:title="@string/contacts"
+
         android:icon="@drawable/contacts" />
 
     <item android:id="@+id/action_log"
-        android:title="@string/log"
+
         android:icon="@drawable/log" />
     
     <item android:id="@+id/action_media"
-        android:title="@string/media"
+
         android:icon="@drawable/music" />
 
 </menu>

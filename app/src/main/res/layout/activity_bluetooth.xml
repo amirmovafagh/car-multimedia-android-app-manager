@@ -25,6 +25,7 @@
             android:layout_height="0dp"
             android:layout_weight="0.14"
             android:layout_gravity="bottom"
+            app:itemIconSize="32dp"
             android:background="@color/colorPrimary"
             app:itemBackground="@color/colorPrimary"
             android:foreground="?attr/selectableItemBackground"

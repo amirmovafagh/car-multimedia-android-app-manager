@@ -1,6 +1,9 @@
 package ir.dev_roid.testusb;
 
+import android.app.Activity;
+import android.content.Context;
 import android.content.Intent;
+import android.media.AudioManager;
 import android.os.Handler;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
@@ -37,6 +40,7 @@ public class MainActivity extends AppCompatActivity  {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
+
 
         mListener = new ObservableInteger();
         mListener.setOnIntegerChangeListener(new ObservableInteger.OnIntegerChangeListener()

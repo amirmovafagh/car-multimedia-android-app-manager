@@ -1,7 +1,7 @@
 <FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:tools="http://schemas.android.com/tools"
     android:background="@color/bgMedia"
-    android:layout_width="1000dp"
+    android:layout_width="1830dp"
     android:layout_height="match_parent"
     tools:context="ir.dev_roid.testusb.bluetoothFragments.MediaFragment">
 
@@ -15,9 +15,67 @@
             android:layout_width="0dp"
             android:layout_height="match_parent"
             android:orientation="vertical"
-            android:layout_weight="0.3">
+            android:layout_weight="0.4"
+            android:paddingLeft="100dp"
+            android:paddingTop="100dp">
+            <LinearLayout
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                >
+                <ImageButton
+                    android:id="@+id/img_btn_previous"
+                    android:layout_width="wrap_content"
+                    android:layout_height="match_parent"
+                    android:src="@drawable/prev"
+                    style="?borderlessButtonStyle"/>
+                <ImageButton
+                    android:id="@+id/img_btn_play"
 
+                    android:layout_width="wrap_content"
+                    android:layout_height="match_parent"
+                    android:src="@drawable/play"
+                    style="?borderlessButtonStyle"/>
+                <ImageButton
+                    android:id="@+id/img_btn_next"
 
+                    android:layout_width="wrap_content"
+                    android:layout_height="match_parent"
+                    android:src="@drawable/next"
+                    style="?borderlessButtonStyle"/>
+            </LinearLayout>
+            <ImageView
+                android:id="@+id/img_view_line"
+
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:src="@drawable/line"
+                />
+            <LinearLayout
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+
+                >
+                <ImageButton
+                    android:id="@+id/img_btn_dec_volume"
+                    android:layout_width="wrap_content"
+                    android:layout_height="match_parent"
+                    android:src="@drawable/down_volume"
+                    style="?borderlessButtonStyle"/>
+                <ImageButton
+                    android:id="@+id/img_btn_stop"
+
+                    android:layout_width="wrap_content"
+                    android:layout_height="match_parent"
+                    android:src="@drawable/stop"
+                    style="?borderlessButtonStyle"/>
+                <ImageButton
+                    android:id="@+id/img_btn_inc_volume"
+
+                    android:layout_width="wrap_content"
+                    android:layout_height="match_parent"
+                    android:src="@drawable/up_volume"
+                    style="?borderlessButtonStyle"/>
+            </LinearLayout>
         </LinearLayout>
 
         <RelativeLayout
@@ -25,7 +83,7 @@
             android:layout_height="match_parent"
 
             android:orientation="horizontal"
-            android:layout_weight="0.7">
+            android:layout_weight="0.6">
 
             <ImageView
                 android:layout_width="match_parent"

@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
-    android:layout_width="300dp"
-    android:layout_height="300dp"
+    android:layout_width="500dp"
+    android:layout_height="400dp"
     android:layout_gravity="center"
     android:background="@drawable/curve_shape"
     android:orientation="vertical" >
@@ -10,11 +10,10 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:gravity="center"
-        android:text="Volume"
+        android:text="@string/title_custom_dialog"
         android:textSize="25sp"/>
     <Space
-        android:layout_width="match_parent"
-        android:layout_height="15dp" />
+        style="@style/spaceSeekbarVertical" />
 
     <LinearLayout
         android:layout_width="match_parent"
@@ -32,6 +31,7 @@
         <SeekBar
             android:id="@+id/seekbar_os_volume"
             android:layout_width="0dp"
+            android:progressDrawable="@drawable/seek_bar"
             android:layout_height="match_parent"
             android:layout_weight="0.81"
             android:thumb="@drawable/thumb_seekbar"/>
@@ -40,8 +40,7 @@
     </LinearLayout>
 
     <Space
-        android:layout_width="match_parent"
-        android:layout_height="30dp" />
+        style="@style/spaceSeekbarVertical" />
 
     <LinearLayout
         android:layout_width="match_parent"
@@ -67,8 +66,7 @@
     </LinearLayout>
 
     <Space
-        android:layout_width="match_parent"
-        android:layout_height="30dp" />
+        style="@style/spaceSeekbarVertical" />
 
     <LinearLayout
         android:layout_width="match_parent"
@@ -78,9 +76,9 @@
             style="@style/spaceSeekbar"/>
         <ImageView
             android:layout_width="0dp"
-            android:layout_height="30dp"
+            android:layout_height="40dp"
             android:layout_weight="0.1"
-            android:src="@drawable/car_sound"/>
+            android:src="@drawable/brightness"/>
         <Space
             style="@style/spaceSeekbar"/>
         <SeekBar

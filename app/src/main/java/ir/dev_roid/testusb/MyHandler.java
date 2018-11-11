@@ -1,5 +1,7 @@
 package ir.dev_roid.testusb;
 
+import android.app.Activity;
+import android.app.Application;
 import android.content.Context;
 import android.content.Intent;
 import android.os.Handler;
@@ -64,6 +66,8 @@ public class MyHandler extends Handler {
                 break;
         }
     }
+
+
 
     private void checkIncomingCall(){
         if(buffer.equalsIgnoreCase("MG5") && !dialFragmentIsRun)

@@ -37,6 +37,8 @@ public class PrefManager {
 
     private static final String BRIGHTNESS_VALUE = "brightnessValue";
 
+    private static final String IS_PLAY = "isPlay";
+
 
     public PrefManager(Context context) {
 
@@ -114,5 +116,16 @@ public class PrefManager {
 
     public int getBrightnessValue(){
         return pref.getInt(BRIGHTNESS_VALUE,  255);
+    }
+
+    public void setIsPlayState(boolean b){
+        editor.putBoolean(IS_PLAY, b);
+        editor.commit();
+
+        Log.d(TAG, "IsPlayState : "+b);
+    }
+
+    public boolean getIsplayState(){
+        return pref.getBoolean(IS_PLAY,  false);
     }
 }
