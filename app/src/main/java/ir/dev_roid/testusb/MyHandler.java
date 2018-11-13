@@ -10,6 +10,7 @@ import android.util.Log;
 import android.widget.Toast;
 
 import ir.dev_roid.testusb.app.ConnectUsbService;
+import ir.dev_roid.testusb.app.MyAudioManager;
 
 import static ir.dev_roid.testusb.bluetoothFragments.DialFragment.dialFragmentIsRun;
 
@@ -24,7 +25,7 @@ public class MyHandler extends Handler {
     public static String buffer = " ";
     public static int steeringWheelData ;
     public static boolean steeringWheelDataStatus = false ;
-    private ConnectUsbService connectUsbService;
+    private MyAudioManager audioManager;
 
     //private final WeakReference<MainActivity> mActivity;
     private Context context;
@@ -40,12 +41,12 @@ public class MyHandler extends Handler {
         switch (msg.what) {
             case UsbService.MESSAGE_FROM_SERIAL_PORT:
                 data = (String) msg.obj;
-                Toast.makeText(context, "1 "+data, Toast.LENGTH_SHORT).show();
+                //Toast.makeText(context, "1 "+data, Toast.LENGTH_SHORT).show();
                 break;
             case UsbService.SYNC_READ:
                 buffer = (String) msg.obj;
 
-                Toast.makeText(context, "2 "+buffer, Toast.LENGTH_SHORT).show();
+                //Toast.makeText(context, "2 "+buffer, Toast.LENGTH_SHORT).show();
                 try{
                     int i = Integer.parseInt(buffer);
                     if(i<3350){
@@ -67,11 +68,16 @@ public class MyHandler extends Handler {
         }
     }
 
+    private void stopHeadUnitMusic(){
+        audioManager = new MyAudioManager(context);
+        audioManager.pauseHeadUnitMusicPlayer();
 
+    }
 
     private void checkIncomingCall(){
         if(buffer.equalsIgnoreCase("MG5") && !dialFragmentIsRun)
         {
+            stopHeadUnitMusic();
             Intent mIntent = new Intent(context,BluetoothActivity.class);
             mIntent.putExtra("loadDialFragment", 1);
             mIntent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
@@ -85,6 +91,7 @@ public class MyHandler extends Handler {
     private void checkOutgoingCall(){
         if(buffer.equalsIgnoreCase("MG4") && !dialFragmentIsRun)
         {
+            stopHeadUnitMusic();
             Intent mIntent = new Intent(context,BluetoothActivity.class);
             mIntent.putExtra("loadDialFragment", 1);
             mIntent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);

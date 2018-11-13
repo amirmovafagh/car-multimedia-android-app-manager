@@ -10,6 +10,7 @@ import android.content.IntentFilter;
 import android.hardware.usb.UsbDevice;
 import android.hardware.usb.UsbDeviceConnection;
 import android.hardware.usb.UsbManager;
+import android.media.AudioFocusRequest;
 import android.media.AudioManager;
 import android.media.MediaPlayer;
 import android.os.Binder;
@@ -32,18 +33,20 @@ import java.util.Timer;
 import java.util.TimerTask;
 
 import ir.dev_roid.testusb.app.Brightness;
+import ir.dev_roid.testusb.app.MyAudioManager;
 import ir.dev_roid.testusb.app.ObservableInteger;
 import ir.dev_roid.testusb.app.PrefManager;
 import ir.dev_roid.testusb.steeringWheelController.SteeringWheelControllerService;
 
 import static ir.dev_roid.testusb.MyHandler.buffer;
+import static ir.dev_roid.testusb.bluetoothFragments.DialFragment.dialFragmentIsRun;
 
 /**
  * Created by hirad on 3/1/18.
  */
 
 public class UsbService extends Service {
-    private static final String TAG = UsbService.class.getSimpleName();
+    private static final String tag = UsbService.class.getSimpleName();
     public static final String ACTION_USB_READY = "com.felhr.connectivityservices.USB_READY";
     public static final String ACTION_USB_ATTACHED = "android.hardware.usb.action.USB_DEVICE_ATTACHED";
     public static final String ACTION_USB_DETACHED = "android.hardware.usb.action.USB_DEVICE_DETACHED";
@@ -62,9 +65,8 @@ public class UsbService extends Service {
     private static int ONGOING_NOTIFICATION_ID = 1;
 
     private PrefManager prefManager;
-    private AudioManager audioManager;
+    private MyAudioManager audioManager;
     private IBinder binder = new UsbBinder();
-    private Handler checkCallStatushandler;
     private ObservableInteger obsInit;
     private Brightness brightness;
     private Context context;
@@ -74,11 +76,12 @@ public class UsbService extends Service {
     private UsbDevice device;
     private UsbDeviceConnection connection;
     private UsbSerialDevice serialPort;
-    private Thread thread;
-    private Runnable threadRunnable;
+    private Thread thread, threadAudioChannel;
+    private Runnable threadRunnable,runnableAudioChannel;
     private boolean threadStatus = true;
 
     private boolean serialPortConnected;
+    private boolean musicPlayerState;
     /*
      *  Data received from serial port will be received here. Just populate onReceivedData with your code
      *  In this particular example. byte stream is converted to String and send to UI thread to
@@ -177,8 +180,7 @@ public class UsbService extends Service {
             }
         });
 
-        audioManager = (AudioManager)context.getSystemService(Context.AUDIO_SERVICE);
-
+        audioManager = new MyAudioManager(context);
     }
 
     public void enableCheckCallStatus() {
@@ -187,6 +189,7 @@ public class UsbService extends Service {
     }
 
     public void CheckCallStatus() {
+
         thread = new Thread() {
             @Override
             public void run() {
@@ -208,34 +211,70 @@ public class UsbService extends Service {
             public void run() {
 
 
-                if(audioManager.isMusicActive())
-                {
-                    // do something - or do it not
-                    Log.i(TAG, "AAAAAA");
-                }
                 String data = "blt-cll-chk?";
                 write(data.getBytes());
-                Log.i(TAG, "CheckCallStatus");
-                checkBluetoothMusic();
-                obsInit.set(brightness.getScreenBrightness());
+                if(!dialFragmentIsRun){
+                    checkAudioManager();
+                    checkBluetoothMusic();
+                    obsInit.set(brightness.getScreenBrightness());
+                }
 
 
 
             }
         };
-
         thread.start();
 
+    }
+
+    private void checkAudioManager() {
+
+        if(audioManager.isMusicPlay())
+        {   Log.i(tag, "1");
+            if(!prefManager.getHeadUnitAudioIsActive()){
+                delayTimer("mod-pin?");
+                Log.i(tag, "1.1");
+                prefManager.setHeadUnitAudioIsActive(true);
+            }
+
+
+
+            if(prefManager.getIsplayState()){
+
+                delayTimer("blt-mus-stp?");
+                Log.i(tag, "1.2");
+                prefManager.setHeadUnitAudioIsActive(true);
+                prefManager.setIsPlayState(false);
+
+            }
+        }else {prefManager.setHeadUnitAudioIsActive(false);
+            Log.i(tag, "1.3");
+        }
     }
 
     private void checkBluetoothMusic() {
 
         if (buffer.equalsIgnoreCase("MB") || buffer.equalsIgnoreCase("MR")) {
+
+            Log.i(tag, "2");
+            audioManager.pauseHeadUnitMusicPlayer();
             delayTimer("mod-rad?");
+            prefManager.setHeadUnitAudioIsActive(false);
+            prefManager.setIsPlayState(true);
         } else if (buffer.equalsIgnoreCase("MP")) {
-            delayTimer("mod-pin?");
+            Log.i(tag, "2.1");
+            if(!prefManager.getHeadUnitAudioIsActive()){
+                delayTimer("mod-pin?");
+                Log.i(tag, "2.2");
+            }
+            prefManager.setIsPlayState(false);
         } else if (buffer.equalsIgnoreCase("MA")) {
-            delayTimer("mod-pin?");
+            Log.i(tag, "2.3");
+            if(!prefManager.getHeadUnitAudioIsActive()){
+                delayTimer("mod-pin?");
+                Log.i(tag, "2.4");
+            }
+            prefManager.setIsPlayState(false);
         }
     }
 
@@ -342,14 +381,14 @@ public class UsbService extends Service {
         UsbManager usbManager = (UsbManager) context.getSystemService(Context.USB_SERVICE);
 
         if (usbManager.getDeviceList().isEmpty()) {
-            Log.d(TAG, "No connected devices");
+            Log.d(tag, "No connected devices");
             check = false;
         }
 
         //get device information
         HashMap<String, UsbDevice> deviceList = usbManager.getDeviceList();
         if (deviceList.size() == 0) {
-            Log.d(TAG, "no usb device found.");
+            Log.d(tag, "no usb device found.");
             check = false;
         }
         Iterator<UsbDevice> deviceIterator = deviceList.values().iterator();

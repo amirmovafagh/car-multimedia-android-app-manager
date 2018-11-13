@@ -19,6 +19,7 @@ import android.widget.ImageView;
 import ir.dev_roid.testusb.R;
 import static ir.dev_roid.testusb.MyHandler.buffer;
 import ir.dev_roid.testusb.app.ConnectUsbService;
+import ir.dev_roid.testusb.app.MyAudioManager;
 import ir.dev_roid.testusb.app.PrefManager;
 
 public class MediaFragment extends Fragment implements View.OnClickListener {
@@ -27,6 +28,7 @@ public class MediaFragment extends Fragment implements View.OnClickListener {
     private ImageButton previous, next, play, pause, stop, decVolume, incVolume;
     private ConnectUsbService connectUsbService;
     private PrefManager prefManager;
+    private MyAudioManager audioManager;
 
 
     public MediaFragment() {
@@ -40,6 +42,9 @@ public class MediaFragment extends Fragment implements View.OnClickListener {
         prefManager = new PrefManager(getContext());
 
         startHandlerMusicPlayerState();
+        if(prefManager.getIsplayState()){
+            playWhithOutCMD();
+        }
 
 
     }
@@ -80,6 +85,9 @@ public class MediaFragment extends Fragment implements View.OnClickListener {
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+
+
+
     }
 
     @Override
@@ -148,24 +156,24 @@ public class MediaFragment extends Fragment implements View.OnClickListener {
         play.setImageResource(R.drawable.play);
         sendData("blt-mus-stp?");
         imgDisk.clearAnimation();
-        prefManager.setIsPlayState(false);
+       // prefManager.setIsPlayState(false);
     }
 
     private void pause() {
-        prefManager.setIsPlayState(false);
+        //prefManager.setIsPlayState(false);
         play.setImageResource(R.drawable.play);
         sendData("blt-mus-ppp?");
         imgDisk.clearAnimation();
     }
 
     private void pauseWhithOutCMD() {
-        prefManager.setIsPlayState(false);
+        //prefManager.setIsPlayState(false);
         play.setImageResource(R.drawable.play);
         imgDisk.clearAnimation();
     }
 
     private void play() {
-        prefManager.setIsPlayState(true);
+        //prefManager.setIsPlayState(true);
         setAnimateMusicLogo(imgDisk);
         play = view.findViewById(R.id.img_btn_play);
         play.setImageResource(R.drawable.pause);
@@ -173,7 +181,6 @@ public class MediaFragment extends Fragment implements View.OnClickListener {
     }
 
     private void playWhithOutCMD() {
-        prefManager.setIsPlayState(true);
         setAnimateMusicLogo(imgDisk);
         play = view.findViewById(R.id.img_btn_play);
         play.setImageResource(R.drawable.pause);

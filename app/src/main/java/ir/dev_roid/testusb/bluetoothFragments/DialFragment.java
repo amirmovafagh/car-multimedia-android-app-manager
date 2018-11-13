@@ -22,6 +22,8 @@ import com.skyfishjy.library.RippleBackground;
 import java.sql.SQLException;
 import java.util.Date;
 import java.util.List;
+import java.util.Timer;
+import java.util.TimerTask;
 
 import ir.dev_roid.testusb.R;
 import ir.dev_roid.testusb.app.ConnectUsbService;
@@ -314,16 +316,25 @@ public class DialFragment extends Fragment implements View.OnClickListener {
         }
     }
 
+    private void delayTimer(final String data){
+        new Timer().schedule(new TimerTask() {
+            @Override
+            public void run() {
+                connectUsbService.write(data);
+            }
+        },100);
+    }
+
     public Boolean makeCall() {
 
         /**
          * in function barghari tamas anjam mishavad
          * */
-
+        delayTimer("mod-rad?");
         if (!txtNumber.getText().toString().isEmpty() && !checkCall) {
             connectUsbService.disableCheckCallStatus(); //turn off usb service checker bluetooth
             stopTimer();
-            connectUsbService.write("blt-cll-" + txtNumber.getText().toString() + "?");
+            delayTimer("blt-cll-" + txtNumber.getText().toString() + "?");
 
 
             visibleObj("Calling out...");
@@ -387,7 +398,7 @@ public class DialFragment extends Fragment implements View.OnClickListener {
          * ba handler vazeiat mokaleme ke az noe tamas vorudi, khoruji, payan tamas ra
          * moshakhas mikonad
          */
-
+        delayTimer("mod-rad?");
         callStatusHandler = new Handler();
         runnableCallStatus = new Runnable() {
             @Override

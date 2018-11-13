@@ -38,6 +38,7 @@ public class PrefManager {
     private static final String BRIGHTNESS_VALUE = "brightnessValue";
 
     private static final String IS_PLAY = "isPlay";
+    private static final String HEAD_UNIT_AUDIO_IS_ACTIVE = "huAudioIsActive";
 
 
     public PrefManager(Context context) {
@@ -122,10 +123,21 @@ public class PrefManager {
         editor.putBoolean(IS_PLAY, b);
         editor.commit();
 
-        Log.d(TAG, "IsPlayState : "+b);
+        //Log.d(TAG, "IsPlayState : "+b);
     }
 
     public boolean getIsplayState(){
         return pref.getBoolean(IS_PLAY,  false);
+    }
+
+    public void setHeadUnitAudioIsActive(boolean b){
+        editor.putBoolean(HEAD_UNIT_AUDIO_IS_ACTIVE, b);
+        editor.commit();
+
+        //Log.d(TAG, "HeadUnitAudioIsActive : "+b);
+    }
+
+    public boolean getHeadUnitAudioIsActive(){
+        return pref.getBoolean(HEAD_UNIT_AUDIO_IS_ACTIVE,  false);
     }
 }
