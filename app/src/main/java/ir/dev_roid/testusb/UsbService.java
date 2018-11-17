@@ -76,12 +76,12 @@ public class UsbService extends Service {
     private UsbDevice device;
     private UsbDeviceConnection connection;
     private UsbSerialDevice serialPort;
-    private Thread thread, threadAudioChannel;
-    private Runnable threadRunnable,runnableAudioChannel;
+    private Thread thread;
+    private Runnable threadRunnable;
     private boolean threadStatus = true;
 
     private boolean serialPortConnected;
-    private boolean musicPlayerState;
+
     /*
      *  Data received from serial port will be received here. Just populate onReceivedData with your code
      *  In this particular example. byte stream is converted to String and send to UI thread to
