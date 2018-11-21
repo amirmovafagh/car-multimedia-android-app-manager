@@ -14,29 +14,28 @@ import ir.dev_roid.testusb.UsbService;
 
 public class ConnectUsbService {
     private Activity activity;
+    private ServiceConnection sConnection;
 
 
     private UsbService usbService;
 
-    public ConnectUsbService(Activity activity){
-        this.activity = activity;
-        startService(UsbService.class, usbConnection, null);
-    }
-    public ConnectUsbService(Context context){
+    public ConnectUsbService(Activity activity) {
         this.activity = activity;
         startService(UsbService.class, usbConnection, null);
     }
 
-    public void write(String data){
+
+    public void write(String data) {
         if (usbService != null) { // if UsbService was correctly binded, Send data
             usbService.write(data.getBytes());
         }
     }
 
-    public void enableCheckCallStatus(){
+    public void enableCheckCallStatus() {
         usbService.enableCheckCallStatus();
     }
-    public void disableCheckCallStatus(){
+
+    public void disableCheckCallStatus() {
         usbService.disableCheckCallStatus();
     }
 
@@ -66,8 +65,14 @@ public class ConnectUsbService {
             activity.startService(startService);
         }
         Intent bindingIntent = new Intent(activity, service);
-        activity.bindService(bindingIntent, serviceConnection, activity.BIND_AUTO_CREATE);
 
+        activity.bindService(bindingIntent, serviceConnection, activity.BIND_AUTO_CREATE);
+        sConnection = serviceConnection;
+
+    }
+
+    public ServiceConnection onDestroyUsb(){
+        return sConnection;
     }
 
 }

@@ -20,6 +20,8 @@ import ir.dev_roid.testusb.R;
 import ir.dev_roid.testusb.app.BluetoothService;
 import ir.dev_roid.testusb.app.ConnectUsbService;
 
+import static ir.dev_roid.testusb.BluetoothActivity.connectUsbServiceStatic;
+
 
 public class SettingsFragment extends Fragment {
     private static final String log = SettingsFragment.class.getName();
@@ -50,9 +52,10 @@ public class SettingsFragment extends Fragment {
     @Override
     public void onActivityCreated(@Nullable Bundle savedInstanceState) {
         super.onActivityCreated(savedInstanceState);
+        connectUsbService = connectUsbServiceStatic;
         bluetoothService = new BluetoothService(getActivity());
         connectionStatus();
-        connectUsbService = new ConnectUsbService(getActivity());
+
 
 
         initSetOnClick();

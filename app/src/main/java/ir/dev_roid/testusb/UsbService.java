@@ -17,6 +17,7 @@ import android.os.Binder;
 import android.os.Handler;
 import android.os.HandlerThread;
 import android.os.IBinder;
+import android.os.Looper;
 import android.util.Log;
 import android.widget.Toast;
 
@@ -213,12 +214,12 @@ public class UsbService extends Service {
 
                 String data = "blt-cll-chk?";
                 write(data.getBytes());
-                if(!dialFragmentIsRun){
+                if (!dialFragmentIsRun) {
                     checkAudioManager();
-                    checkBluetoothMusic();
-                    obsInit.set(brightness.getScreenBrightness());
-                }
+                    //checkBluetoothMusic();
 
+                }
+                obsInit.set(brightness.getScreenBrightness());
 
 
             }
@@ -229,63 +230,76 @@ public class UsbService extends Service {
 
     private void checkAudioManager() {
 
-        if(audioManager.isMusicPlay())
-        {   Log.i(tag, "1");
-            if(!prefManager.getHeadUnitAudioIsActive()){
-                delayTimer("mod-pin?");
+        if (audioManager.isMusicPlay()) {
+            Log.i(tag, "1");
+            if (prefManager.getBluetoothPlayerState()) {
+                delayTimer("blt-mus-stp?",100);
                 Log.i(tag, "1.1");
-                prefManager.setHeadUnitAudioIsActive(true);
+                //delayTimer("mod-pin?");
+
+
+                prefManager.setBluetoothPlayerState(false);
             }
 
+            if (!prefManager.getHeadUnitAudioIsActive()) {
+                //delayTimer("mod-pin?");
+                delayTimer("blt-mus-stp?",200);
 
 
-            if(prefManager.getIsplayState()){
-
-                delayTimer("blt-mus-stp?");
                 Log.i(tag, "1.2");
-                prefManager.setHeadUnitAudioIsActive(true);
-                prefManager.setIsPlayState(false);
-
+                prefManager.setBluetoothPlayerState(false);
             }
-        }else {prefManager.setHeadUnitAudioIsActive(false);
-            Log.i(tag, "1.3");
+
+            if(prefManager.getRadioIsRun()){
+                delayTimer("mod-pio?",300);
+                Log.i(tag, "1.3");
+                prefManager.setRadioIsRun(false);
+            }
+
+
+
+
+
+
+            prefManager.setHeadUnitAudioIsActive(true);
+
+        } else {
+            prefManager.setHeadUnitAudioIsActive(false);
+
         }
     }
 
-    private void checkBluetoothMusic() {
+    /*private void checkBluetoothMusic() {
 
         if (buffer.equalsIgnoreCase("MB") || buffer.equalsIgnoreCase("MR")) {
 
             Log.i(tag, "2");
-            audioManager.pauseHeadUnitMusicPlayer();
-            delayTimer("mod-rad?");
-            prefManager.setHeadUnitAudioIsActive(false);
-            prefManager.setIsPlayState(true);
+
+            prefManager.setBluetoothPlayerState(true);
         } else if (buffer.equalsIgnoreCase("MP")) {
             Log.i(tag, "2.1");
-            if(!prefManager.getHeadUnitAudioIsActive()){
+            if (!prefManager.getHeadUnitAudioIsActive()) {
                 delayTimer("mod-pin?");
                 Log.i(tag, "2.2");
             }
-            prefManager.setIsPlayState(false);
+            prefManager.setBluetoothPlayerState(false);
         } else if (buffer.equalsIgnoreCase("MA")) {
             Log.i(tag, "2.3");
-            if(!prefManager.getHeadUnitAudioIsActive()){
+            if (!prefManager.getHeadUnitAudioIsActive()) {
                 delayTimer("mod-pin?");
                 Log.i(tag, "2.4");
             }
-            prefManager.setIsPlayState(false);
+            prefManager.setBluetoothPlayerState(false);
         }
-    }
+    }*/
 
-    private void delayTimer(final String data) {
-        new Timer().schedule(new TimerTask() {
+    private void delayTimer(final String data , int delay) {
+        new Handler(Looper.getMainLooper()).postDelayed(new Runnable() {
             @Override
             public void run() {
-                //Do something after 100ms
                 write(data.getBytes());
             }
-        }, 100);
+        }, delay);
     }
 
     public void disableCheckCallStatus() {

@@ -8,17 +8,16 @@ import android.support.annotation.Nullable;
 import android.util.Log;
 
 
+import static ir.dev_roid.testusb.BluetoothActivity.connectUsbServiceStatic;
 import static ir.dev_roid.testusb.MyHandler.buffer;
 
 public class BluetoothService extends Service {
     private String log = BluetoothService.class.getName();
-    private ConnectUsbService connectUsbService;
     private Activity activity;
     private String status;
 
     public BluetoothService(Activity activity){
         this.activity = activity;
-        connectUsbService = new ConnectUsbService(activity);
 
     }
 

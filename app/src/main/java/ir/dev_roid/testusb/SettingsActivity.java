@@ -36,7 +36,7 @@ private static final String TAG = SettingsActivity.class.getSimpleName();
     private ViewGroup relativeLayout = null;
     private Rect relativeLayoutRect = null;
     private boolean isCoordinatesInit_Level1 = false;
-    private PrefManager pref;
+    private PrefManager prefManager;
     private int p;
     private int i = 0; //handler switch case
     private ImageButton b;
@@ -60,17 +60,15 @@ private static final String TAG = SettingsActivity.class.getSimpleName();
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_settings);
         initObjectsView();
-        pref = new PrefManager(SettingsActivity.this);
-
-
+        prefManager = new PrefManager(SettingsActivity.this);
         connectUsbService = new ConnectUsbService(SettingsActivity.this);
 
-        toolBarResideMenu = new ToolBar_ResideMenu(SettingsActivity.this, "Audio Settings");
+        toolBarResideMenu = new ToolBar_ResideMenu(SettingsActivity.this, "Audio Settings", connectUsbService, prefManager);
         toolBarResideMenu.resideMenuInit("Home", "Bluetooth", "Radio",
                 R.drawable.icon_home, R.drawable.icon_home, R.drawable.icon_home, MainActivity.class
                 , BluetoothActivity.class, RadioActivity.class, "Settings");
-        basSeekbar.setProgress(pref.getVolumeValue(5));
-        trebleSeekbar.setProgress(pref.getVolumeValue(6));
+        basSeekbar.setProgress(prefManager.getVolumeValue(5));
+        trebleSeekbar.setProgress(prefManager.getVolumeValue(6));
 
         chartWidth = new int[11];
         chartHeight = new int[11];
@@ -80,8 +78,8 @@ private static final String TAG = SettingsActivity.class.getSimpleName();
             Log.d("chart","W: "+chartWidth[i]+" H: "+chartHeight[i]);
 
             audioBalanceImg.animate()
-                    .x(pref.getXcordinate())
-                    .y(pref.getYcordinate())
+                    .x(prefManager.getXcordinate())
+                    .y(prefManager.getYcordinate())
                     .setDuration(100)
                     .start();
 
@@ -109,7 +107,7 @@ private static final String TAG = SettingsActivity.class.getSimpleName();
 
             @Override
             public void onStopTrackingTouch(SeekBar seekBar) {
-                pref.setVolumeValue(5, p);
+                prefManager.setVolumeValue(5, p);
             }
         });
 
@@ -131,7 +129,7 @@ private static final String TAG = SettingsActivity.class.getSimpleName();
 
             @Override
             public void onStopTrackingTouch(SeekBar seekBar) {
-                pref.setVolumeValue(6, p);
+                prefManager.setVolumeValue(6, p);
             }
         });
 
@@ -150,7 +148,7 @@ private static final String TAG = SettingsActivity.class.getSimpleName();
 
             @Override
             public void onStopTrackingTouch(SeekBar seekBar) {
-                pref.setVolumeValue(7, p);
+                prefManager.setVolumeValue(7, p);
             }
         });
     }
@@ -226,7 +224,7 @@ private static final String TAG = SettingsActivity.class.getSimpleName();
             speakersInit(100,100,100,100);
         }else {
             calculateBalanceData(getX, getY);
-            pref.setXYcordinates(getX, getY);
+            prefManager.setXYcordinates(getX, getY);
         }
     }
 
@@ -333,13 +331,13 @@ private static final String TAG = SettingsActivity.class.getSimpleName();
         final int fl, fr, rr, rl;
 
         fl = checkPercent(frontLeft);
-        pref.setVolumeValue(1, fl);
+        prefManager.setVolumeValue(1, fl);
         fr = checkPercent(frontRight);
-        pref.setVolumeValue(2, fr);
+        prefManager.setVolumeValue(2, fr);
         rl = checkPercent(rearLeft);
-        pref.setVolumeValue(3, rl);
+        prefManager.setVolumeValue(3, rl);
         rr = checkPercent(rearRight);
-        pref.setVolumeValue(4, rr);
+        prefManager.setVolumeValue(4, rr);
 
         Log.d(TAG, " fl : "+fl+" fr : "+fr+" rl : "+rl+" rr : "+rr);
         handlerSetSpeakersData = new Handler();

@@ -1,7 +1,6 @@
 package ir.dev_roid.testusb.bluetoothFragments;
 
 import android.content.Context;
-import android.media.Image;
 import android.os.Bundle;
 import android.os.Handler;
 import android.support.annotation.Nullable;
@@ -10,7 +9,6 @@ import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.view.animation.TranslateAnimation;
 import android.widget.Button;
 import android.widget.ImageButton;
 import android.widget.ImageView;
@@ -25,14 +23,16 @@ import java.util.List;
 import java.util.Timer;
 import java.util.TimerTask;
 
+import ir.dev_roid.testusb.BluetoothActivity;
 import ir.dev_roid.testusb.R;
 import ir.dev_roid.testusb.app.ConnectUsbService;
+import ir.dev_roid.testusb.app.MyAudioManager;
 import ir.dev_roid.testusb.bluetoothFragments.contacts.Database;
 import ir.dev_roid.testusb.bluetoothFragments.contacts.Pojo.CallInfo;
 import ir.dev_roid.testusb.bluetoothFragments.contacts.Pojo.CallType;
 import ir.dev_roid.testusb.bluetoothFragments.contacts.Pojo.PhoneNumber;
 
-
+import static ir.dev_roid.testusb.BluetoothActivity.connectUsbServiceStatic;
 import static ir.dev_roid.testusb.MyHandler.buffer;
 
 
@@ -47,7 +47,7 @@ public class DialFragment extends Fragment implements View.OnClickListener {
     private boolean checkCall, isVisible = false;
     private long startTime = 0;
     private ConnectUsbService connectUsbService;
-    private Handler callStatusHandler,handlerData;
+    private Handler callStatusHandler, handlerData;
     private Runnable runnableCallStatus;
     public static boolean dialFragmentIsRun = false;
     boolean checkCallGetNumber = false;
@@ -55,6 +55,7 @@ public class DialFragment extends Fragment implements View.OnClickListener {
     private boolean incomingCallStatus = false;
     private boolean outCallStatus = false;
     private boolean onCallStatus = false;
+    private MyAudioManager audioManager;
 
 
     //runs without a timer by reposting this handler at the end of the runnable
@@ -92,41 +93,14 @@ public class DialFragment extends Fragment implements View.OnClickListener {
     public void onActivityCreated(@Nullable Bundle savedInstanceState) {
         super.onActivityCreated(savedInstanceState);
 
-        connectUsbService = new ConnectUsbService(getActivity());
+        connectUsbService = connectUsbServiceStatic;
         timerHandler = new Handler();
+        audioManager = new MyAudioManager(getContext());
+
+        audioManager.pauseHeadUnitMusicPlayer();
 
 
     }
-
-    // slide the view from below itself to the current position
-    public void slideUp(View view){
-        view.setVisibility(View.INVISIBLE);
-        TranslateAnimation animate = new TranslateAnimation(
-                view.getWidth(),                 // fromXDelta
-                0,                 // toXDelta
-                0,               // fromYDelta
-                0);                // toYDelta
-        animate.setDuration(500);
-        animate.setFillAfter(true);
-        view.setClickable(true);
-        view.startAnimation(animate);
-    }
-
-    // slide the view from its current position to below itself
-    public void slideDown(View view){
-        TranslateAnimation animate = new TranslateAnimation(
-                0,                 // fromXDelta
-                view.getWidth(),                 // toXDelta
-                0,                 // fromYDelta
-                0); // toYDelta
-        animate.setDuration(500);
-        animate.setFillAfter(true);
-        view.setClickable(false);
-        view.startAnimation(animate);
-    }
-
-
-
 
     private void startTimer() {
         if (!checkTimer) {
@@ -316,13 +290,13 @@ public class DialFragment extends Fragment implements View.OnClickListener {
         }
     }
 
-    private void delayTimer(final String data){
+    private void delayTimer(final String data) {
         new Timer().schedule(new TimerTask() {
             @Override
             public void run() {
                 connectUsbService.write(data);
             }
-        },100);
+        }, 100);
     }
 
     public Boolean makeCall() {
@@ -330,7 +304,7 @@ public class DialFragment extends Fragment implements View.OnClickListener {
         /**
          * in function barghari tamas anjam mishavad
          * */
-        delayTimer("mod-rad?");
+
         if (!txtNumber.getText().toString().isEmpty() && !checkCall) {
             connectUsbService.disableCheckCallStatus(); //turn off usb service checker bluetooth
             stopTimer();
@@ -398,7 +372,7 @@ public class DialFragment extends Fragment implements View.OnClickListener {
          * ba handler vazeiat mokaleme ke az noe tamas vorudi, khoruji, payan tamas ra
          * moshakhas mikonad
          */
-        delayTimer("mod-rad?");
+
         callStatusHandler = new Handler();
         runnableCallStatus = new Runnable() {
             @Override
@@ -472,16 +446,16 @@ public class DialFragment extends Fragment implements View.OnClickListener {
         //incomingCallHandler.postDelayed(runnableIncomingCall, 0);
     }
 
-    private void sendCommand (final String data){
+    private void sendCommand(final String data) {
         connectUsbService.disableCheckCallStatus();
         handlerData = new Handler();
         handlerData.postDelayed(new Runnable() {
             @Override
             public void run() {
-                connectUsbService.write(data+"?");
+                connectUsbService.write(data + "?");
                 connectUsbService.enableCheckCallStatus();
             }
-        },10);
+        }, 10);
     }
 
     private void invisibleObj() {
@@ -582,13 +556,17 @@ public class DialFragment extends Fragment implements View.OnClickListener {
     public void onAttach(Context context) {
         super.onAttach(context);
         dialFragmentIsRun = true;
-
+        audioManager = new MyAudioManager(context);
+        if(audioManager.isMusicPlay()){
+            audioManager.pauseHeadUnitMusicPlayer();
+        }
     }
 
     @Override
     public void onDetach() {
         super.onDetach();
         dialFragmentIsRun = false;
+
     }
 
     @Override
@@ -616,6 +594,9 @@ public class DialFragment extends Fragment implements View.OnClickListener {
         super.onResume();
         dialFragmentIsRun = true;
         callStatusHandler.postDelayed(runnableCallStatus, 0);
+        if(audioManager.isMusicPlay()){
+            audioManager.pauseHeadUnitMusicPlayer();
+        }
 
     }
 

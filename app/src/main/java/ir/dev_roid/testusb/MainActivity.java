@@ -13,7 +13,9 @@ import android.view.View;
 import android.widget.Button;
 import android.widget.SeekBar;
 import android.widget.Toast;
+
 import com.special.ResideMenu.ResideMenu;
+
 import ir.dev_roid.testusb.app.ConnectUsbService;
 import ir.dev_roid.testusb.app.ObservableInteger;
 import ir.dev_roid.testusb.app.PrefManager;
@@ -21,18 +23,18 @@ import ir.dev_roid.testusb.app.ToolBar_ResideMenu;
 import ir.dev_roid.testusb.steeringWheelController.SteeringWheelContorllerActivity;
 
 
-public class MainActivity extends AppCompatActivity  {
-    private ResideMenu resideMenu;
+public class MainActivity extends AppCompatActivity {
+
     private ToolBar_ResideMenu toolBarResideMenu;
     private Handler handlerHardwareInitializing;
     private PrefManager pref;
     int p;
     int i = 0;
 
-    private SeekBar lf,rf,lr,rr;
-    private ObservableInteger mListener;
+    private SeekBar lf, rf, lr, rr;
 
-    private Button aux,pine,radio,bluetooth;
+
+    private Button aux, pine, radio, bluetooth;
 
     private ConnectUsbService connectUsbService;
 
@@ -40,32 +42,21 @@ public class MainActivity extends AppCompatActivity  {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
+        connectUsbService = new ConnectUsbService(MainActivity.this);
+        pref = new PrefManager(MainActivity.this);
 
 
-        mListener = new ObservableInteger();
-        mListener.setOnIntegerChangeListener(new ObservableInteger.OnIntegerChangeListener()
-        {
-            @Override
-            public void onIntegerChanged(int newValue)
-            {
-                Toast.makeText(MainActivity.this, "chanfe: "+newValue, Toast.LENGTH_SHORT).show();
-            }
-        });
-
-        lf = (SeekBar) findViewById(R.id.left_front);
-        rf = (SeekBar) findViewById(R.id.right_front);
-        lr = (SeekBar) findViewById(R.id.left_rear);
-        rr = (SeekBar) findViewById(R.id.right_rear);
+        lf = findViewById(R.id.left_front);
+        rf = findViewById(R.id.right_front);
+        lr = findViewById(R.id.left_rear);
+        rr = findViewById(R.id.right_rear);
 
         //toolbarInit
-        toolBarResideMenu = new ToolBar_ResideMenu(this, "Multi Media");
+        toolBarResideMenu = new ToolBar_ResideMenu(this, "Multi Media", connectUsbService, pref);
         //resideMenuInit
         toolBarResideMenu.resideMenuInit("Bluetooth", "Radio", "Settings",
                 R.drawable.icon_home, R.drawable.icon_home, R.drawable.icon_home,
                 BluetoothActivity.class, RadioActivity.class, SettingsActivity.class, "Home");
-
-        connectUsbService = new ConnectUsbService(MainActivity.this);
-        pref = new PrefManager(MainActivity.this);
 
 
         radio = (Button) findViewById(R.id.radio);
@@ -81,12 +72,11 @@ public class MainActivity extends AppCompatActivity  {
         getWindowManager().getDefaultDisplay().getMetrics(displayMetrics);
         int width = displayMetrics.widthPixels;
         int height = displayMetrics.heightPixels;
-        double x = Math.pow(width/displayMetrics.xdpi,2);
-        double y = Math.pow(height/displayMetrics.ydpi,2);
-        double screenInches = Math.sqrt(x+y);
-        Toast.makeText(MainActivity.this, ""+width+" * "+height+" inch:"+screenInches, Toast.LENGTH_SHORT).show();
-        Log.i("AAA",width+" ,"+height+" ,"+screenInches);
-
+        double x = Math.pow(width / displayMetrics.xdpi, 2);
+        double y = Math.pow(height / displayMetrics.ydpi, 2);
+        double screenInches = Math.sqrt(x + y);
+        Toast.makeText(MainActivity.this, "" + width + " * " + height + " inch:" + screenInches, Toast.LENGTH_SHORT).show();
+        Log.i("AAA", width + " ," + height + " ," + screenInches);
 
 
         radio.setOnClickListener(new View.OnClickListener() {
@@ -120,8 +110,8 @@ public class MainActivity extends AppCompatActivity  {
         lf.setOnSeekBarChangeListener(new SeekBar.OnSeekBarChangeListener() {
             @Override
             public void onProgressChanged(SeekBar seekBar, int progress, boolean fromUser) {
-                p=progress;
-                connectUsbService.write("aud-vlf-"+(223-progress)+"?");
+                p = progress;
+                connectUsbService.write("aud-vlf-" + (223 - progress) + "?");
             }
 
             @Override
@@ -138,8 +128,8 @@ public class MainActivity extends AppCompatActivity  {
         rf.setOnSeekBarChangeListener(new SeekBar.OnSeekBarChangeListener() {
             @Override
             public void onProgressChanged(SeekBar seekBar, int progress, boolean fromUser) {
-                p=progress;
-                connectUsbService.write("aud-vrf-"+(255-progress)+"?");
+                p = progress;
+                connectUsbService.write("aud-vrf-" + (255 - progress) + "?");
 
             }
 
@@ -157,8 +147,8 @@ public class MainActivity extends AppCompatActivity  {
         lr.setOnSeekBarChangeListener(new SeekBar.OnSeekBarChangeListener() {
             @Override
             public void onProgressChanged(SeekBar seekBar, int progress, boolean fromUser) {
-                p=progress;
-                connectUsbService.write("aud-vlr-"+(159-progress)+"?");
+                p = progress;
+                connectUsbService.write("aud-vlr-" + (159 - progress) + "?");
 
             }
 
@@ -176,8 +166,8 @@ public class MainActivity extends AppCompatActivity  {
         rr.setOnSeekBarChangeListener(new SeekBar.OnSeekBarChangeListener() {
             @Override
             public void onProgressChanged(SeekBar seekBar, int progress, boolean fromUser) {
-                p=progress;
-                connectUsbService.write("aud-vrr-"+(191-progress)+"?");
+                p = progress;
+                connectUsbService.write("aud-vrr-" + (191 - progress) + "?");
 
             }
 
@@ -197,7 +187,7 @@ public class MainActivity extends AppCompatActivity  {
     @Override
     public void onResume() {
         super.onResume();
-          //Start listening notifications from UsbService
+        //Start listening notifications from UsbService
         //startService(UsbService.class, usbConnection, null); // Start UsbService(if it was not started before) and Bind it
     }
 
@@ -208,43 +198,48 @@ public class MainActivity extends AppCompatActivity  {
         //unbindService(usbConnection); //when devicee diconnected force close
     }
 
+    @Override
+    protected void onDestroy() {
+        super.onDestroy();
+        unbindService(connectUsbService.onDestroyUsb());
+    }
 
-    private void startHardwareInitializing(){
+    private void startHardwareInitializing() {
 
         lf.setProgress(pref.getVolumeValue(1));
         rf.setProgress(pref.getVolumeValue(2));
         lr.setProgress(pref.getVolumeValue(3));
         rr.setProgress(pref.getVolumeValue(4));
 
-        handlerHardwareInitializing =new Handler();
-                handlerHardwareInitializing.postDelayed(new Runnable() {
+        handlerHardwareInitializing = new Handler();
+        handlerHardwareInitializing.postDelayed(new Runnable() {
 
             @Override
             public void run() {
-                switch (i){
+                switch (i) {
 
                     case 0:
-                        connectUsbService.write("aud-vol-"+(63-pref.getVolumeValue(0))+"?");
-                        handlerHardwareWait(this,500);
+                        connectUsbService.write("aud-vol-" + (63 - pref.getVolumeValue(0)) + "?");
+                        handlerHardwareWait(this, 500);
                         break;
                     case 1:
-                        connectUsbService.write("aud-vlf-"+(223-pref.getVolumeValue(1))+"?");
-                        handlerHardwareWait(this,500);
+                        connectUsbService.write("aud-vlf-" + (223 - pref.getVolumeValue(1)) + "?");
+                        handlerHardwareWait(this, 500);
                         break;
                     case 2:
-                        connectUsbService.write("aud-vrf-"+(255-pref.getVolumeValue(2))+"?");
-                        handlerHardwareWait(this,500);
+                        connectUsbService.write("aud-vrf-" + (255 - pref.getVolumeValue(2)) + "?");
+                        handlerHardwareWait(this, 500);
                         break;
                     case 3:
-                        connectUsbService.write("aud-vlr-"+(159-pref.getVolumeValue(3))+"?");
-                        handlerHardwareWait(this,500);
+                        connectUsbService.write("aud-vlr-" + (159 - pref.getVolumeValue(3)) + "?");
+                        handlerHardwareWait(this, 500);
                         break;
                     case 4:
-                        connectUsbService.write("aud-vrr-"+(191-pref.getVolumeValue(4))+"?");
+                        connectUsbService.write("aud-vrr-" + (191 - pref.getVolumeValue(4)) + "?");
 
                         break;
                     case 5:
-                        connectUsbService.write("aud-bas-"+(112-pref.getVolumeValue(5))+"?");
+                        connectUsbService.write("aud-bas-" + (112 - pref.getVolumeValue(5)) + "?");
                         handlerHardwareInitializing.removeCallbacks(this);
                         break;
 
@@ -252,12 +247,12 @@ public class MainActivity extends AppCompatActivity  {
                 i++;
 
             }
-        },500);
+        }, 500);
 
     }
 
-    private void handlerHardwareWait(Runnable r,int delay){
-        handlerHardwareInitializing.postDelayed(r,500);
+    private void handlerHardwareWait(Runnable r, int delay) {
+        handlerHardwareInitializing.postDelayed(r, 500);
     }
 
 

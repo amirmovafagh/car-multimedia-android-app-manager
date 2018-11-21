@@ -15,7 +15,7 @@ import android.widget.SeekBar;
 
 import ir.dev_roid.testusb.R;
 
-public class CustomDialog extends Activity {
+public class CustomDialog {
 
     private Activity activity;
     private ImageButton mute;
@@ -25,20 +25,14 @@ public class CustomDialog extends Activity {
     private Brightness brightness;
     private int frqSeekVal;
 
-    public CustomDialog (Activity activity){
-        this.activity=activity;
-        connectUsbService = new ConnectUsbService(activity);
-        pref= new PrefManager(activity);
+    public CustomDialog(Activity activity, PrefManager prefManager, ConnectUsbService connectUsbService) {
+        this.activity = activity;
+        this.connectUsbService = connectUsbService;
+        this.pref = prefManager;
     }
 
-    @Override
-    protected void onCreate(@Nullable Bundle savedInstanceState) {
-        super.onCreate(savedInstanceState);
 
-
-    }
-
-    public void show (){
+    public void show() {
         Dialog dialog = new Dialog(activity, R.style.PauseDialog);
 
         dialog.requestWindowFeature(Window.FEATURE_NO_TITLE);
@@ -61,7 +55,6 @@ public class CustomDialog extends Activity {
         brightnessSeek.setProgress(brightness.getScreenBrightness());
 
 
-
         mute.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
@@ -74,7 +67,7 @@ public class CustomDialog extends Activity {
             @Override
             public void onProgressChanged(SeekBar seekBar, int progress, boolean fromUser) {
                 //Toast.makeText(activity, ""+progress, Toast.LENGTH_SHORT).show();
-                audioManager.setStreamVolume(AudioManager.STREAM_MUSIC,progress,AudioManager.FLAG_PLAY_SOUND);
+                audioManager.setStreamVolume(AudioManager.STREAM_MUSIC, progress, AudioManager.FLAG_PLAY_SOUND);
             }
 
             @Override
@@ -92,8 +85,8 @@ public class CustomDialog extends Activity {
         carVolumeSeek.setOnSeekBarChangeListener(new SeekBar.OnSeekBarChangeListener() {
             @Override
             public void onProgressChanged(SeekBar seekBar, int progress, boolean fromUser) {
-                frqSeekVal=progress;
-                connectUsbService.write("aud-vol-"+(63-progress)+"?");
+                frqSeekVal = progress;
+                connectUsbService.write("aud-vol-" + (63 - progress) + "?");
 
             }
 
@@ -104,7 +97,7 @@ public class CustomDialog extends Activity {
 
             @Override
             public void onStopTrackingTouch(SeekBar seekBar) {
-                pref.setVolumeValue(0,frqSeekVal);
+                pref.setVolumeValue(0, frqSeekVal);
             }
         });
         dialog.show();
@@ -113,7 +106,7 @@ public class CustomDialog extends Activity {
             @Override
             public void onProgressChanged(SeekBar seekBar, int i, boolean b) {
                 brightness.setScreenBrightness(i);
-                connectUsbService.write("aud-brg-"+i/5+"?");
+                connectUsbService.write("aud-brg-" + i / 5 + "?");
             }
 
             @Override
@@ -128,5 +121,6 @@ public class CustomDialog extends Activity {
         });
 
     }
+
 
 }

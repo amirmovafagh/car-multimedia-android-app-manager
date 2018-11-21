@@ -33,11 +33,12 @@ public class ToolBar_ResideMenu
     private Activity activity;
 
 
+
     public ToolBar_ResideMenu() {
         this.activity = activity;
     }
 
-    public ToolBar_ResideMenu(final Activity activity, String toolbarTitle)
+    public ToolBar_ResideMenu(final Activity activity, String toolbarTitle, ConnectUsbService connectUsbService, PrefManager prefManager)
     {
         this.activity = activity;
         myToolbar = (Toolbar) activity.findViewById(R.id.toolbar);
@@ -48,7 +49,7 @@ public class ToolBar_ResideMenu
         //getSupportActionBar().setDisplayShowTitleEnabled(false);
         toolbarTextView.setText(toolbarTitle);
 
-        dialog = new CustomDialog(activity);
+        dialog = new CustomDialog(activity,prefManager, connectUsbService);
 
         menuIcon.setOnClickListener(new View.OnClickListener() {
                 @Override
