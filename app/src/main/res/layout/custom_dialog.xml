@@ -58,6 +58,7 @@
         <SeekBar
             android:id="@+id/seekbar_car_volume"
             android:layout_width="0dp"
+            android:max="63"
             android:layout_height="match_parent"
             android:layout_weight="0.81"
             android:thumb="@drawable/thumb_seekbar"/>

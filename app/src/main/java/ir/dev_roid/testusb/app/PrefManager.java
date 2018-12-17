@@ -4,6 +4,9 @@ import android.content.Context;
 import android.content.SharedPreferences;
 import android.util.Log;
 
+import static ir.dev_roid.testusb.SettingsActivity.defaultX;
+import static ir.dev_roid.testusb.SettingsActivity.defaultY;
+
 /**
  * Created by hirad on 4/4/18.
  */
@@ -31,8 +34,8 @@ public class PrefManager {
     private static final Float frq = (float) 98.0;
 
     private static final String[] KEY_VOLUME_VALUES = {"mainVal", "lfVal", "rfVal", "lrVal", "rrVal",
-            "bassVal", "trebleVal", "loudVal"};
-    private static final int[] values = {31, 16, 16, 16, 16, 15, 8, 3};
+            "bassVal", "trebleVal", "loudVal","gainVal", "auxMode", "androidMode", "radioMode"};
+    private static final int[] values = {31, 30, 30, 30, 30, 0, 0, 0,0,92,93, 94};
 
     private static final String KEY_X_CORDINATE = "xCordinate";
     private static final String KEY_Y_CORDINATE = "yCordinate";
@@ -112,12 +115,12 @@ public class PrefManager {
 
     public Float getXcordinate() {
 
-        return pref.getFloat(KEY_X_CORDINATE, 220);
+        return pref.getFloat(KEY_X_CORDINATE, defaultX);
     }
 
     public Float getYcordinate() {
 
-        return pref.getFloat(KEY_Y_CORDINATE, 222);
+        return pref.getFloat(KEY_Y_CORDINATE, defaultY);
     }
 
     public void setBrightnessValue(int value) {

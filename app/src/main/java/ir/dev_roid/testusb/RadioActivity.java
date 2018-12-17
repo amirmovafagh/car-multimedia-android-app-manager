@@ -16,6 +16,7 @@ import com.special.ResideMenu.ResideMenu;
 
 import com.warkiz.widget.IndicatorSeekBar;
 
+import ir.dev_roid.testusb.app.AudioValues;
 import ir.dev_roid.testusb.app.ConnectUsbService;
 import ir.dev_roid.testusb.app.CustomDialog;
 import ir.dev_roid.testusb.app.MyAudioManager;
@@ -35,6 +36,7 @@ public class RadioActivity extends AppCompatActivity implements View.OnClickList
     private Float frequency;
     private ToolBar_ResideMenu toolBarResideMenu;
     private MyAudioManager audioManager;
+    private AudioValues audioValues;
 
     private ConnectUsbService connectUsbService;
 
@@ -48,7 +50,8 @@ public class RadioActivity extends AppCompatActivity implements View.OnClickList
         connectUsbService = new ConnectUsbService(RadioActivity.this);
         audioManager = new MyAudioManager(this);
         audioManager.pauseHeadUnitMusicPlayer();
-        sendData("mod-rad?", 0);
+        audioValues = new AudioValues(prefManager);
+        sendData(audioValues.radioMode(), 0);
         //toolbarInit();
         initView();
         onLongClick();
@@ -301,7 +304,7 @@ public class RadioActivity extends AppCompatActivity implements View.OnClickList
                 audioManager.pauseHeadUnitMusicPlayer();
             }
 
-            sendData("mod-rad?", 100);
+            sendData(audioValues.radioMode(), 100);
             prefManager.setBluetoothPlayerState(false);
             prefManager.setHeadUnitAudioIsActive(false);
         }
@@ -311,7 +314,7 @@ public class RadioActivity extends AppCompatActivity implements View.OnClickList
     protected void onStart() {
         super.onStart();
         audioManager.pauseHeadUnitMusicPlayer();
-        sendData("mod-rad?", 3000);
+        sendData(audioValues.radioMode(), 3000);
         Log.i(tag, "onStart");
         prefManager.setRadioIsRun(true);
     }
@@ -341,7 +344,7 @@ public class RadioActivity extends AppCompatActivity implements View.OnClickList
     @Override
     protected void onDestroy() {
         super.onDestroy();
-        sendData("mod-pin?", 300);
+        sendData(audioValues.androidBTMode(), 300);
         Log.i(tag, "onDESTROy");
         prefManager.setRadioIsRun(false);
 

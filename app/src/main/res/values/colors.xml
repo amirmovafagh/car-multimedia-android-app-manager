@@ -2,7 +2,7 @@
 <resources>
     <color name="colorPrimary">#212121</color>
     <color name="colorPrimaryDark">#000000</color>
-    <color name="activityBackground">#303030</color>
+    <color name="activityBackground">#393939</color>
     <color name="cards_dialogs">#424242</color>
     <color name="colorAccent">#F44336</color>
     <color name="bgBottomNavigation">#F44336</color>

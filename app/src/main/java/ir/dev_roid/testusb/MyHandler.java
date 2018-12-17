@@ -46,7 +46,7 @@ public class MyHandler extends Handler {
             case UsbService.SYNC_READ:
                 buffer = (String) msg.obj;
 
-                //Toast.makeText(context, "2 "+buffer, Toast.LENGTH_SHORT).show();
+                Toast.makeText(context, "2 "+buffer, Toast.LENGTH_SHORT).show();
                 try{
                     int i = Integer.parseInt(buffer);
                     if(i<3350){

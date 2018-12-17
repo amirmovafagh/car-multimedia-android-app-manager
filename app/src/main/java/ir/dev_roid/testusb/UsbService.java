@@ -33,6 +33,7 @@ import java.util.Map;
 import java.util.Timer;
 import java.util.TimerTask;
 
+import ir.dev_roid.testusb.app.AudioValues;
 import ir.dev_roid.testusb.app.Brightness;
 import ir.dev_roid.testusb.app.MyAudioManager;
 import ir.dev_roid.testusb.app.ObservableInteger;
@@ -80,6 +81,7 @@ public class UsbService extends Service {
     private Thread thread;
     private Runnable threadRunnable;
     private boolean threadStatus = true;
+    private AudioValues audioValues;
 
     private boolean serialPortConnected;
 
@@ -137,6 +139,7 @@ public class UsbService extends Service {
                     serialPortConnected = false;
                 }
             }
+
         }
     };
 
@@ -162,6 +165,7 @@ public class UsbService extends Service {
         foregroundNotification();
         CheckCallStatus();
         startService(new Intent(getBaseContext(), SteeringWheelControllerService.class));
+        audioValues = new AudioValues(prefManager);
         obsInit.setOnIntegerChangeListener(new ObservableInteger.OnIntegerChangeListener() {
             @Override
             public void onIntegerChanged(final int newValue) {
@@ -171,7 +175,7 @@ public class UsbService extends Service {
                         @Override
                         public void run() {
                             //Do something after 100ms
-                            String data = "aud-brg-" + newValue / 5 + "?";
+                            String data = "mod-brg-" + newValue / 5 + "?";
                             write(data.getBytes());
                         }
                     }, 100);
@@ -216,10 +220,9 @@ public class UsbService extends Service {
                 write(data.getBytes());
                 if (!dialFragmentIsRun) {
                     checkAudioManager();
-                    //checkBluetoothMusic();
-
                 }
                 obsInit.set(brightness.getScreenBrightness());
+                checkResetMCUstate();
 
 
             }
@@ -228,12 +231,18 @@ public class UsbService extends Service {
 
     }
 
+    private void checkResetMCUstate() {
+        if (buffer.equalsIgnoreCase("RUN")) {
+            sendData(audioValues.getAudioValues(), 400);
+        }
+    }
+
     private void checkAudioManager() {
 
         if (audioManager.isMusicPlay()) {
             Log.i(tag, "1");
             if (prefManager.getBluetoothPlayerState()) {
-                delayTimer("blt-mus-stp?",100);
+                sendData("blt-mus-stp?", 100);
                 Log.i(tag, "1.1");
                 //delayTimer("mod-pin?");
 
@@ -243,22 +252,18 @@ public class UsbService extends Service {
 
             if (!prefManager.getHeadUnitAudioIsActive()) {
                 //delayTimer("mod-pin?");
-                delayTimer("blt-mus-stp?",200);
+                sendData("blt-mus-stp?", 200);
 
 
                 Log.i(tag, "1.2");
                 prefManager.setBluetoothPlayerState(false);
             }
 
-            if(prefManager.getRadioIsRun()){
-                delayTimer("mod-pio?",300);
+            if (prefManager.getRadioIsRun()) {
+                sendData(audioValues.androidBTMode(), 300);
                 Log.i(tag, "1.3");
                 prefManager.setRadioIsRun(false);
             }
-
-
-
-
 
 
             prefManager.setHeadUnitAudioIsActive(true);
@@ -293,7 +298,7 @@ public class UsbService extends Service {
         }
     }*/
 
-    private void delayTimer(final String data , int delay) {
+    private void sendData(final String data, int delay) {
         new Handler(Looper.getMainLooper()).postDelayed(new Runnable() {
             @Override
             public void run() {

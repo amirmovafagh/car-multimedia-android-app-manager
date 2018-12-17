@@ -7,6 +7,7 @@ import android.graphics.Color;
 import android.graphics.drawable.ColorDrawable;
 import android.media.AudioManager;
 import android.os.Bundle;
+import android.os.Handler;
 import android.support.annotation.Nullable;
 import android.view.View;
 import android.view.Window;
@@ -24,15 +25,18 @@ public class CustomDialog {
     private PrefManager pref;
     private Brightness brightness;
     private int frqSeekVal;
+    private AudioValues audioValues;
 
     public CustomDialog(Activity activity, PrefManager prefManager, ConnectUsbService connectUsbService) {
         this.activity = activity;
         this.connectUsbService = connectUsbService;
         this.pref = prefManager;
+        audioValues = new AudioValues(pref);
     }
 
 
     public void show() {
+
         Dialog dialog = new Dialog(activity, R.style.PauseDialog);
 
         dialog.requestWindowFeature(Window.FEATURE_NO_TITLE);
@@ -84,9 +88,16 @@ public class CustomDialog {
 
         carVolumeSeek.setOnSeekBarChangeListener(new SeekBar.OnSeekBarChangeListener() {
             @Override
-            public void onProgressChanged(SeekBar seekBar, int progress, boolean fromUser) {
-                frqSeekVal = progress;
-                connectUsbService.write("aud-vol-" + (63 - progress) + "?");
+            public void onProgressChanged(SeekBar seekBar, final int progress, boolean fromUser) {
+
+                audioValues.setVolume(progress);
+                new Handler().postDelayed(new Runnable() {
+                    @Override
+                    public void run() {
+
+                        connectUsbService.write(audioValues.getVolumeValue());
+                    }
+                },20);
 
             }
 
@@ -97,7 +108,7 @@ public class CustomDialog {
 
             @Override
             public void onStopTrackingTouch(SeekBar seekBar) {
-                pref.setVolumeValue(0, frqSeekVal);
+
             }
         });
         dialog.show();
@@ -106,7 +117,8 @@ public class CustomDialog {
             @Override
             public void onProgressChanged(SeekBar seekBar, int i, boolean b) {
                 brightness.setScreenBrightness(i);
-                connectUsbService.write("aud-brg-" + i / 5 + "?");
+
+                connectUsbService.write("mod-brg-" + i / 5 + "?");
             }
 
             @Override

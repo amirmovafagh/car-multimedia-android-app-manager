@@ -25,6 +25,9 @@ public class Receiver extends BroadcastReceiver {
         }
 
 
+        if(intent.getAction().equals("android.media.VOLUME_CHANGED_ACTION")){
+            //Toast.makeText(context, "vol", Toast.LENGTH_SHORT).show();
+        }
         /*when connected USb to device check that is target usb or not
         if (intent.getAction().equals(USB_DEVICE_ATTACHED)) {
         }*/

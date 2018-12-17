@@ -37,6 +37,7 @@ dependencies {
     implementation 'com.android.support:recyclerview-v7:28.0.0'
     implementation 'com.skyfishjy.ripplebackground:library:1.0.1'
     implementation 'com.github.warkiz.widget:indicatorseekbar:1.2.9'
+    implementation 'com.github.alpbak:BoxedVerticalSeekBar:1.1.1'
 
 
 }

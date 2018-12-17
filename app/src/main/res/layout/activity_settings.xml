@@ -3,6 +3,7 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
     android:background="@color/activityBackground"
     tools:context="ir.dev_roid.testusb.SettingsActivity"
     android:orientation="vertical">
@@ -24,27 +25,32 @@
                 android:layout_marginTop="10dp"
                 android:orientation="horizontal">
                 <Button
+                    android:id="@+id/driver_button"
                     android:layout_width="0dp"
                     android:layout_height="match_parent"
                     android:layout_weight="0.33"
                     android:layout_marginLeft="10dp"
                     android:layout_marginRight="10dp"
+                    android:textSize="25sp"
                     android:text="Driver"
+                    android:backgroundTint="@color/seek_bar_secondary_progress"
                     style="@style/AppTheme.RoundedCornerMaterialButton"/>
 
                 <ImageButton
-                    android:id="@+id/btn_balance_up"
+                    android:id="@+id/balance_up_imgbtn"
                     style="?android:attr/borderlessButtonStyle"
                     android:layout_width="0dp"
                     android:layout_height="wrap_content"
                     android:layout_weight="0.33"
                     android:src="@drawable/balance_up" />
                 <Button
+                    android:id="@+id/front_button"
                     android:layout_width="0dp"
                     android:layout_height="match_parent"
                     android:layout_weight="0.33"
                     android:layout_marginLeft="10dp"
                     android:layout_marginRight="10dp"
+                    android:textSize="25sp"
                     android:text="front"
                     style="@style/AppTheme.RoundedCornerMaterialButton"/>
             </LinearLayout>
@@ -60,6 +66,7 @@
 
 
                 <ImageButton
+                    android:id="@+id/balance_right_imgbtn"
                     android:layout_width="0dp"
                     android:layout_height="wrap_content"
                     android:layout_weight="0.1"
@@ -84,8 +91,8 @@
                             android:layout_centerHorizontal="true"
                             android:layout_centerVertical="true"/>
                         <ImageView
-                            android:layout_width="wrap_content"
-                            android:layout_height="wrap_content"
+                            android:layout_width="64dp"
+                            android:layout_height="64dp"
                             android:layout_centerHorizontal="true"
                             android:layout_centerVertical="true"
                             android:id="@+id/audio_balance_img"
@@ -96,6 +103,7 @@
 
 
                 <ImageButton
+                    android:id="@+id/balance_left_imgbtn"
                     android:layout_width="0dp"
                     android:layout_height="wrap_content"
                     android:layout_weight="0.1"
@@ -109,36 +117,34 @@
                 android:layout_height="0dp"
                 android:layout_weight="0.15"
                 android:orientation="horizontal">
-                <Button
+                <android.support.design.button.MaterialButton
+                    android:id="@+id/reset_button"
                     android:layout_width="0dp"
                     android:layout_height="match_parent"
                     android:layout_weight="0.33"
                     android:layout_margin="7dp"
-                    android:text="All"
+
+                    android:text="RESET"
+                    android:textSize="25sp"
                     style="@style/AppTheme.RoundedCornerMaterialButton"/>
+
                 <ImageButton
+                    android:id="@+id/balance_down_imgbtn"
                     android:layout_width="0dp"
                     android:layout_height="wrap_content"
                     android:layout_weight="0.33"
                     style="?android:attr/borderlessButtonStyle"
                     android:src="@drawable/balance_down"/>
                 <Button
+                    android:id="@+id/rear_button"
                     android:layout_width="0dp"
                     android:layout_height="match_parent"
                     android:layout_weight="0.33"
                     android:layout_margin="7dp"
+                    android:textSize="25sp"
                     android:text="Rear"
                     style="@style/AppTheme.RoundedCornerMaterialButton"/>
             </LinearLayout>
-
-
-
-
-
-
-
-
-            
 
         </LinearLayout>
 
@@ -147,77 +153,139 @@
             android:layout_width="0dp"
             android:layout_height="match_parent"
             android:layout_weight="0.5"
-            android:orientation="vertical"
+            android:orientation="horizontal"
             android:background="@color/activityBackground">
-
             <LinearLayout
-                android:layout_width="match_parent"
-                android:layout_height="0dp"
-                android:layout_weight="0.33"
-                android:orientation="horizontal">
-                <TextView
-                    android:layout_width="0dp"
-                    android:layout_height="match_parent"
-                    android:layout_weight="0.1"
-                    android:layout_gravity="center"
-                    android:text="Bass"/>
+                android:layout_width="0dp"
+                android:layout_height="match_parent"
+                android:layout_weight="0.1"
+                android:orientation="vertical"
+                >
 
-                <SeekBar
-                    android:id="@+id/bas_seekbar"
-                    style="@style/Widget.AppCompat.SeekBar.Discrete"
-                    android:layout_width="0dp"
-                    android:layout_height="match_parent"
-                    android:max="16"
-                    android:progress="0"
-                    android:layout_weight="0.9"
-                    android:thumb="@drawable/thumb_seekbar"/>
+                <abak.tr.com.boxedverticalseekbar.BoxedVertical
+                    android:id="@+id/base_vertical_seekbar"
+                    android:layout_width="80dp"
+                    android:layout_height="300dp"
+                    android:layout_gravity="center"
+                    android:layout_marginTop="100dp"
+                    android:layout_marginBottom="30dp"
+
+                    app:backgroundColor="@color/color_background"
+                    app:cornerRadius="20dp"
+
+                    app:imageEnabled="false"
+                    app:maxImage="@drawable/woofer_max"
+                    app:defaultImage="@drawable/woofer_def"
+                    app:minImage="@drawable/woofer_off"
+                    app:max="7"
+                    app:defaultValue="0"
+                    app:min="-7"
+                    app:progressColor="@color/color_progress"
+                    app:step="1"
+                    app:textBottomPadding="20"
+                    app:textColor="#FF0000"
+                    app:textEnabled="true"
+                    app:textSize="30sp"
+                    app:touchDisabled="false" />
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:textAlignment="center"
+                    android:layout_gravity="center"
+                    android:textSize="25sp"
+                    android:text="Base"/>
             </LinearLayout>
 
             <LinearLayout
-                android:layout_width="match_parent"
-                android:layout_height="0dp"
-                android:layout_weight="0.33"
-                android:orientation="horizontal">
-                <TextView
-                    android:layout_width="0dp"
-                    android:layout_height="match_parent"
-                    android:layout_weight="0.1"
+                android:layout_width="0dp"
+                android:layout_height="match_parent"
+                android:layout_weight="0.1"
+                android:orientation="vertical"
+
+                >
+
+                <abak.tr.com.boxedverticalseekbar.BoxedVertical
+                    android:id="@+id/treble_vertical_seekbar"
+                    android:layout_width="80dp"
+                    android:layout_height="300dp"
                     android:layout_gravity="center"
-                    android:text="treble"/>
-                <SeekBar
-                    android:id="@+id/treble_seekbar"
-                    style="@style/Widget.AppCompat.SeekBar.Discrete"
-                    android:layout_width="0dp"
-                    android:layout_height="match_parent"
-                    android:max="16"
-                    android:progress="0"
-                    android:layout_weight="0.9"
-                    android:thumb="@drawable/thumb_seekbar"/>
+                    android:layout_marginTop="100dp"
+                    android:layout_marginBottom="30dp"
+
+                    app:backgroundColor="@color/color_background"
+                    app:cornerRadius="20dp"
+                    app:defaultValue="0"
+                    app:imageEnabled="false"
+                    app:max="7"
+                    app:min="-7"
+                    app:progressColor="@color/color_progress"
+                    app:step="1"
+                    app:textBottomPadding="20"
+                    app:textColor="#FF0000"
+                    app:textEnabled="true"
+                    app:textSize="30sp"
+                    app:touchDisabled="false" />
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:textAlignment="center"
+                    android:layout_gravity="center"
+                    android:textSize="25sp"
+                    android:text="Treble"/>
             </LinearLayout>
 
             <LinearLayout
-                android:layout_width="match_parent"
-                android:layout_height="0dp"
-                android:layout_weight="0.33"
-                android:orientation="horizontal">
-                <TextView
-                    android:layout_width="0dp"
-                    android:layout_height="match_parent"
-                    android:layout_weight="0.1"
+                android:layout_width="0dp"
+                android:layout_height="match_parent"
+                android:layout_weight="0.1"
+                android:orientation="vertical"
+                >
+                <android.support.v7.widget.SwitchCompat
+                    android:id="@+id/loudness_switch"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="30dp"
+
                     android:layout_gravity="center"
-                    android:text="Loud"/>
-                <SeekBar
-                    android:id="@+id/loud_seekbar"
-                    style="@style/Widget.AppCompat.SeekBar.Discrete"
-                    android:layout_width="0dp"
-                    android:layout_height="match_parent"
-                    android:max="2"
-                    android:progress="0"
-                    android:layout_weight="0.9"
-                    android:thumb="@drawable/thumb_seekbar"/>
+                    android:scaleY="2"
+                    android:scaleX="2"
+                    android:text="Loud"
+                    android:textColor="@android:color/white"
+                     />
 
+                <abak.tr.com.boxedverticalseekbar.BoxedVertical
+                    android:id="@+id/gain_vertical_seekbar"
 
+                    android:layout_width="80dp"
+                    android:layout_height="300dp"
+                    android:layout_gravity="center"
+                    android:layout_marginTop="45dp"
+                    android:layout_marginBottom="30dp"
+
+                    app:backgroundColor="@color/color_background"
+                    app:cornerRadius="20dp"
+                    app:defaultValue="0"
+                    app:imageEnabled="false"
+                    app:maxImage="@drawable/woofer_max"
+                    app:defaultImage="@drawable/woofer_def"
+                    app:minImage="@drawable/woofer_off"
+
+                    app:max="12"
+                    app:progressColor="@color/color_progress"
+                    app:step="4"
+                    app:textColor="#FF0000"
+                    app:textEnabled="true"
+                    app:textSize="30sp"
+                    app:touchDisabled="false" />
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:textAlignment="center"
+                    android:layout_gravity="center"
+                    android:textSize="25sp"
+                    android:text="Gain"/>
             </LinearLayout>
+
 
 
         </LinearLayout>
