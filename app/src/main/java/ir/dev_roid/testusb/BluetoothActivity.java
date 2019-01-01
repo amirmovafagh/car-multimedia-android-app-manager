@@ -1,7 +1,6 @@
 package ir.dev_roid.testusb;
 
 
-import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
 import android.os.Handler;
@@ -16,15 +15,12 @@ import android.view.MenuItem;
 import ir.dev_roid.testusb.app.ConnectUsbService;
 import ir.dev_roid.testusb.app.PrefManager;
 import ir.dev_roid.testusb.app.ToolBar_ResideMenu;
-import ir.dev_roid.testusb.bluetoothFragments.ContactsFragment;
-import ir.dev_roid.testusb.bluetoothFragments.DialFragment;
-import ir.dev_roid.testusb.bluetoothFragments.LogFragment;
 import ir.dev_roid.testusb.bluetoothFragments.MediaFragment;
 import ir.dev_roid.testusb.bluetoothFragments.SettingsFragment;
-
+import ir.dev_roid.testusb.bluetoothFragments.contacts.PkgTelephoneActivity.TelephoneActivity;
 
 import static ir.dev_roid.testusb.MyHandler.buffer;
-import static ir.dev_roid.testusb.bluetoothFragments.DialFragment.dialFragmentIsRun;
+import static ir.dev_roid.testusb.bluetoothFragments.contacts.PkgTelephoneActivity.PkgPhoneDialerFragment.PhoneDialerFragment.dialFragmentIsRun;
 
 
 public class BluetoothActivity extends AppCompatActivity {
@@ -54,15 +50,7 @@ public class BluetoothActivity extends AppCompatActivity {
         final BottomNavigationView navigation = (BottomNavigationView) findViewById(R.id.navigation);
         navigation.setOnNavigationItemSelectedListener(mOnNavigationItemSelectedListener);
 
-        Intent intent = getIntent();
-        if (intent.hasExtra("loadDialFragment")) {
-            int intentFragment = getIntent().getExtras().getInt("loadDialFragment");
-            if (intentFragment == 1) {
-                loadFragment(new DialFragment());
-                navigation.setSelectedItemId(R.id.action_dialler);
-
-            }
-        } else loadFragment(new SettingsFragment());
+        loadFragment(new SettingsFragment());
 
         handler = new Handler();
         runnable = new Runnable() {
@@ -70,8 +58,9 @@ public class BluetoothActivity extends AppCompatActivity {
             public void run() {
                 if (buffer.equalsIgnoreCase("MG4") || buffer.equalsIgnoreCase("MG5")) {
                     if (!dialFragmentIsRun) {
-                        loadFragment(new DialFragment());
-                        navigation.setSelectedItemId(R.id.action_dialler);
+                        startActivity(new Intent(BluetoothActivity.this, TelephoneActivity.class));
+                        finish();
+                        //navigation.setSelectedItemId(R.id.action_dialler);
                         Log.i(tag, "bt");
                     }
                 }
@@ -94,23 +83,11 @@ public class BluetoothActivity extends AppCompatActivity {
                     fragment = new MediaFragment();
                     loadFragment(fragment);
                     return true;
-                case R.id.action_log:
-                    toolBarResideMenu.Title("Call LOG");
-                    fragment = new LogFragment();
-                    loadFragment(fragment);
 
-
-                    return true;
-                case R.id.action_contacts:
-                    toolBarResideMenu.Title("Contacts");
-                    fragment = new ContactsFragment();
-                    loadFragment(fragment);
-
-                    return true;
-                case R.id.action_dialler:
-                    toolBarResideMenu.Title("Dialler");
-                    fragment = new DialFragment();
-                    loadFragment(fragment);
+                case R.id.action_phone:
+                    toolBarResideMenu.Title("Phone");
+                    startActivity(new Intent(BluetoothActivity.this, TelephoneActivity.class));
+                    finish();
                     return true;
                 case R.id.action_settings:
                     toolBarResideMenu.Title("Settings");
@@ -139,8 +116,8 @@ public class BluetoothActivity extends AppCompatActivity {
     }
 
     @Override
-    protected void onPostResume() {
-        super.onPostResume();
+    protected void onResume() {
+        super.onResume();
         handler.postDelayed(runnable, 3000);
     }
 
@@ -148,5 +125,6 @@ public class BluetoothActivity extends AppCompatActivity {
     protected void onDestroy() {
         super.onDestroy();
         unbindService(connectUsbServiceStatic.onDestroyUsb());
+
     }
 }

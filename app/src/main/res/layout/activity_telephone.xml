@@ -1,0 +1,70 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    xmlns:app="http://schemas.android.com/apk/res-auto">
+
+    <android.support.v7.widget.Toolbar
+        android:id="@+id/tb_telephone_activity"
+        android:layout_width="match_parent"
+        android:layout_height="?android:attr/actionBarSize"
+        app:titleTextColor="@color/color_text"
+        android:background="@color/colorPrimary"
+        android:elevation="4dp"
+        android:theme="@style/ThemeOverlay.AppCompat.Dark.ActionBar"
+        app:popupTheme="@style/ThemeOverlay.AppCompat.Light"
+         />
+
+    <com.miguelcatalan.materialsearchview.MaterialSearchView
+        android:id="@+id/sv_search_view"
+        android:textColor="@color/colorPrimaryDark"
+
+        android:layout_width="match_parent"
+        android:layout_height="?android:attr/actionBarSize"
+        />
+
+    <android.support.design.widget.TabLayout
+        android:id="@+id/tl_telephone_activity"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        app:tabTextColor="@color/color_text"
+        android:elevation="4dp"
+        app:tabSelectedTextColor="#FFFFDA44"
+        android:layout_below="@+id/tb_telephone_activity"/>
+
+    <android.support.v4.view.ViewPager
+        android:id="@+id/vp_telephone_activity"
+        android:layout_marginTop="8dp"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:layout_below="@+id/tl_telephone_activity"
+        />
+
+
+    <FrameLayout
+        android:id="@+id/fl_fragment_container"
+        android:layout_marginTop="8dp"
+        android:layout_below="@id/tb_telephone_activity"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        />
+
+    <android.support.design.widget.FloatingActionButton
+        android:id="@+id/fab"
+        android:layout_marginRight="600dp"
+        android:layout_marginBottom="310dp"
+        android:layout_height="wrap_content"
+        android:layout_width="wrap_content"
+        android:layout_alignParentBottom="true"
+        android:layout_alignParentRight="true"
+        android:src="@drawable/bluetooth_settings"
+        app:backgroundTint="@color/colorPrimary"
+        android:clickable="true"
+        app:borderWidth="0dp"
+        app:fabCustomSize="55dp"
+        app:maxImageSize="35dp" />
+
+
+
+
+</RelativeLayout>

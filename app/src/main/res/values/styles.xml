@@ -16,23 +16,19 @@
     </style>
 
     <style name="dialButton" parent="Theme.AppCompat">
+        <item name="android:elevation">3dp</item>
+        <item name="android:layout_margin">3dp</item>
         <item name="android:textSize">20sp</item>
         <item name="android:layout_width">0dp</item>
         <item name="android:layout_weight">0.25</item>
-        <item name="android:layout_height">100dp</item>
+        <item name="android:layout_height">50dp</item>
         <item name="android:layout_gravity">center</item>
         <item name="android:textAlignment">center</item>
         <item name="android:textColor">@android:color/white</item>
-        <item name="colorButtonNormal">@color/cards_dialogs</item>
-        <item name="colorControlHighlight">@color/colorAccent</item>
+        <item name="android:background">@drawable/rounded_button_dialpad</item>
     </style>
 
-    <style name="imgButtonDialpad">
-        <item name="android:layout_width">0dp</item>
-        <item name="android:layout_height">100dp</item>
-        <item name="android:layout_weight">0.25</item>
-        <item name="android:layout_gravity">center</item>
-    </style>
+
 
     <style name="FlatButton" parent="Theme.AppCompat.Light">
         <item name="android:layout_width">wrap_content</item>

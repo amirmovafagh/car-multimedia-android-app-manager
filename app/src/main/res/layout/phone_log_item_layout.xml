@@ -1,0 +1,84 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout
+    android:id="@+id/rl"
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:paddingTop="1dp"
+
+    xmlns:tools="http://schemas.android.com/tools">
+
+
+    <ImageView
+        android:id="@+id/iv_img_user"
+        android:layout_width="60dp"
+        android:layout_height="40dp"
+        tools:background="@drawable/ic_unknown_person_black_32dp"/>
+
+
+
+    <TextView
+        android:id="@+id/tv_firstname"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        tools:text="(FirstName)"
+        android:layout_toRightOf="@+id/iv_img_user"
+        android:paddingTop="5dp"
+        android:maxLength="16"
+        />
+    <TextView
+        android:id="@+id/tv_lastname"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        tools:text="(LastName)"
+        android:layout_toRightOf="@+id/tv_firstname"
+        android:layout_alignTop="@id/tv_firstname"
+        android:layout_alignBottom="@id/tv_firstname"
+        android:paddingTop="5dp"
+        android:maxLength="16"
+        />
+
+    <TextView
+        android:id="@+id/tv_phonenumber"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_below="@id/tv_firstname"
+        android:layout_marginBottom="-10dp"
+        android:layout_toRightOf="@+id/img_calltype_icon"
+        android:layout_marginLeft="5dp"
+        tools:text="09132552211" />
+
+
+    <ImageView
+        android:id="@+id/img_calltype_icon"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        tools:src="@drawable/ic_call_missed_black_16dp"
+        android:layout_toRightOf="@+id/iv_img_user"
+        android:layout_alignTop="@id/tv_phonenumber"
+        android:layout_alignBottom="@id/tv_phonenumber"
+        />
+
+
+
+    <TextView
+        android:id="@+id/tv_date"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        tools:text="17/jan/2012"
+        android:layout_alignParentRight="true"
+        android:layout_alignBottom="@+id/tv_firstname"
+        android:paddingRight="7dp"
+        />
+    <TextView
+        android:id="@+id/tv_time"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        tools:text="17:56:22"
+        android:layout_alignTop="@id/tv_phonenumber"
+        android:layout_alignRight="@+id/tv_date"
+        android:layout_alignLeft="@+id/tv_date"
+        android:gravity="center"
+
+        />
+</RelativeLayout>

@@ -1,17 +1,13 @@
 package ir.dev_roid.testusb.app;
 
 import android.app.Activity;
-import android.app.Service;
-import android.content.Intent;
-import android.os.IBinder;
-import android.support.annotation.Nullable;
+
 import android.util.Log;
 
 
-import static ir.dev_roid.testusb.BluetoothActivity.connectUsbServiceStatic;
 import static ir.dev_roid.testusb.MyHandler.buffer;
 
-public class BluetoothService extends Service {
+public class BluetoothService {
     private String log = BluetoothService.class.getName();
     private Activity activity;
     private String status;
@@ -42,9 +38,5 @@ public class BluetoothService extends Service {
         return status;
     }
 
-    @Nullable
-    @Override
-    public IBinder onBind(Intent intent) {
-        return null;
-    }
+
 }

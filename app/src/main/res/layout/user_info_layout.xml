@@ -1,0 +1,66 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent" 
+    android:layout_height="match_parent"
+    android:background="@color/activityBackground"
+    >
+
+
+    <TextView
+        android:id="@+id/tv_change_audience_info_firstname_lable"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Firstname : "
+        android:textSize="20dp"
+        android:layout_margin="10dp"/>
+    <TextView
+        android:id="@+id/et_change_audience_info_firstname"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_toRightOf="@+id/tv_change_audience_info_firstname_lable"
+        android:layout_alignTop="@+id/tv_change_audience_info_firstname_lable"
+        android:layout_alignBottom="@+id/tv_change_audience_info_firstname_lable"
+        android:hint="firstname"
+        />
+
+
+    <TextView
+        android:id="@+id/tv_change_audience_info_lastname_lable"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_below="@+id/tv_change_audience_info_firstname_lable"
+        android:text="Lastname : "
+        android:textSize="20dp"
+        android:layout_margin="10dp"
+        />
+    <TextView
+        android:id="@+id/et_change_audience_info_lastname"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_toRightOf="@+id/tv_change_audience_info_lastname_lable"
+        android:layout_alignTop="@+id/tv_change_audience_info_lastname_lable"
+        android:layout_alignBottom="@+id/tv_change_audience_info_lastname_lable"
+        android:hint="lastname"
+        />
+
+    <TextView
+        android:id="@+id/tv_change_audience_info_phones_lable"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_margin="10dp"
+        android:textSize="20dp"
+        android:text="Phones : "
+        android:layout_below="@id/tv_change_audience_info_lastname_lable"/>
+
+    <ListView
+        android:id="@+id/rv_change_audience_info_phones"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_below="@id/tv_change_audience_info_phones_lable"
+        android:layout_margin="10dp"
+        />
+
+
+
+</RelativeLayout>

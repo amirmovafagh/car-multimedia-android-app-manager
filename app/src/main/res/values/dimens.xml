@@ -2,6 +2,6 @@
     <dimen name="fab_margin">16dp</dimen>
 
     <dimen name="seek_bar_thickness">5dp</dimen>
-    <dimen name="seek_bar_thumb_size">30dp</dimen>
+    <dimen name="seek_bar_thumb_size">31dp</dimen>
 
 </resources>

@@ -19,7 +19,8 @@
         android:theme="@style/AppTheme">
         <activity
             android:name=".MainActivity"
-            android:screenOrientation="landscape">
+            android:screenOrientation="landscape"
+            android:launchMode="singleTop">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
 
@@ -69,6 +70,7 @@
         <activity
             android:name=".BluetoothActivity"
             android:label="@string/title_activity_bluetooth"
+            android:launchMode="singleTop"
             android:screenOrientation="landscape"
             android:taskAffinity=".BluetoothActivity"
             android:theme="@style/AppTheme">
@@ -78,10 +80,25 @@
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
-        >
+
+        <activity
+            android:name=".bluetoothFragments.contacts.PkgTelephoneActivity.TelephoneActivity"
+            android:label="@string/title_activity_telephone"
+            android:launchMode="singleTop"
+            android:screenOrientation="landscape"
+            android:taskAffinity=".bluetoothFragments.contacts.PkgTelephoneActivity.TelephoneActivity"
+            android:theme="@style/AppTheme">
+            <intent-filter>
+                <action android:name="android.intent.action.MAIN" />
+
+                <category android:name="android.intent.category.LAUNCHER" />
+            </intent-filter>
+        </activity>
+
         <activity
             android:name=".RadioActivity"
             android:label="@string/title_activity_radio"
+            android:launchMode="singleTop"
             android:screenOrientation="landscape"
             android:taskAffinity=".RadioActivity"
             android:theme="@style/AppTheme">
@@ -94,6 +111,7 @@
         <activity
             android:name=".SettingsActivity"
             android:label="@string/title_activity_settings"
+            android:launchMode="singleTop"
             android:screenOrientation="landscape"
             android:taskAffinity=".SettingsActivity"
             android:theme="@style/AppTheme">

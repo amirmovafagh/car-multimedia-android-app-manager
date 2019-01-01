@@ -2,11 +2,10 @@ package ir.dev_roid.testusb.bluetoothFragments.contacts;
 
 import android.content.Context;
 import android.database.sqlite.SQLiteDatabase;
-import android.os.Build;
-import android.support.annotation.RequiresApi;
 import android.util.Log;
+import android.widget.Toast;
+
 import com.j256.ormlite.android.apptools.OrmLiteSqliteOpenHelper;
-import com.j256.ormlite.dao.Dao;
 import com.j256.ormlite.dao.RuntimeExceptionDao;
 import com.j256.ormlite.support.ConnectionSource;
 import com.j256.ormlite.table.TableUtils;
@@ -14,11 +13,11 @@ import com.j256.ormlite.table.TableUtils;
 import java.sql.SQLException;
 
 import ir.dev_roid.testusb.bluetoothFragments.contacts.Pojo.Audience;
-import ir.dev_roid.testusb.bluetoothFragments.contacts.Pojo.CallInfo;
+import ir.dev_roid.testusb.bluetoothFragments.contacts.Pojo.CallLog;
 import ir.dev_roid.testusb.bluetoothFragments.contacts.Pojo.CallType;
 import ir.dev_roid.testusb.bluetoothFragments.contacts.Pojo.PhoneNumber;
 
-public class Database extends OrmLiteSqliteOpenHelper {
+public class ModelDAOs extends OrmLiteSqliteOpenHelper {
 
     private static final String DB_NAME = "telephone.db";
     private static final Integer DB_VERSION = 1;
@@ -26,18 +25,30 @@ public class Database extends OrmLiteSqliteOpenHelper {
 
     private RuntimeExceptionDao<Audience, Integer> audienceRuntimeExceptionDao;
     private RuntimeExceptionDao<PhoneNumber, Integer> phoneNumberRuntimeExceptionDao;
-    private RuntimeExceptionDao<CallInfo, Integer> callInfoRuntimeExceptionDao;
+    private RuntimeExceptionDao<CallLog, Integer> callInfoRuntimeExceptionDao;
     private RuntimeExceptionDao<CallType, Integer> callTypeRuntimeExceptionDao;
 
-    public Database(Context context) {
+    Context ctx;
+
+    private static ModelDAOs modelDAOs = null;
+
+    public static ModelDAOs getInstance(Context ctx) {
+        if (modelDAOs == null) {
+            modelDAOs = new ModelDAOs(ctx);
+        }
+        return modelDAOs;
+    }
+
+    private ModelDAOs(Context context) {
         super(context, DB_NAME, null, DB_VERSION);
+        this.ctx = context;
+
     }
 
 
     @Override
     public void onCreate(SQLiteDatabase database, ConnectionSource connectionSource) {
         try {
-
 
             database.endTransaction();
 
@@ -46,60 +57,66 @@ public class Database extends OrmLiteSqliteOpenHelper {
             database.beginTransaction();
             TableUtils.createTable(connectionSource, Audience.class);
             TableUtils.createTable(connectionSource, PhoneNumber.class);
-            TableUtils.createTable(connectionSource, CallInfo.class);
+            TableUtils.createTable(connectionSource, CallLog.class);
             TableUtils.createTable(connectionSource, CallType.class);
 
-
-
-            getCallTypeRuntimeExceptionDao().create(new CallType(1, CallType.Type.INPUT));
-            getCallTypeRuntimeExceptionDao().create(new CallType(2, CallType.Type.OUTPUT));
-            getCallTypeRuntimeExceptionDao().create(new CallType(3, CallType.Type.MISSING));
+            getCallTypeRuntimeExceptionDao().create(new CallType(CallType.INPUT));
+            getCallTypeRuntimeExceptionDao().create(new CallType(CallType.OUTPUT));
+            getCallTypeRuntimeExceptionDao().create(new CallType(CallType.MISSED));
         } catch (SQLException e) {
-            Log.e(TAG, "onCreate: " + "Create Table Error !!! " );
+            Log.e(TAG, "onCreate: " + "Create Table Error !!! ");
+            Toast.makeText(ctx, "Create Table Error !!! ", Toast.LENGTH_LONG).show();
             e.printStackTrace();
         }
     }
 
     @Override
-    public void onUpgrade(SQLiteDatabase database, ConnectionSource connectionSource, int oldVersion, int newVersion) {
+    public void onUpgrade(SQLiteDatabase database, ConnectionSource connectionSource, int oldVersion,
+                          int newVersion) {
 
     }
 
     public RuntimeExceptionDao<Audience, Integer> getAudienceRuntimeExceptionDao() {
 
-        if (audienceRuntimeExceptionDao == null)
+        if (audienceRuntimeExceptionDao == null) {
             audienceRuntimeExceptionDao = getRuntimeExceptionDao(Audience.class);
+        }
         return audienceRuntimeExceptionDao;
 
     }
 
     public RuntimeExceptionDao<PhoneNumber, Integer> getPhoneNumberRuntimeExceptionDao() {
 
-        if (phoneNumberRuntimeExceptionDao == null)
+        if (phoneNumberRuntimeExceptionDao == null) {
             phoneNumberRuntimeExceptionDao = getRuntimeExceptionDao(PhoneNumber.class);
+        }
         return phoneNumberRuntimeExceptionDao;
     }
 
-    public RuntimeExceptionDao<CallInfo, Integer> getCallInfoRuntimeExceptionDao() {
+    public RuntimeExceptionDao<CallLog, Integer> getCallInfoRuntimeExceptionDao() {
 
-        if (callInfoRuntimeExceptionDao == null)
-            callInfoRuntimeExceptionDao = getRuntimeExceptionDao(CallInfo.class);
+        if (callInfoRuntimeExceptionDao == null) {
+            callInfoRuntimeExceptionDao = getRuntimeExceptionDao(CallLog.class);
+        }
         return callInfoRuntimeExceptionDao;
     }
 
     public RuntimeExceptionDao<CallType, Integer> getCallTypeRuntimeExceptionDao() {
 
-        if (callTypeRuntimeExceptionDao == null)
+        if (callTypeRuntimeExceptionDao == null) {
             callTypeRuntimeExceptionDao = getRuntimeExceptionDao(CallType.class);
+        }
         return callTypeRuntimeExceptionDao;
 
     }
 
-    public void close()
-    {
-        super.close();
+    public void close() {
         audienceRuntimeExceptionDao = null;
         phoneNumberRuntimeExceptionDao = null;
         callInfoRuntimeExceptionDao = null;
+        callTypeRuntimeExceptionDao = null;
+
+        super.close();
     }
+
 }

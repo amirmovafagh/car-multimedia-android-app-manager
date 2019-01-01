@@ -41,7 +41,7 @@ import ir.dev_roid.testusb.app.PrefManager;
 import ir.dev_roid.testusb.steeringWheelController.SteeringWheelControllerService;
 
 import static ir.dev_roid.testusb.MyHandler.buffer;
-import static ir.dev_roid.testusb.bluetoothFragments.DialFragment.dialFragmentIsRun;
+import static ir.dev_roid.testusb.bluetoothFragments.contacts.PkgTelephoneActivity.PkgPhoneDialerFragment.PhoneDialerFragment.dialFragmentIsRun;
 
 /**
  * Created by hirad on 3/1/18.
@@ -215,10 +215,11 @@ public class UsbService extends Service {
             @Override
             public void run() {
 
-
+                Log.d(tag, "service...");
                 String data = "blt-cll-chk?";
                 write(data.getBytes());
                 if (!dialFragmentIsRun) {
+
                     checkAudioManager();
                 }
                 obsInit.set(brightness.getScreenBrightness());
@@ -323,13 +324,17 @@ public class UsbService extends Service {
 
     @Override
     public int onStartCommand(Intent intent, int flags, int startId) {
-        return Service.START_NOT_STICKY;
+        return Service.START_STICKY;
     }
 
     @Override
     public void onDestroy() {
         super.onDestroy();
+        Log.d(tag, "onDestroy service");
         UsbService.SERVICE_CONNECTED = false;
+
+
+
     }
 
     /*

@@ -11,9 +11,9 @@ import android.widget.Toast;
 
 import ir.dev_roid.testusb.app.ConnectUsbService;
 import ir.dev_roid.testusb.app.MyAudioManager;
+import ir.dev_roid.testusb.bluetoothFragments.contacts.PkgTelephoneActivity.TelephoneActivity;
 
-import static ir.dev_roid.testusb.bluetoothFragments.DialFragment.dialFragmentIsRun;
-
+import static ir.dev_roid.testusb.bluetoothFragments.contacts.PkgTelephoneActivity.PkgPhoneDialerFragment.PhoneDialerFragment.dialFragmentIsRun;
 
 /**
  * Created by hirad on 3/5/18.
@@ -44,6 +44,7 @@ public class MyHandler extends Handler {
                 //Toast.makeText(context, "1 "+data, Toast.LENGTH_SHORT).show();
                 break;
             case UsbService.SYNC_READ:
+
                 buffer = (String) msg.obj;
 
                 Toast.makeText(context, "2 "+buffer, Toast.LENGTH_SHORT).show();
@@ -78,10 +79,10 @@ public class MyHandler extends Handler {
         if(buffer.equalsIgnoreCase("MG5") && !dialFragmentIsRun)
         {
             stopHeadUnitMusic();
-            Intent mIntent = new Intent(context,BluetoothActivity.class);
-            mIntent.putExtra("loadDialFragment", 1);
-            mIntent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
-            context.startActivity(mIntent);
+
+            Intent intent = new Intent(context,TelephoneActivity.class);
+            intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+            context.startActivity(intent);
             Log.i(TAG, "Incoming call");
             return;
         }
@@ -92,10 +93,10 @@ public class MyHandler extends Handler {
         if(buffer.equalsIgnoreCase("MG4") && !dialFragmentIsRun)
         {
             stopHeadUnitMusic();
-            Intent mIntent = new Intent(context,BluetoothActivity.class);
-            mIntent.putExtra("loadDialFragment", 1);
-            mIntent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
-            context.startActivity(mIntent);
+            Intent intent = new Intent(context,TelephoneActivity.class);
+            intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+            context.startActivity(intent);
+
             Log.i(TAG, "Outgoing call");
             return;
         }

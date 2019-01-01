@@ -7,12 +7,14 @@ import android.content.Intent;
 import android.content.ServiceConnection;
 import android.os.Bundle;
 import android.os.IBinder;
+import android.util.Log;
 
 import java.util.Set;
 
 import ir.dev_roid.testusb.UsbService;
 
 public class ConnectUsbService {
+    private static final String tag = ConnectUsbService.class.getSimpleName();
     private Activity activity;
     private ServiceConnection sConnection;
 
@@ -33,11 +35,15 @@ public class ConnectUsbService {
 
     public void enableCheckCallStatus() {
         usbService.enableCheckCallStatus();
+        Log.i(tag,"enableCheckCallStatus");
     }
 
     public void disableCheckCallStatus() {
         usbService.disableCheckCallStatus();
+
+        Log.i(tag,"disableCheckCallStatus");
     }
+
 
     public final ServiceConnection usbConnection = new ServiceConnection() {
         @Override
@@ -63,6 +69,7 @@ public class ConnectUsbService {
                 }
             }
             activity.startService(startService);
+
         }
         Intent bindingIntent = new Intent(activity, service);
 

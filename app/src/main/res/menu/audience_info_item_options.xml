@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="utf-8"?>
+<menu xmlns:android="http://schemas.android.com/apk/res/android">
+
+    <item android:id="@+id/mi_remove_audience"
+        android:title="Delete"
+        />
+    <item android:id="@+id/mi_change_audience_info"
+        android:title="Edit"
+        />
+
+</menu>

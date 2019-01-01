@@ -1,0 +1,53 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout
+    android:id="@+id/rl_add_user_layout"
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="@color/activityBackground"
+    >
+
+    <EditText
+        android:id="@+id/et_add_user_firstname"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_margin="10dp"
+        android:hint="FirstNname"
+        />
+
+    <EditText
+        android:id="@+id/et_add_user_lastname"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_margin="10dp"
+        android:hint="LastNname"
+        android:layout_below="@id/et_add_user_firstname"
+        />
+    <EditText
+        android:id="@+id/et_add_user_phonenumber"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_margin="10dp"
+        android:hint="PhoneNumber"
+        android:layout_below="@+id/et_add_user_lastname"
+        />
+
+    <Button
+        android:id="@+id/btn_add_user_cancel"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_margin="20dp"
+        android:layout_below="@id/et_add_user_phonenumber"
+        android:layout_alignParentLeft="true"
+        android:text="Cancel"/>
+
+
+    <Button
+        android:id="@+id/btn_add_user_save"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_margin="20dp"
+        android:layout_below="@id/et_add_user_phonenumber"
+        android:layout_alignParentRight="true"
+        android:text="Save"/>
+</RelativeLayout>

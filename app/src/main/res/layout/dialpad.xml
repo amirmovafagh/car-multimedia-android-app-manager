@@ -1,12 +1,24 @@
+<android.support.design.card.MaterialCardView xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_height="match_parent"
+    android:layout_width="0dp"
+    android:layout_marginRight="8dp"
+    android:layout_marginBottom="8dp"
+    android:layout_marginLeft="4dp"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:layout_weight="0.56"
+    app:cardBackgroundColor="@color/cards_dialogs"
+    app:strokeColor="@color/colorAccent"
+    app:cardCornerRadius="5dp"
+    >
 <LinearLayout
     android:id="@+id/dialpad_view"
     android:paddingRight="5dp"
-    android:layout_width="0dp"
+    android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:layout_weight="0.56"
+
     android:layout_gravity="center"
     android:orientation="vertical"
-    xmlns:android="http://schemas.android.com/apk/res/android">
+    >
 
     <LinearLayout
         style="@style/linearDialPad">
@@ -29,9 +41,13 @@
             style="@style/dialButton"/>
 
         <ImageButton
+            android:layout_width="0dp"
+            android:layout_height="50dp"
+            android:layout_weight="0.25"
+            android:layout_gravity="center"
+            style="?android:attr/borderlessButtonStyle"
             android:id="@+id/backspace"
             android:src="@drawable/backspace"
-            style="@style/imgButtonDialpad"
             />
 
     </LinearLayout>
@@ -55,9 +71,14 @@
             style="@style/dialButton"/>
 
         <ImageButton
+            android:layout_width="0dp"
+            android:layout_height="50dp"
+            android:layout_weight="0.25"
+            android:layout_gravity="center"
+            style="?android:attr/borderlessButtonStyle"
             android:id="@+id/btn_call"
             android:src="@drawable/call"
-            style="@style/imgButtonDialpad"
+
             />
     </LinearLayout>
 
@@ -82,9 +103,14 @@
             style="@style/dialButton"/>
 
         <ImageButton
+            android:layout_width="0dp"
+            android:layout_height="50dp"
+            android:layout_weight="0.25"
+            android:layout_gravity="center"
+            style="?android:attr/borderlessButtonStyle"
             android:id="@+id/btn_end_call"
             android:src="@drawable/endcall"
-            style="@style/imgButtonDialpad"
+
             />
 
     </LinearLayout>
@@ -109,3 +135,4 @@
     </LinearLayout>
 
 </LinearLayout>
+</android.support.design.card.MaterialCardView>

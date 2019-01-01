@@ -7,7 +7,9 @@ import com.j256.ormlite.table.DatabaseTable;
 import java.util.Date;
 
 @DatabaseTable
-public class CallInfo {
+public class CallLog {
+
+    public static final String PHONE_FEILD_NAME = "phoneNumber_id";
 
     @DatabaseField(generatedId = true)
     private Integer idCallInfo;
@@ -28,11 +30,11 @@ public class CallInfo {
     )
     private CallType callType;
 
-    public CallInfo(){
+    public CallLog(){
 
     }
 
-    public CallInfo(Integer idCallInfo, Date date) {
+    public CallLog(Integer idCallInfo, Date date) {
         this.idCallInfo = idCallInfo;
         this.date = date;
     }

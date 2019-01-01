@@ -1,23 +1,17 @@
 package ir.dev_roid.testusb.bluetoothFragments.contacts.Pojo;
 
 import com.j256.ormlite.dao.ForeignCollection;
-import com.j256.ormlite.field.DataType;
 import com.j256.ormlite.field.DatabaseField;
 import com.j256.ormlite.field.ForeignCollectionField;
 import com.j256.ormlite.table.DatabaseTable;
 
-import javax.persistence.Column;
-import javax.persistence.Entity;
-import javax.persistence.GeneratedValue;
-import javax.persistence.GenerationType;
-import javax.persistence.Id;
-import javax.persistence.ManyToMany;
-import javax.persistence.ManyToOne;
+import java.io.Serializable;
 
 @DatabaseTable
-public class PhoneNumber {
+public class PhoneNumber implements Serializable, Cloneable {
 
     public static final String PHONE_FEILD_NAME = "phone";
+    public static final String PHONE_FEILD_AUDIENCE_ID = "audience_id";
 
     @DatabaseField(generatedId = true)
     private Integer idPhoneNumber;
@@ -32,15 +26,14 @@ public class PhoneNumber {
     private Audience audience;
 
     @ForeignCollectionField
-    private ForeignCollection<CallInfo> callInfos;
+    private ForeignCollection<CallLog> callLogs;
 
 
     public PhoneNumber(){
 
     }
 
-    public PhoneNumber(Integer idPhoneNumber, String phone) {
-        this.idPhoneNumber = idPhoneNumber;
+    public PhoneNumber(String phone) {
         this.phone = phone;
     }
 
@@ -69,12 +62,12 @@ public class PhoneNumber {
         this.audience = audience;
     }
 
-    public ForeignCollection<CallInfo> getCallInfos() {
-        return callInfos;
+    public ForeignCollection<CallLog> getCallLogs() {
+        return callLogs;
     }
 
-    public void setCallInfos(ForeignCollection<CallInfo> callInfos) {
-        this.callInfos = callInfos;
+    public void setCallLogs(ForeignCollection<CallLog> callLogs) {
+        this.callLogs = callLogs;
     }
 
 
@@ -85,7 +78,11 @@ public class PhoneNumber {
                 "idPhoneNumber=" + idPhoneNumber +
                 ", phone='" + phone + '\'' +
                 ", audience=" + audience +
-                ", callInfos=" + callInfos +
+                ", callInfos=" + callLogs +
                 '}';
+    }
+
+    public PhoneNumber clone() throws CloneNotSupportedException {
+        return (PhoneNumber) super.clone();
     }
 }

@@ -1,19 +1,21 @@
 package ir.dev_roid.testusb.bluetoothFragments.contacts.Pojo;
 
-import com.j256.ormlite.dao.ForeignCollection;
 import com.j256.ormlite.field.DatabaseField;
 import com.j256.ormlite.field.ForeignCollectionField;
 import com.j256.ormlite.table.DatabaseTable;
 
+import java.io.Serializable;
 import java.util.Collection;
 
 @DatabaseTable
-public class Audience {
-
+public class Audience implements Serializable {
     public static final String ID_FEILD_NAME = "idAudience";
     public static final String FIRSTNAME_FEILD_NAME = "firstname";
     public static final String LASTNAME_FEILD_NAME = "lastname";
     public static final String EMAIL_FEILD_NAME = "email";
+
+
+    public static final String UNKNOWN_AUDIENCE_NAME = "(UNKNOWN)";
 
     @DatabaseField(generatedId = true)
     private Integer idAudience;
@@ -92,4 +94,5 @@ public class Audience {
                 ", phoneNumbers=" + phoneNumbers +
                 '}';
     }
+
 }

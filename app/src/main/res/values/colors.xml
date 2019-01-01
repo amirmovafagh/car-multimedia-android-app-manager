@@ -5,13 +5,21 @@
     <color name="activityBackground">#393939</color>
     <color name="cards_dialogs">#424242</color>
     <color name="colorAccent">#F44336</color>
+    <color name="color_text">#FFFFFF</color>
     <color name="bgBottomNavigation">#F44336</color>
     <color name="bgMedia">#1C0C2E</color>
+
     <color name="dark_green">#2e3837</color>
     <color name="transparent">#00ff0000</color>
     <color name="color_activity_steering_wheel_control_item_text">#DCDCDC</color>
-
+    <color name="fab_btn_bluetooth">#3370cc</color>
     <color name="seek_bar_background">#ababab</color>
     <color name="seek_bar_progress">#ff0000</color>
     <color name="seek_bar_secondary_progress">#3399CC</color>
+
+
+    <color name="default_screen_bg">#f9f9f9</color>
+    <color name="rounded_container_bg">#222222</color>
+    <color name="rounded_container_border">#3b3f44</color>
+    <color name="light_gray_header_color">#646663</color>
 </resources>

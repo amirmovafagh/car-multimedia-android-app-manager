@@ -1,15 +1,21 @@
-package ir.dev_roid.testusb.bluetoothFragments;
+package ir.dev_roid.testusb.bluetoothFragments.contacts.PkgTelephoneActivity.PkgPhoneDialerFragment;
 
 import android.content.Context;
+import android.content.Intent;
 import android.os.Bundle;
 import android.os.Handler;
+import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
+import android.support.design.card.MaterialCardView;
 import android.support.v4.app.Fragment;
+import android.text.Editable;
+import android.text.TextWatcher;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
+import android.widget.EditText;
 import android.widget.ImageButton;
 import android.widget.ImageView;
 import android.widget.TextView;
@@ -17,27 +23,23 @@ import android.widget.Toast;
 
 import com.skyfishjy.library.RippleBackground;
 
-import java.sql.SQLException;
-import java.util.Date;
-import java.util.List;
 import java.util.Timer;
 import java.util.TimerTask;
 
-import ir.dev_roid.testusb.BluetoothActivity;
 import ir.dev_roid.testusb.R;
+
 import ir.dev_roid.testusb.app.ConnectUsbService;
 import ir.dev_roid.testusb.app.MyAudioManager;
-import ir.dev_roid.testusb.bluetoothFragments.contacts.Database;
-import ir.dev_roid.testusb.bluetoothFragments.contacts.Pojo.CallInfo;
-import ir.dev_roid.testusb.bluetoothFragments.contacts.Pojo.CallType;
-import ir.dev_roid.testusb.bluetoothFragments.contacts.Pojo.PhoneNumber;
 
-import static ir.dev_roid.testusb.BluetoothActivity.connectUsbServiceStatic;
 import static ir.dev_roid.testusb.MyHandler.buffer;
+import static ir.dev_roid.testusb.bluetoothFragments.contacts.PkgTelephoneActivity.TelephoneActivity.connectUsbServiceStaticTelephone;
 
+public class PhoneDialerFragment extends Fragment implements RequiredViewOps, View.OnClickListener {
+    private static final String tag = PhoneDialerFragment.class.getSimpleName();
+    public static boolean dialFragmentIsRun = false;
+    private Context ctx;
+    private ProvidedPresenterOps presenterOps;
 
-public class DialFragment extends Fragment implements View.OnClickListener {
-    private static String tag = DialFragment.class.getSimpleName();
     private View view, dialpadView;
     private RippleBackground rippleBackground;
     private ImageView imageView;
@@ -47,16 +49,32 @@ public class DialFragment extends Fragment implements View.OnClickListener {
     private boolean checkCall, isVisible = false;
     private long startTime = 0;
     private ConnectUsbService connectUsbService;
-    private Handler callStatusHandler, handlerData;
+    private Handler callStatusHandler, handlerData, handlerMakeCall;
     private Runnable runnableCallStatus;
-    public static boolean dialFragmentIsRun = false;
     boolean checkCallGetNumber = false;
     boolean checkTimer = false;
     private boolean incomingCallStatus = false;
+    private MaterialCardView cardViewControllers;
     private boolean outCallStatus = false;
     private boolean onCallStatus = false;
     private MyAudioManager audioManager;
 
+    public PhoneDialerFragment() {
+        dialFragmentIsRun = true;
+    }
+
+    @Override
+    public void onAttach(Context context) {
+        super.onAttach(context);
+        connectUsbService = connectUsbServiceStaticTelephone;
+        dialFragmentIsRun = true;
+        ctx = getContext();
+        presenterOps = new PhoneDialerPresenter(ctx, this);
+        audioManager = new MyAudioManager(context);
+        if (audioManager.isMusicPlay()) {
+            audioManager.pauseHeadUnitMusicPlayer();
+        }
+    }
 
     //runs without a timer by reposting this handler at the end of the runnable
     private Handler timerHandler = new Handler();
@@ -75,33 +93,6 @@ public class DialFragment extends Fragment implements View.OnClickListener {
         }
     };
 
-
-    public DialFragment() {
-        // Required empty public constructor
-        dialFragmentIsRun = true;
-
-    }
-
-    @Override
-    public void onCreate(Bundle savedInstanceState) {
-        super.onCreate(savedInstanceState);
-        dialFragmentIsRun = true;
-        isVisible = false;
-    }
-
-    @Override
-    public void onActivityCreated(@Nullable Bundle savedInstanceState) {
-        super.onActivityCreated(savedInstanceState);
-
-        connectUsbService = connectUsbServiceStatic;
-        timerHandler = new Handler();
-        audioManager = new MyAudioManager(getContext());
-
-        audioManager.pauseHeadUnitMusicPlayer();
-
-
-    }
-
     private void startTimer() {
         if (!checkTimer) {
             startTime = System.currentTimeMillis();
@@ -115,6 +106,87 @@ public class DialFragment extends Fragment implements View.OnClickListener {
         timerHandler.removeCallbacks(timerRunnable);
         txtCallTimer.setText("0:00");
         checkTimer = false;
+    }
+
+    @Override
+    public void onCreate(@Nullable Bundle savedInstanceState) {
+        super.onCreate(savedInstanceState);
+        dialFragmentIsRun = true;
+        isVisible = false;
+    }
+
+    @Override
+    public void onActivityCreated(@Nullable Bundle savedInstanceState) {
+        super.onActivityCreated(savedInstanceState);
+
+        timerHandler = new Handler();
+        handlerMakeCall = new Handler();
+        audioManager = new MyAudioManager(getContext());
+
+        audioManager.pauseHeadUnitMusicPlayer();
+        Bundle bundle = this.getArguments();
+
+        if (bundle != null) {
+            String receivedNumber = bundle.getString("num", ""); // Key, default value
+            txtNumber.setText(receivedNumber);
+            makeCall();
+        }
+
+    }
+
+    @Nullable
+    @Override
+    public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
+        view = inflater.inflate(R.layout.fragment_dial, container, false);
+        dialpadView = view.findViewById(R.id.dialpad_view);
+        rippleBackground = view.findViewById(R.id.content);
+        imageView = view.findViewById(R.id.centerImage);
+        txtNumber = view.findViewById(R.id.txt_number);
+        txtCallSituation = (TextView) view.findViewById(R.id.txt_call_situation);
+        txtCallTimer = (TextView) view.findViewById(R.id.txt_call_timer);
+        upVolume = (ImageButton) view.findViewById(R.id.ib_up_volume);
+        upVolume.setOnClickListener(this);
+        downVolume = (ImageButton) view.findViewById(R.id.ib_down_volume);
+        downVolume.setOnClickListener(this);
+        mute = (ImageButton) view.findViewById(R.id.ib_mute);
+        mute.setOnClickListener(this);
+        btConnection = (ImageButton) view.findViewById(R.id.ib_bluetooth_connection_call);
+        btConnection.setOnClickListener(this);
+        cardViewControllers = view.findViewById(R.id.card_view_controllers);
+        invisibleObj();
+
+        final int[] dialpadBtnsID = {R.id.btn_star, R.id.btn_sharp, R.id.zero, R.id.one, R.id.two,
+                R.id.three, R.id.four, R.id.five, R.id.six, R.id.seven, R.id.eight, R.id.nine};
+
+        for (int i = 0; i < dialpadBtnsID.length; i++) {
+            numPadBtn = view.findViewById(dialpadBtnsID[i]);
+            numPadBtn.setOnClickListener(this);
+        }
+
+        final int[] imgBtnID = {R.id.btn_end_call, R.id.btn_call, R.id.backspace};
+        for (int i = 0; i < imgBtnID.length; i++) {
+            imgBtnDialPad = view.findViewById(imgBtnID[i]);
+            imgBtnDialPad.setOnClickListener(this);
+        }
+
+        backSpaceBtn = (ImageButton) view.findViewById(R.id.backspace);
+        checkCallStatus();
+        return view;
+
+    }
+
+    private void saveInComingCall(String number) {
+
+        presenterOps.clickedOnCallRecivedButton(number);
+    }
+
+    private void saveOutGoingCall(String number) {
+
+        presenterOps.clickedOnCallMadeButton(number);
+    }
+
+    private void saveMissCall(String number) {
+        presenterOps.clickedOnCallMissedButton(number);
     }
 
     @Override
@@ -186,6 +258,7 @@ public class DialFragment extends Fragment implements View.OnClickListener {
                     connectUsbService.write("blt-cll-ans");
                     incomingCallStatus = false;
                 } else
+
                     makeCall();
 
                 break;
@@ -235,47 +308,6 @@ public class DialFragment extends Fragment implements View.OnClickListener {
         });
     }
 
-    @Override
-    public View onCreateView(LayoutInflater inflater, ViewGroup container,
-                             Bundle savedInstanceState) {
-        // Inflate the layout for this fragment
-        view = inflater.inflate(R.layout.fragment_dial, container, false);
-        dialpadView = view.findViewById(R.id.dialpad_view);
-        rippleBackground = view.findViewById(R.id.content);
-        imageView = view.findViewById(R.id.centerImage);
-        txtNumber = view.findViewById(R.id.txt_number);
-        txtCallSituation = (TextView) view.findViewById(R.id.txt_call_situation);
-        txtCallTimer = (TextView) view.findViewById(R.id.txt_call_timer);
-        upVolume = (ImageButton) view.findViewById(R.id.ib_up_volume);
-        upVolume.setOnClickListener(this);
-        downVolume = (ImageButton) view.findViewById(R.id.ib_down_volume);
-        downVolume.setOnClickListener(this);
-        mute = (ImageButton) view.findViewById(R.id.ib_mute);
-        mute.setOnClickListener(this);
-        btConnection = (ImageButton) view.findViewById(R.id.ib_bluetooth_connection_call);
-        btConnection.setOnClickListener(this);
-        invisibleObj();
-
-        final int[] dialpadBtnsID = {R.id.btn_star, R.id.btn_sharp, R.id.zero, R.id.one, R.id.two,
-                R.id.three, R.id.four, R.id.five, R.id.six, R.id.seven, R.id.eight, R.id.nine};
-
-        for (int i = 0; i < dialpadBtnsID.length; i++) {
-            numPadBtn = view.findViewById(dialpadBtnsID[i]);
-            numPadBtn.setOnClickListener(this);
-        }
-
-        final int[] imgBtnID = {R.id.btn_end_call, R.id.btn_call, R.id.backspace};
-        for (int i = 0; i < imgBtnID.length; i++) {
-            imgBtnDialPad = view.findViewById(imgBtnID[i]);
-            imgBtnDialPad.setOnClickListener(this);
-        }
-
-        backSpaceBtn = (ImageButton) view.findViewById(R.id.backspace);
-        checkCallStatus();
-        return view;
-
-    }
-
     //enable ripple circle
     public void startRipple() {
         if (!rippleBackground.isRippleAnimationRunning()) {
@@ -299,6 +331,12 @@ public class DialFragment extends Fragment implements View.OnClickListener {
         }, 100);
     }
 
+    private void setNameContactNumberCalling(){
+        String contactName = presenterOps.ifThereInContacts(txtNumber.getText().toString());
+        if(contactName != "non"){
+            txtNumber.setText(contactName);
+        }
+    }
     public Boolean makeCall() {
 
         /**
@@ -308,13 +346,18 @@ public class DialFragment extends Fragment implements View.OnClickListener {
         if (!txtNumber.getText().toString().isEmpty() && !checkCall) {
             connectUsbService.disableCheckCallStatus(); //turn off usb service checker bluetooth
             stopTimer();
-            delayTimer("blt-cll-" + txtNumber.getText().toString() + "?");
+            handlerMakeCall.postDelayed(new Runnable() {
+                @Override
+                public void run() {
+                    delayTimer("blt-cll-" + txtNumber.getText().toString() + "?");
+                }
+            },100);
 
 
-            visibleObj("Calling out...");
 
 
-            new Handler().postDelayed(new Runnable() {
+
+            handlerMakeCall.postDelayed(new Runnable() {
                 @Override
                 public void run() {
                     if (buffer.equalsIgnoreCase("IR")) {
@@ -322,7 +365,13 @@ public class DialFragment extends Fragment implements View.OnClickListener {
                         //Toast.makeText(getActivity(), "output call", Toast.LENGTH_SHORT).show();
                         //startTimer();
                         //BtnCallOutputOnClick();
+                        //saveOutGoingCall(txtNumber.getText().toString());
+                        visibleObj("Calling out...");
+                        saveOutGoingCall(txtNumber.getText().toString());
+
+                        setNameContactNumberCalling();
                         startRipple();
+                        startTimer();
                         outCallStatus = true;
                         connectUsbService.enableCheckCallStatus(); //turn on usb service checker bluetooth
                     } else {
@@ -333,7 +382,7 @@ public class DialFragment extends Fragment implements View.OnClickListener {
                         endCall();
                     }
                 }
-            }, 100);
+            },400);
             //checkEndCallStatus();
             checkCall = true;
         } else {
@@ -346,6 +395,7 @@ public class DialFragment extends Fragment implements View.OnClickListener {
     public void endCall() {
 
         connectUsbService.write("blt-cll-end?");
+        connectUsbService.enableCheckCallStatus();
         checkCall = false;
         stopRipple();
         txtCallSituation.setText("");
@@ -357,6 +407,7 @@ public class DialFragment extends Fragment implements View.OnClickListener {
 
     public void endCall2() {
         //connectUsbService.write("blt-cll-end?");
+        connectUsbService.enableCheckCallStatus();
         checkCall = false;
         rippleBackground.stopRippleAnimation();
         txtCallSituation.setText("");
@@ -393,7 +444,9 @@ public class DialFragment extends Fragment implements View.OnClickListener {
 
                             }*/
                         pnumber = pnumber.trim();
+                        setNameContactNumberCalling();
                         txtNumber.setText(pnumber);
+                        saveInComingCall(pnumber);
                     }
 
                     visibleObj("Incoming Call...");
@@ -440,7 +493,7 @@ public class DialFragment extends Fragment implements View.OnClickListener {
                     }
 
                 }
-                callStatusHandler.postDelayed(runnableCallStatus, 10);
+                callStatusHandler.postDelayed(runnableCallStatus, 1000);
             }
         };
         //incomingCallHandler.postDelayed(runnableIncomingCall, 0);
@@ -455,13 +508,14 @@ public class DialFragment extends Fragment implements View.OnClickListener {
                 connectUsbService.write(data + "?");
                 connectUsbService.enableCheckCallStatus();
             }
-        }, 10);
+        }, 100);
     }
 
     private void invisibleObj() {
         txtCallSituation.setVisibility(View.INVISIBLE);
         txtCallTimer.setVisibility(View.INVISIBLE);
         rippleBackground.setVisibility(View.INVISIBLE);
+        cardViewControllers.setVisibility(View.INVISIBLE);
         mute.setVisibility(View.INVISIBLE);
         upVolume.setVisibility(View.INVISIBLE);
         downVolume.setVisibility(View.INVISIBLE);
@@ -473,6 +527,7 @@ public class DialFragment extends Fragment implements View.OnClickListener {
         txtCallSituation.setText(CallSituation);
         txtCallTimer.setVisibility(View.VISIBLE);
         rippleBackground.setVisibility(View.VISIBLE);
+        cardViewControllers.setVisibility(View.VISIBLE);
         mute.setVisibility(View.VISIBLE);
         upVolume.setVisibility(View.VISIBLE);
         downVolume.setVisibility(View.VISIBLE);
@@ -480,106 +535,33 @@ public class DialFragment extends Fragment implements View.OnClickListener {
     }
 
 
-    private void BtnMissCallOnClick() {
-        this.SaveCallInfoLog(txtNumber.getText().toString(), new CallType(3, CallType.Type.MISSING));
-        Toast.makeText(getActivity(), "misscall", Toast.LENGTH_SHORT).show();
+    public static PhoneDialerFragment newInstance() {
+
+        Bundle args = new Bundle();
+
+        PhoneDialerFragment fragment = new PhoneDialerFragment();
+        fragment.setArguments(args);
+        return fragment;
     }
-
-    private void BtnCallOutputOnClick() {
-        this.SaveCallInfoLog(txtNumber.getText().toString(), new CallType(2, CallType.Type.OUTPUT));
-        Toast.makeText(getActivity(), "output call", Toast.LENGTH_SHORT).show();
-    }
-
-    private void BtnCallInputOnClick() {
-        this.SaveCallInfoLog(txtNumber.getText().toString(), new CallType(1, CallType.Type.INPUT));
-        Toast.makeText(getActivity(), "input call", Toast.LENGTH_SHORT).show();
-    }
-
-
-    private void SaveCallInfoLog(String phon, CallType type) {
-
-        CallInfo callInfo = new CallInfo();
-
-        callInfo.setDate(new Date());
-
-        callInfo.setPhoneNumber(getPhoneNumber(phon));
-
-        callInfo.setCallType(type);
-
-        Database db = new Database(getActivity());
-        db.getCallInfoRuntimeExceptionDao().create(callInfo);
-        db.close();
-
-
-    }
-
-
-    private PhoneNumber getExistedPhoneNumber(String s) {
-
-        Database db = new Database(getActivity());
-        PhoneNumber phoneNumber = null;
-        try {
-            List<PhoneNumber> phoneNumbers = db.getPhoneNumberRuntimeExceptionDao().query(
-                    db.getPhoneNumberRuntimeExceptionDao().queryBuilder().where()
-                            .eq(PhoneNumber.PHONE_FEILD_NAME, s)
-                            .prepare()
-            );
-            phoneNumber = phoneNumbers.size() > 0 ? phoneNumbers.get(0) : null;
-        } catch (SQLException e) {
-            e.printStackTrace();
-        }
-        db.close();
-        return phoneNumber;
-    }
-
-
-    private PhoneNumber getPhoneNumber(String phon) {
-
-        PhoneNumber result = null;
-
-        if ((result = getExistedPhoneNumber(phon)) != null) {
-            return result;
-        } else {
-            PhoneNumber phoneNumber = new PhoneNumber();
-            phoneNumber.setPhone(phon);
-
-            Database db = new Database(getActivity());
-            db.getPhoneNumberRuntimeExceptionDao().create(phoneNumber);
-
-            return phoneNumber;
-        }
-
-    }
-
 
     @Override
-    public void onAttach(Context context) {
-        super.onAttach(context);
+    public void showCallLogInsertSuccessfullyMessage() {
+        Toast.makeText(ctx, "callLog insert with successfully", Toast.LENGTH_SHORT).show();
+    }
+
+    @Override
+    public void showCallLogNotInsertMessage() {
+        Toast.makeText(ctx, "callLog not insert", Toast.LENGTH_SHORT).show();
+    }
+
+    @Override
+    public void onResume() {
+        super.onResume();
         dialFragmentIsRun = true;
-        audioManager = new MyAudioManager(context);
-        if(audioManager.isMusicPlay()){
+        callStatusHandler.postDelayed(runnableCallStatus, 0);
+        if (audioManager.isMusicPlay()) {
             audioManager.pauseHeadUnitMusicPlayer();
         }
-    }
-
-    @Override
-    public void onDetach() {
-        super.onDetach();
-        dialFragmentIsRun = false;
-
-    }
-
-    @Override
-    public void onStop() {
-        super.onStop();
-        dialFragmentIsRun = false;
-        callStatusHandler.removeCallbacksAndMessages(null);
-    }
-
-    @Override
-    public void onDestroyView() {
-        super.onDestroyView();
-        dialFragmentIsRun = false;
     }
 
     @Override
@@ -590,15 +572,21 @@ public class DialFragment extends Fragment implements View.OnClickListener {
     }
 
     @Override
-    public void onResume() {
-        super.onResume();
-        dialFragmentIsRun = true;
-        callStatusHandler.postDelayed(runnableCallStatus, 0);
-        if(audioManager.isMusicPlay()){
-            audioManager.pauseHeadUnitMusicPlayer();
-        }
+    public void onStart() {
+        super.onStart();
+        Bundle bundle = this.getArguments();
 
+        if (bundle != null) {
+            String receivedNumber = bundle.getString("num", ""); // Key, default value
+            txtNumber.setText(receivedNumber);
+            makeCall();
+        }
     }
 
+    @Override
+    public void onStop() {
+        super.onStop();
+        dialFragmentIsRun = false;
+        callStatusHandler.removeCallbacksAndMessages(null);
+    }
 }
-

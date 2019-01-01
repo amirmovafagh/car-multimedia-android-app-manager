@@ -1,24 +1,10 @@
 <?xml version="1.0" encoding="utf-8"?>
 <menu xmlns:android="http://schemas.android.com/apk/res/android">
 
-    <item android:id="@+id/action_settings"
+    <item android:id="@+id/action_settings" android:icon="@drawable/settings" />
 
-        android:icon="@drawable/settings" />
-
-    <item android:id="@+id/action_dialler"
-
-        android:icon="@drawable/dialpad" />
-
-    <item android:id="@+id/action_contacts"
-
-        android:icon="@drawable/contacts" />
-
-    <item android:id="@+id/action_log"
-
-        android:icon="@drawable/log" />
+    <item android:id="@+id/action_phone" android:icon="@drawable/log" />
     
-    <item android:id="@+id/action_media"
-
-        android:icon="@drawable/music" />
+    <item android:id="@+id/action_media" android:icon="@drawable/music" />
 
 </menu>
