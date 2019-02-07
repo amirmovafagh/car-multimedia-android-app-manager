@@ -1,21 +1,17 @@
 package ir.dev_roid.testusb.bluetoothFragments.contacts.PkgTelephoneActivity.PkgPhoneDialerFragment;
 
 import android.content.Context;
-import android.content.Intent;
 import android.os.Bundle;
 import android.os.Handler;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.design.card.MaterialCardView;
 import android.support.v4.app.Fragment;
-import android.text.Editable;
-import android.text.TextWatcher;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
-import android.widget.EditText;
 import android.widget.ImageButton;
 import android.widget.ImageView;
 import android.widget.TextView;
@@ -32,7 +28,7 @@ import ir.dev_roid.testusb.app.ConnectUsbService;
 import ir.dev_roid.testusb.app.MyAudioManager;
 
 import static ir.dev_roid.testusb.MyHandler.buffer;
-import static ir.dev_roid.testusb.bluetoothFragments.contacts.PkgTelephoneActivity.TelephoneActivity.connectUsbServiceStaticTelephone;
+import static ir.dev_roid.testusb.TelephoneActivity.connectUsbServiceStaticTelephone;
 
 public class PhoneDialerFragment extends Fragment implements RequiredViewOps, View.OnClickListener {
     private static final String tag = PhoneDialerFragment.class.getSimpleName();

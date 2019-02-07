@@ -23,4 +23,6 @@
 
     <string name="title_custom_dialog">Volume And Brightness</string>
 
+    <string name="onClick_fav_radio_btn_channel_per">با لمس طولانی این گزینه فرکانس مورد علاقه خود را ذخیره نمایید.</string>
+    <string name="onLongClick_fav_radio_btn_channel_per">فرکانس ذخیره شد.</string>
 </resources>

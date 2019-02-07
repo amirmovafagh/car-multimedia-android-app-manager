@@ -26,12 +26,14 @@ public class PrefManager {
 
     private static final String IS_FIRST_TIME_LAUNCH = "IsFirstTimeLaunch";
 
-    private static final String[] KEY_FAV_RADIO_BTNs = {"btn1", "btn2", "btn3", "btn4", "btn5",
-            "btn6"};
+    private static final String[] KEY_FAV_RADIO_BTNs = {"btn1fm", "btn2fm", "btn3fm", "btn4fm", "btn5fm", "btn6fm",
+            "btn1am", "btn2am", "btn3am", "btn4am", "btn5am", "btn6am"};
     private static final String IS_RUN_RADIO = "runRadio";
 
-    private static final String KEY_RADIO_FRQ = "radioFrequency";
-    private static final Float frq = (float) 98.0;
+    private static final String KEY_RADIO_FRQ_FM = "radioFrequencyFM";
+    private static final String KEY_RADIO_FRQ_AM = "radioFrequencyAM";
+    private static final Float frqFM = (float) 98.0;
+    private static final int frqAM = 1000;
 
     private static final String[] KEY_VOLUME_VALUES = {"mainVal", "lfVal", "rfVal", "lrVal", "rrVal",
             "bassVal", "trebleVal", "loudVal","gainVal", "auxMode", "androidMode", "radioMode"};
@@ -45,6 +47,8 @@ public class PrefManager {
     private static final String IS_PLAY_BLUETOOTH = "isPlayBluetoothPlayer";
     private static final String HEAD_UNIT_AUDIO_IS_ACTIVE = "huAudioIsActive";
 
+    private static final String RADIO_MODE = "radioMode";
+    private static final String RADIO_SOUND_GAIN = "radioSoundGain";
 
     public PrefManager(Context context) {
 
@@ -53,18 +57,32 @@ public class PrefManager {
         editor = pref.edit();
     }
 
-    public void setRadioFrequency(float frequenceNumber) {
+    public void setRadioFrequencyFM(float frequenceNumber) {
 
-        editor.putFloat(KEY_RADIO_FRQ, frequenceNumber);
+        editor.putFloat(KEY_RADIO_FRQ_FM, frequenceNumber);
         // commit changes
         editor.commit();
-        Log.d(TAG, "set  Radio Frequency " + frequenceNumber + " Hz ");
+        Log.d(TAG, "set  Radio Frequency FM" + frequenceNumber + " MHz ");
     }
 
 
-    public float getRadioFrequency() {
+    public float getRadioFrequencyFM() {
 
-        return pref.getFloat(KEY_RADIO_FRQ, frq);
+        return pref.getFloat(KEY_RADIO_FRQ_FM, frqFM);
+    }
+
+    public void setRadioFrequencyAM (int frequenceNumber) {
+
+        editor.putInt(KEY_RADIO_FRQ_AM, frequenceNumber);
+        // commit changes
+        editor.commit();
+        Log.d(TAG, "set  Radio Frequency AM" + frequenceNumber + " MHz ");
+    }
+
+
+    public int getRadioFrequencyAM() {
+
+        return pref.getInt(KEY_RADIO_FRQ_AM, frqAM);
     }
 
     public void setFavoriteRadioFrequency(int i, String frequenceNumber) {
@@ -86,6 +104,28 @@ public class PrefManager {
         editor.commit();
         //Log.d(TAG, "set Value " + value + " to : " + IS_RUN_RADIO);
     }
+
+    public void setRadioSoundGain(int value) {
+        editor.putInt(RADIO_SOUND_GAIN, value);
+        editor.commit();
+
+        Log.d(TAG, "RADIO_SOUND_GAIN : " + value);
+    }
+
+    public int getRadioSoundGain() {
+        return pref.getInt(RADIO_SOUND_GAIN, 0);
+    }
+
+    public void setRadioMode(int value) {
+        editor.putInt(RADIO_MODE, value);
+        editor.commit();
+
+        Log.d(TAG, "RADIO_MODE : " + value);
+    }
+
+    public int getRadioMode() {
+        return pref.getInt(RADIO_MODE, 1);
+    } //1 FM ,0 AM
 
     public boolean getRadioIsRun(){
         return pref.getBoolean(IS_RUN_RADIO, false);

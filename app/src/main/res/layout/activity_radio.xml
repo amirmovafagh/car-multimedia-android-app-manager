@@ -1,35 +1,35 @@
 <?xml version="1.0" encoding="utf-8"?>
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    xmlns:app="http://schemas.android.com/apk/res-auto"
     android:background="@color/activityBackground"
     android:orientation="vertical"
     tools:context="ir.dev_roid.testusb.RadioActivity">
 
-    <include layout="@layout/toolbar"/>
+    <include layout="@layout/toolbar" />
 
     <com.warkiz.widget.IndicatorSeekBar
         android:id="@+id/seekbar_frequency"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_marginTop="18dp"
-        app:isb_progress="98"
+        android:background="@drawable/radio_bar"
         android:padding="12dp"
         android:scaleY="2"
-        android:background="@drawable/radio_bar"
-        app:isb_thumb_drawable="@drawable/thumb_seekbar_radio"
+        app:isb_clear_default_padding="false"
+        app:isb_max="108"
+        app:isb_min="88"
+        app:isb_progress="98"
+        app:isb_progress_value_float="true"
+        app:isb_seek_bar_type="continuous"
         app:isb_show_indicator="false"
         app:isb_text_color="@color/transparent"
+        app:isb_thumb_drawable="@drawable/thumb_seekbar_radio"
         app:isb_track_background_bar_color="@color/transparent"
-        app:isb_track_progress_bar_color="@color/transparent"
-        app:isb_clear_default_padding="false"
-        app:isb_seek_bar_type="continuous"
-        app:isb_min="88"
-        app:isb_max="108"
 
-        app:isb_progress_value_float="true" />
+        app:isb_track_progress_bar_color="@color/transparent" />
 
     <LinearLayout
         android:layout_width="match_parent"
@@ -37,87 +37,204 @@
         android:layout_weight="0.7"
         android:orientation="horizontal">
 
-        <ImageButton
-            android:id="@+id/previous_img_btn"
+        <FrameLayout
+            android:id="@+id/ripple"
             android:layout_width="0dp"
             android:layout_height="wrap_content"
-            android:layout_weight="0.33"
-            android:src="@drawable/previous_track_button"
             android:layout_gravity="center"
-            style="?android:attr/borderlessButtonStyle"/>
+            android:layout_weight="0.15"
 
-        <TextView
-            android:id="@+id/txt_frequency"
+            >
+
+            <ImageButton
+                android:id="@+id/previous_img_btn"
+                style="?android:attr/borderlessButtonStyle"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_gravity="center"
+                android:src="@drawable/previous_track_button" />
+        </FrameLayout>
+
+        <android.support.v7.widget.CardView
             android:layout_width="0dp"
             android:layout_height="match_parent"
-            android:layout_weight="0.33"
-            android:gravity="center"
-            android:textAlignment="center"
-            android:text="98.0"
-            android:maxLines="1"
-            android:maxLength="5"
-            android:textSize="50sp"/>
+            android:layout_marginTop="25dp"
+            android:layout_weight="0.70"
+            app:cardBackgroundColor="#e028545b"
+            app:cardCornerRadius="5dp"
+            app:cardElevation="2dp">
 
-        <ImageButton
-            android:id="@+id/next_img_btn"
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:background="@drawable/radio_on_air"
+                android:orientation="horizontal">
+
+                <LinearLayout
+
+                    android:layout_width="0dp"
+                    android:layout_height="match_parent"
+                    android:layout_weight="0.13"
+                    android:orientation="vertical">
+                    <com.balysv.materialripple.MaterialRippleLayout
+                        android:layout_width="match_parent"
+                        android:layout_height="0dp"
+                        android:layout_weight="0.32">
+                        <ImageView
+                            android:id="@+id/am_fm_mode_image_view"
+                            android:layout_width="match_parent"
+                            android:layout_height="match_parent"
+                            android:src="@drawable/fm_mode_96" />
+                    </com.balysv.materialripple.MaterialRippleLayout>
+
+
+                    <com.balysv.materialripple.MaterialRippleLayout
+                        android:layout_width="match_parent"
+                        android:layout_height="0dp"
+                        android:layout_weight="0.35">
+                        <ImageView
+                            android:id="@+id/auto_search_image_view"
+                            android:layout_width="match_parent"
+                            android:layout_height="match_parent"
+                            android:src="@drawable/auto_search_96" />
+                    </com.balysv.materialripple.MaterialRippleLayout>
+
+                    <com.balysv.materialripple.MaterialRippleLayout
+                        android:layout_width="match_parent"
+                        android:layout_height="0dp"
+                        android:layout_weight="0.32">
+                        <ImageView
+                            android:id="@+id/radio_sound_gain_image_view"
+                            android:layout_width="match_parent"
+                            android:layout_height="match_parent"
+                            android:src="@drawable/radio_sound_gain_on_96" />
+                    </com.balysv.materialripple.MaterialRippleLayout>
+
+
+
+                </LinearLayout>
+
+                <LinearLayout
+                    android:layout_width="0dp"
+                    android:layout_height="match_parent"
+                    android:layout_weight="0.4"
+                    android:orientation="vertical">
+
+                    <ScrollView
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content">
+
+                        <LinearLayout
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:orientation="vertical">
+                            <android.support.v7.widget.RecyclerView
+                                android:id="@+id/recycler_view"
+                                android:layout_width="match_parent"
+                                android:layout_height="wrap_content"
+                                android:scrollbars="vertical" />
+                        </LinearLayout>
+
+
+                    </ScrollView>
+                </LinearLayout>
+
+                <LinearLayout
+                    android:layout_width="0dp"
+                    android:layout_height="match_parent"
+                    android:layout_weight="0.3"
+                    android:orientation="horizontal">
+
+                    <TextView
+                        android:id="@+id/txt_frequency"
+                        android:layout_width="0dp"
+                        android:layout_height="match_parent"
+                        android:layout_weight="0.6"
+                        android:gravity="start"
+                        android:maxLength="5"
+                        android:maxLines="1"
+                        android:text="98.0"
+                        android:textAlignment="center"
+                        android:textSize="40sp" />
+
+                    <TextView
+                        android:layout_width="0dp"
+                        android:layout_height="50dp"
+                        android:layout_weight="0.4"
+                        android:gravity="start"
+
+                        android:maxLength="5"
+                        android:maxLines="1"
+                        android:text="MHZ"
+                        android:textAlignment="center"
+                        android:textSize="20sp" />
+
+                </LinearLayout>
+
+            </LinearLayout>
+
+
+        </android.support.v7.widget.CardView>
+
+        <FrameLayout
+
             android:layout_width="0dp"
             android:layout_height="wrap_content"
-            android:layout_weight="0.33"
-            android:src="@drawable/next_track_button"
             android:layout_gravity="center"
-            style="?android:attr/borderlessButtonStyle"/>
+            android:layout_weight="0.15">
+
+            <ImageButton
+                android:id="@+id/next_img_btn"
+                style="?android:attr/borderlessButtonStyle"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_gravity="center"
+                android:src="@drawable/next_track_button" />
+        </FrameLayout>
+
 
     </LinearLayout>
 
 
     <android.support.v7.widget.CardView
-        app:cardBackgroundColor="@color/cards_dialogs"
         android:layout_width="match_parent"
         android:layout_height="0dp"
-        android:layout_weight="0.5"
-        app:cardCornerRadius="5dp"
         android:layout_margin="5dp"
-        >
+        android:layout_weight="0.2"
+        app:cardBackgroundColor="@color/cards_dialogs"
+        app:cardCornerRadius="5dp"
+        app:cardElevation="2dp">
+
+
         <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="match_parent"
-            android:orientation="vertical"
-            >
+            android:background="@drawable/card_edge"
+            android:orientation="horizontal">
 
-            <LinearLayout
-                android:layout_width="match_parent"
-                android:layout_height="0dp"
-                android:layout_weight="0.5"
-                android:orientation="horizontal"
-                >
-                <Button
-                    android:id="@+id/fav_radio_btn1"
-                    style="@style/fav_buttons_radio" />
-                <Button
-                    android:id="@+id/fav_radio_btn2"
-                    style="@style/fav_buttons_radio" />
-                <Button
-                    android:id="@+id/fav_radio_btn3"
-                    style="@style/fav_buttons_radio" />
-            </LinearLayout>
+            <Button
+                android:id="@+id/fav_radio_btn1"
+                style="@style/fav_buttons_radio" />
 
-            <LinearLayout
-                android:layout_width="match_parent"
-                android:layout_height="0dp"
-                android:layout_weight="0.5"
-                android:orientation="horizontal"
-                >
-                <Button
-                    android:id="@+id/fav_radio_btn4"
-                    style="@style/fav_buttons_radio" />
-                <Button
-                    android:id="@+id/fav_radio_btn5"
-                    style="@style/fav_buttons_radio" />
-                <Button
-                    android:id="@+id/fav_radio_btn6"
-                    style="@style/fav_buttons_radio" />
-            </LinearLayout>
+            <Button
+                android:id="@+id/fav_radio_btn2"
+                style="@style/fav_buttons_radio" />
 
+            <Button
+                android:id="@+id/fav_radio_btn3"
+                style="@style/fav_buttons_radio" />
+
+            <Button
+                android:id="@+id/fav_radio_btn4"
+                style="@style/fav_buttons_radio" />
+
+            <Button
+                android:id="@+id/fav_radio_btn5"
+                style="@style/fav_buttons_radio" />
+
+            <Button
+                android:id="@+id/fav_radio_btn6"
+                style="@style/fav_buttons_radio" />
         </LinearLayout>
 
 

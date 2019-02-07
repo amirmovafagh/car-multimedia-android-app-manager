@@ -44,6 +44,19 @@
             android:name="ir.dev_roid.testusb.steeringWheelController.SteeringWheelControllerService"
             android:enabled="true" />
 
+        <activity
+            android:name=".SteeringWheelContorllerActivity"
+            android:label="SteeringWheelContorller"
+            android:screenOrientation="landscape"
+            android:taskAffinity=".steeringWheelController.SteeringWheelContorllerActivity"
+            android:theme="@style/AppTheme">
+            <intent-filter>
+                <action android:name="android.intent.action.MAIN" />
+
+                <category android:name="android.intent.category.LAUNCHER" />
+            </intent-filter>
+        </activity>
+
         <receiver android:name=".Receiver">
             <intent-filter>
                 <action android:name="android.hardware.usb.action.USB_DEVICE_ATTACHED" />
@@ -63,9 +76,7 @@
                 android:resource="@xml/device_filter" />
         </receiver>
 
-        <meta-data
-            android:name="preloaded_fonts"
-            android:resource="@array/preloaded_fonts" />
+
 
         <activity
             android:name=".BluetoothActivity"
@@ -82,16 +93,15 @@
         </activity>
 
         <activity
-            android:name=".bluetoothFragments.contacts.PkgTelephoneActivity.TelephoneActivity"
+            android:name=".TelephoneActivity"
             android:label="@string/title_activity_telephone"
             android:launchMode="singleTop"
             android:screenOrientation="landscape"
             android:taskAffinity=".bluetoothFragments.contacts.PkgTelephoneActivity.TelephoneActivity"
             android:theme="@style/AppTheme">
             <intent-filter>
-                <action android:name="android.intent.action.MAIN" />
-
-                <category android:name="android.intent.category.LAUNCHER" />
+                <action android:name="android.intent.action.MAIN"/>
+                <category android:name="android.intent.category.LAUNCHER"/>
             </intent-filter>
         </activity>
 
@@ -121,18 +131,7 @@
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
-        <activity
-            android:name=".steeringWheelController.SteeringWheelContorllerActivity"
-            android:label="SteeringWheelContorller"
-            android:screenOrientation="landscape"
-            android:taskAffinity=".steeringWheelController.SteeringWheelContorllerActivity"
-            android:theme="@style/AppTheme">
-            <intent-filter>
-                <action android:name="android.intent.action.MAIN" />
 
-                <category android:name="android.intent.category.LAUNCHER" />
-            </intent-filter>
-        </activity>
     </application>
 
 </manifest>

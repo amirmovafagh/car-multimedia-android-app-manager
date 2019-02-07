@@ -1,4 +1,4 @@
-package ir.dev_roid.testusb.bluetoothFragments.contacts.PkgTelephoneActivity;
+package ir.dev_roid.testusb;
 
 import android.os.Bundle;
 import android.support.design.widget.TabLayout;
@@ -15,6 +15,11 @@ import com.miguelcatalan.materialsearchview.MaterialSearchView;
 
 import ir.dev_roid.testusb.R;
 import ir.dev_roid.testusb.app.ConnectUsbService;
+import ir.dev_roid.testusb.bluetoothFragments.contacts.PkgTelephoneActivity.InfluenceOfAddUserToActivityOps;
+import ir.dev_roid.testusb.bluetoothFragments.contacts.PkgTelephoneActivity.InfluenceOfAudienceInfoToActivity;
+import ir.dev_roid.testusb.bluetoothFragments.contacts.PkgTelephoneActivity.InfluenceOfChangeAudienceInfoToActivity;
+import ir.dev_roid.testusb.bluetoothFragments.contacts.PkgTelephoneActivity.InfluenceOfPhoneLogToActivityOps;
+import ir.dev_roid.testusb.bluetoothFragments.contacts.PkgTelephoneActivity.InfluenceOfUserInfoToActivity;
 import ir.dev_roid.testusb.bluetoothFragments.contacts.PkgTelephoneActivity.PkgAddUserFragment.AddUserFragment;
 import ir.dev_roid.testusb.bluetoothFragments.contacts.PkgTelephoneActivity.PkgAudienceInfoFragment.AudienceInfoFragment;
 import ir.dev_roid.testusb.bluetoothFragments.contacts.PkgTelephoneActivity.PkgAudienceInfoFragment.InfluenceOfActivityToAudienceInfoOps;
@@ -22,6 +27,10 @@ import ir.dev_roid.testusb.bluetoothFragments.contacts.PkgTelephoneActivity.PkgC
 import ir.dev_roid.testusb.bluetoothFragments.contacts.PkgTelephoneActivity.PkgPhoneLogFragment.InfluenceOfActivityToPhoneLogOps;
 import ir.dev_roid.testusb.bluetoothFragments.contacts.PkgTelephoneActivity.PkgPhoneLogFragment.PhoneLogFragment;
 import ir.dev_roid.testusb.bluetoothFragments.contacts.PkgTelephoneActivity.PkgUserInfoFragment.UserInfoFragment;
+import ir.dev_roid.testusb.bluetoothFragments.contacts.PkgTelephoneActivity.ProvidedPresenterOps;
+import ir.dev_roid.testusb.bluetoothFragments.contacts.PkgTelephoneActivity.RequiredViewOps;
+import ir.dev_roid.testusb.bluetoothFragments.contacts.PkgTelephoneActivity.TelephonePresenter;
+import ir.dev_roid.testusb.bluetoothFragments.contacts.PkgTelephoneActivity.ViewPagerAdapter;
 import ir.dev_roid.testusb.bluetoothFragments.contacts.Pojo.Audience;
 import ir.dev_roid.testusb.bluetoothFragments.contacts.Pojo.PhoneNumber;
 

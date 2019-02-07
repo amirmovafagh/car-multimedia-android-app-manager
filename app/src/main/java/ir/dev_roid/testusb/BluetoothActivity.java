@@ -17,7 +17,6 @@ import ir.dev_roid.testusb.app.PrefManager;
 import ir.dev_roid.testusb.app.ToolBar_ResideMenu;
 import ir.dev_roid.testusb.bluetoothFragments.MediaFragment;
 import ir.dev_roid.testusb.bluetoothFragments.SettingsFragment;
-import ir.dev_roid.testusb.bluetoothFragments.contacts.PkgTelephoneActivity.TelephoneActivity;
 
 import static ir.dev_roid.testusb.MyHandler.buffer;
 import static ir.dev_roid.testusb.bluetoothFragments.contacts.PkgTelephoneActivity.PkgPhoneDialerFragment.PhoneDialerFragment.dialFragmentIsRun;

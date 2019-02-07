@@ -12,7 +12,6 @@ import android.support.v7.widget.DividerItemDecoration;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.PopupMenu;
 import android.support.v7.widget.RecyclerView;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.MenuItem;
 import android.view.View;
@@ -25,7 +24,7 @@ import java.util.List;
 import ir.dev_roid.testusb.R;
 import ir.dev_roid.testusb.bluetoothFragments.contacts.PkgTelephoneActivity.InfluenceOfAudienceInfoToActivity;
 import ir.dev_roid.testusb.bluetoothFragments.contacts.PkgTelephoneActivity.PkgPhoneDialerFragment.PhoneDialerFragment;
-import ir.dev_roid.testusb.bluetoothFragments.contacts.PkgTelephoneActivity.TelephoneActivity;
+import ir.dev_roid.testusb.TelephoneActivity;
 import ir.dev_roid.testusb.bluetoothFragments.contacts.Pojo.Audience;
 
 public class AudienceInfoFragment extends Fragment implements

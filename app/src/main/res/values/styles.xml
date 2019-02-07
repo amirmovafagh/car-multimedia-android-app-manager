@@ -8,11 +8,17 @@
         <item name="colorAccent">@color/colorAccent</item>
         <item name="android:windowBackground">@color/activityBackground</item>
         <item name="colorButtonNormal">@color/colorPrimary</item>
-        <item name="colorControlHighlight">@color/colorAccent</item>
+        <item name="colorControlHighlight">#95542020</item>
         <item name="android:textColor">@android:color/white</item>
         <item name="android:windowDrawsSystemBarBackgrounds">false</item>
 
 
+    </style>
+
+    <style name="AppCompatAlertDialogStyle" parent="Theme.AppCompat.Light.Dialog.Alert">
+        <item name="colorAccent">@color/colorAccent</item>
+        <item name="android:textColorPrimary">@color/colorPrimary</item>
+        <item name="android:background">@color/colorAccent</item>
     </style>
 
     <style name="dialButton" parent="Theme.AppCompat">
@@ -50,7 +56,9 @@
         <item name="android:layout_weight">0.33</item>
         <item name="android:layout_height">match_parent</item>
         <item name="android:layout_width">0dp</item>
+        <item name="android:layout_margin">5dp</item>
         <item name="android:text">Save Frequency</item>
+        <item name="android:background">@drawable/rounded_button_dialpad</item>
 
 
     </style>

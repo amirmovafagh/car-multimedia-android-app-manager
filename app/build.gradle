@@ -44,6 +44,8 @@ dependencies {
     implementation 'com.github.alpbak:BoxedVerticalSeekBar:1.1.1'
     implementation 'javax.persistence:persistence-api:1.0'
     implementation 'com.miguelcatalan:materialsearchview:1.4.0'
+    implementation 'com.balysv:material-ripple:1.0.2'
+
 
 
 }

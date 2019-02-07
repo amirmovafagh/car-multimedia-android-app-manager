@@ -1,27 +1,19 @@
 package ir.dev_roid.testusb;
 
-import android.app.Activity;
-import android.content.Context;
 import android.content.Intent;
-import android.media.AudioManager;
 import android.os.Handler;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
-import android.util.DisplayMetrics;
-import android.util.Log;
+import android.view.MotionEvent;
 import android.view.View;
 import android.widget.Button;
 import android.widget.SeekBar;
 import android.widget.Toast;
 
-import com.special.ResideMenu.ResideMenu;
-
 import ir.dev_roid.testusb.app.AudioValues;
 import ir.dev_roid.testusb.app.ConnectUsbService;
-import ir.dev_roid.testusb.app.ObservableInteger;
 import ir.dev_roid.testusb.app.PrefManager;
 import ir.dev_roid.testusb.app.ToolBar_ResideMenu;
-import ir.dev_roid.testusb.steeringWheelController.SteeringWheelContorllerActivity;
 
 
 public class MainActivity extends AppCompatActivity {
@@ -87,7 +79,7 @@ public class MainActivity extends AppCompatActivity {
         pine.setOnLongClickListener(new View.OnLongClickListener() {
             @Override
             public boolean onLongClick(View view) {
-                connectUsbService.write("dbg?");
+                connectUsbService.write("oth?");
                 return false;
             }
         });
@@ -209,7 +201,9 @@ public class MainActivity extends AppCompatActivity {
 
     private void startHardwareInitializing() {
         if (!pref.getRadioIsRun())
-            sendData(audioValues.androidBTMode(), 100);
+            sendData(audioValues.androidBTMode(), 500);
+            sendData(audioValues.getAudioValues(), 500);
+
 
         lf.setProgress(pref.getVolumeValue(1));
         rf.setProgress(pref.getVolumeValue(2));
@@ -234,5 +228,10 @@ public class MainActivity extends AppCompatActivity {
         }, delay);
     }
 
+    @Override
+    public boolean onTouchEvent(MotionEvent event) {
 
+return super.onTouchEvent(event);
+
+    }
 }

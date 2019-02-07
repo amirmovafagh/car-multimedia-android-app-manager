@@ -1,7 +1,5 @@
 package ir.dev_roid.testusb;
 
-import android.app.Activity;
-import android.app.Application;
 import android.content.Context;
 import android.content.Intent;
 import android.os.Handler;
@@ -9,9 +7,7 @@ import android.os.Message;
 import android.util.Log;
 import android.widget.Toast;
 
-import ir.dev_roid.testusb.app.ConnectUsbService;
 import ir.dev_roid.testusb.app.MyAudioManager;
-import ir.dev_roid.testusb.bluetoothFragments.contacts.PkgTelephoneActivity.TelephoneActivity;
 
 import static ir.dev_roid.testusb.bluetoothFragments.contacts.PkgTelephoneActivity.PkgPhoneDialerFragment.PhoneDialerFragment.dialFragmentIsRun;
 
@@ -46,6 +42,7 @@ public class MyHandler extends Handler {
             case UsbService.SYNC_READ:
 
                 buffer = (String) msg.obj;
+
 
                 Toast.makeText(context, "2 "+buffer, Toast.LENGTH_SHORT).show();
                 try{

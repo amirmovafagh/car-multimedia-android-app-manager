@@ -335,12 +335,16 @@ public class SettingsActivity extends AppCompatActivity implements View.OnTouchL
         initButtons();
     }
 
+
+
     private void initAudioEQsettings() {
         loudSwitch.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
             @Override
             public void onCheckedChanged(CompoundButton compoundButton, boolean b) {
                 audioValues.loudState(b);
                 sendData(audioValues.androidBTMode());
+                Toast.makeText(SettingsActivity.this, ""+prefManager.getVolumeValue(11), Toast.LENGTH_SHORT).show();
+
 
             }
         });
@@ -358,6 +362,7 @@ public class SettingsActivity extends AppCompatActivity implements View.OnTouchL
 
             @Override
             public void onStopTrackingTouch(BoxedVertical boxedVertical) {
+                Toast.makeText(SettingsActivity.this, ""+prefManager.getVolumeValue(11), Toast.LENGTH_SHORT).show();
 
             }
         });
@@ -376,6 +381,7 @@ public class SettingsActivity extends AppCompatActivity implements View.OnTouchL
 
             @Override
             public void onStopTrackingTouch(BoxedVertical boxedVertical) {
+                Toast.makeText(SettingsActivity.this, ""+prefManager.getVolumeValue(11), Toast.LENGTH_SHORT).show();
 
             }
         });
@@ -394,6 +400,7 @@ public class SettingsActivity extends AppCompatActivity implements View.OnTouchL
 
             @Override
             public void onStopTrackingTouch(BoxedVertical boxedVertical) {
+                Toast.makeText(SettingsActivity.this, ""+prefManager.getVolumeValue(11), Toast.LENGTH_SHORT).show();
 
             }
         });

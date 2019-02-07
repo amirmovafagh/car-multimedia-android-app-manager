@@ -19,7 +19,7 @@ import java.util.List;
 
 import ir.dev_roid.testusb.R;
 import ir.dev_roid.testusb.bluetoothFragments.contacts.PkgTelephoneActivity.InfluenceOfUserInfoToActivity;
-import ir.dev_roid.testusb.bluetoothFragments.contacts.PkgTelephoneActivity.TelephoneActivity;
+import ir.dev_roid.testusb.TelephoneActivity;
 import ir.dev_roid.testusb.bluetoothFragments.contacts.Pojo.Audience;
 import ir.dev_roid.testusb.bluetoothFragments.contacts.Pojo.PhoneNumber;
 

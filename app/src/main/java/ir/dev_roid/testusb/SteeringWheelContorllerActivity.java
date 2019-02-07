@@ -1,4 +1,4 @@
-package ir.dev_roid.testusb.steeringWheelController;
+package ir.dev_roid.testusb;
 
 import android.content.Intent;
 import android.support.v7.app.AppCompatActivity;
@@ -10,7 +10,10 @@ import android.widget.Toast;
 import ir.dev_roid.testusb.R;
 import ir.dev_roid.testusb.steeringWheelController.Pojo.ControllerOption;
 import ir.dev_roid.testusb.steeringWheelController.Pojo.Options;
-
+import ir.dev_roid.testusb.steeringWheelController.ProvidedPresenterOps;
+import ir.dev_roid.testusb.steeringWheelController.RecyclerViewAdapter;
+import ir.dev_roid.testusb.steeringWheelController.RequiredViewOps;
+import ir.dev_roid.testusb.steeringWheelController.SteeringWheelControllerPresenter;
 
 
 import java.util.ArrayList;
