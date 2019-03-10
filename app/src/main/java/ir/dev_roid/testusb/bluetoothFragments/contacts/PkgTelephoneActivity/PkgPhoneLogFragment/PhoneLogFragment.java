@@ -53,8 +53,10 @@ public class PhoneLogFragment extends Fragment implements RequiredViewOps
             }
         });
         LinearLayoutManager layoutManager = new LinearLayoutManager(getContext(), LinearLayoutManager.VERTICAL, true);
+        layoutManager.setStackFromEnd(true);
         rvPhoneLog.setLayoutManager(layoutManager);
         rvPhoneLog.setAdapter(recyclerViewAdapter);
+
         DividerItemDecoration dividerItemDecoration = new DividerItemDecoration(ctx,
                 layoutManager.getOrientation());
         rvPhoneLog.addItemDecoration(dividerItemDecoration);

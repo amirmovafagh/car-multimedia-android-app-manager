@@ -13,6 +13,8 @@ import java.util.Set;
 
 import ir.dev_roid.testusb.UsbService;
 
+import static ir.dev_roid.testusb.UsbService.threadStatus;
+
 public class ConnectUsbService {
     private static final String tag = ConnectUsbService.class.getSimpleName();
     private Activity activity;
@@ -35,12 +37,16 @@ public class ConnectUsbService {
 
     public void enableCheckCallStatus() {
         usbService.enableCheckCallStatus();
+        threadStatus = true;
         Log.i(tag,"enableCheckCallStatus");
+    }
+    public void changeDelay(int delay) {
+        usbService.changeHandlerDelay(delay);
     }
 
     public void disableCheckCallStatus() {
         usbService.disableCheckCallStatus();
-
+        threadStatus = false;
         Log.i(tag,"disableCheckCallStatus");
     }
 

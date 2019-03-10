@@ -8,6 +8,7 @@ import android.util.Log;
 import android.widget.Toast;
 
 import ir.dev_roid.testusb.app.MyAudioManager;
+import ir.dev_roid.testusb.app.PrefManager;
 
 import static ir.dev_roid.testusb.bluetoothFragments.contacts.PkgTelephoneActivity.PkgPhoneDialerFragment.PhoneDialerFragment.dialFragmentIsRun;
 
@@ -20,8 +21,10 @@ public class MyHandler extends Handler {
     private String data;
     public static String buffer = " ";
     public static int steeringWheelData ;
+    public static boolean telephoneActivityIsOpen = false;
     public static boolean steeringWheelDataStatus = false ;
     private MyAudioManager audioManager;
+    private PrefManager prefManager;
 
     //private final WeakReference<MainActivity> mActivity;
     private Context context;
@@ -29,12 +32,15 @@ public class MyHandler extends Handler {
 
     public MyHandler(Context context) {
         this.context= context;
+        prefManager = new PrefManager(context);
 
     }
 
     @Override
     public void handleMessage(Message msg) {
+        boolean dbug = prefManager.getDebugModeState();
         switch (msg.what) {
+
             case UsbService.MESSAGE_FROM_SERIAL_PORT:
                 data = (String) msg.obj;
                 //Toast.makeText(context, "1 "+data, Toast.LENGTH_SHORT).show();
@@ -43,8 +49,8 @@ public class MyHandler extends Handler {
 
                 buffer = (String) msg.obj;
 
+                if(dbug){Toast.makeText(context, "2 "+buffer, Toast.LENGTH_SHORT).show();}
 
-                Toast.makeText(context, "2 "+buffer, Toast.LENGTH_SHORT).show();
                 try{
                     int i = Integer.parseInt(buffer);
                     if(i<3350){
@@ -55,7 +61,7 @@ public class MyHandler extends Handler {
                     }else steeringWheelDataStatus = false;
 
                 }catch (Exception e){
-                    Log.i(TAG, " "+e);
+                    //Log.i(TAG, " "+e);
                     steeringWheelDataStatus = false;
                 }
 

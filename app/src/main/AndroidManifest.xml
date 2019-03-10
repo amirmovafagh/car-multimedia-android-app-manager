@@ -11,9 +11,9 @@
 
     <application
         android:allowBackup="true"
-        android:icon="@mipmap/ic_launcher"
+        android:icon="@mipmap/car_multimedia_icon"
         android:label="@string/app_name"
-        android:roundIcon="@mipmap/ic_launcher_round"
+        android:roundIcon="@mipmap/car_multimedia_icon"
         android:supportsRtl="false"
         android:taskAffinity=".MainActivity"
         android:theme="@style/AppTheme">
@@ -40,11 +40,9 @@
         <service
             android:name=".UsbService"
             android:enabled="true" />
-        <service
-            android:name="ir.dev_roid.testusb.steeringWheelController.SteeringWheelControllerService"
-            android:enabled="true" />
 
         <activity
+            android:icon="@mipmap/car_steering_wheel_icon"
             android:name=".SteeringWheelContorllerActivity"
             android:label="SteeringWheelContorller"
             android:screenOrientation="landscape"
@@ -57,7 +55,7 @@
             </intent-filter>
         </activity>
 
-        <receiver android:name=".Receiver">
+        <receiver android:name=".app.Receiver">
             <intent-filter>
                 <action android:name="android.hardware.usb.action.USB_DEVICE_ATTACHED" />
                 <action android:name="android.intent.action.BOOT_COMPLETED" />
@@ -79,6 +77,7 @@
 
 
         <activity
+            android:icon="@mipmap/car_bluetooth_icon"
             android:name=".BluetoothActivity"
             android:label="@string/title_activity_bluetooth"
             android:launchMode="singleTop"
@@ -93,6 +92,7 @@
         </activity>
 
         <activity
+            android:icon="@mipmap/car_phone_icon"
             android:name=".TelephoneActivity"
             android:label="@string/title_activity_telephone"
             android:launchMode="singleTop"
@@ -106,6 +106,7 @@
         </activity>
 
         <activity
+            android:icon="@mipmap/car_radio_icon"
             android:name=".RadioActivity"
             android:label="@string/title_activity_radio"
             android:launchMode="singleTop"
@@ -119,6 +120,7 @@
             </intent-filter>
         </activity>
         <activity
+            android:icon="@mipmap/car_settings_icon"
             android:name=".SettingsActivity"
             android:label="@string/title_activity_settings"
             android:launchMode="singleTop"

@@ -36,18 +36,19 @@ public class PrefManager {
     private static final int frqAM = 1000;
 
     private static final String[] KEY_VOLUME_VALUES = {"mainVal", "lfVal", "rfVal", "lrVal", "rrVal",
-            "bassVal", "trebleVal", "loudVal","gainVal", "auxMode", "androidMode", "radioMode"};
-    private static final int[] values = {31, 30, 30, 30, 30, 0, 0, 0,0,92,93, 94};
+            "bassVal", "trebleVal", "loudVal","gainVal", "auxMode", "androidMode", "radioMode","lastMainVal"};
+    private static final int[] values = {48, 30, 30, 30, 30, 0, 0, 0,0,92,93, 94,50};
 
     private static final String KEY_X_CORDINATE = "xCordinate";
     private static final String KEY_Y_CORDINATE = "yCordinate";
 
     private static final String BRIGHTNESS_VALUE = "brightnessValue";
-
+    private static final String DEBUG_MODE = "debugMode";
     private static final String IS_PLAY_BLUETOOTH = "isPlayBluetoothPlayer";
     private static final String HEAD_UNIT_AUDIO_IS_ACTIVE = "huAudioIsActive";
+    private static final String AUX_AUDIO_IS_ACTIVE = "auxAudioIsActive";
 
-    private static final String RADIO_MODE = "radioMode";
+    private static final String RADIO_MODE_CHANNEL = "radioModeChannel";
     private static final String RADIO_SOUND_GAIN = "radioSoundGain";
 
     public PrefManager(Context context) {
@@ -117,14 +118,14 @@ public class PrefManager {
     }
 
     public void setRadioMode(int value) {
-        editor.putInt(RADIO_MODE, value);
+        editor.putInt(RADIO_MODE_CHANNEL, value);
         editor.commit();
 
         Log.d(TAG, "RADIO_MODE : " + value);
     }
 
     public int getRadioMode() {
-        return pref.getInt(RADIO_MODE, 1);
+        return pref.getInt(RADIO_MODE_CHANNEL, 1);
     } //1 FM ,0 AM
 
     public boolean getRadioIsRun(){
@@ -135,7 +136,7 @@ public class PrefManager {
         editor.putInt(KEY_VOLUME_VALUES[i], value);
 
         editor.commit();
-        Log.d(TAG, "set Value " + value + " to :" + KEY_VOLUME_VALUES[i]);
+        Log.d(TAG, "set Value " + value + " to : " + KEY_VOLUME_VALUES[i]);
     }
 
     public int getVolumeValue(int i) {
@@ -194,5 +195,27 @@ public class PrefManager {
 
     public boolean getHeadUnitAudioIsActive() {
         return pref.getBoolean(HEAD_UNIT_AUDIO_IS_ACTIVE, false);
+    }
+
+    public void setAUXAudioIsActive(boolean b) {
+        editor.putBoolean(AUX_AUDIO_IS_ACTIVE, b);
+        editor.commit();
+
+        //Log.d(TAG, "AUXAudioIsActive : "+b);
+    }
+
+    public boolean getAUXAudioIsActive() {
+        return pref.getBoolean(AUX_AUDIO_IS_ACTIVE, false);
+    }
+
+    public void setDebugModeState(boolean value) {
+        editor.putBoolean(DEBUG_MODE, value);
+        editor.commit();
+
+        //Log.d(TAG, "DEBUG_MODE : "+b);
+    }
+
+    public boolean getDebugModeState() {
+        return pref.getBoolean(DEBUG_MODE, false);
     }
 }

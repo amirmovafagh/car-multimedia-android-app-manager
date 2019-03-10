@@ -10,8 +10,10 @@ import android.widget.Button;
 import android.widget.SeekBar;
 import android.widget.Toast;
 
+import abak.tr.com.boxedverticalseekbar.BoxedVertical;
 import ir.dev_roid.testusb.app.AudioValues;
 import ir.dev_roid.testusb.app.ConnectUsbService;
+import ir.dev_roid.testusb.app.MyAudioManager;
 import ir.dev_roid.testusb.app.PrefManager;
 import ir.dev_roid.testusb.app.ToolBar_ResideMenu;
 
@@ -20,12 +22,14 @@ public class MainActivity extends AppCompatActivity {
 
     private ToolBar_ResideMenu toolBarResideMenu;
     private PrefManager pref;
+    MyAudioManager myAudioManager;
     int p;
     int i = 0;
     private AudioValues audioValues;
+    private BoxedVertical soundModule;
 
 
-    private SeekBar lf, rf, lr, rr;
+
 
 
     private Button aux, pine, radio, bluetooth;
@@ -39,12 +43,10 @@ public class MainActivity extends AppCompatActivity {
         connectUsbService = new ConnectUsbService(MainActivity.this);
         pref = new PrefManager(MainActivity.this);
         audioValues= new AudioValues(pref) ;
-        Toast.makeText(this, ""+audioValues.getAudioValues(), Toast.LENGTH_LONG).show();
+        myAudioManager = new MyAudioManager(getApplicationContext());
 
-        lf = findViewById(R.id.left_front);
-        rf = findViewById(R.id.right_front);
-        lr = findViewById(R.id.left_rear);
-        rr = findViewById(R.id.right_rear);
+        soundModule = findViewById(R.id.sound_module_seekbar);
+        soundModule.setValue(pref.getVolumeValue(0));
 
         //toolbarInit
         toolBarResideMenu = new ToolBar_ResideMenu(this, "Multi Media", connectUsbService, pref);
@@ -57,7 +59,7 @@ public class MainActivity extends AppCompatActivity {
         radio = findViewById(R.id.radio);
         aux = findViewById(R.id.aux);
         pine = findViewById(R.id.pine);
-        bluetooth = findViewById(R.id.bluetooth);
+
 
 
 
@@ -67,6 +69,9 @@ public class MainActivity extends AppCompatActivity {
             @Override
             public void onClick(View v) {
                 connectUsbService.write(audioValues.radioMode());
+                pref.setHeadUnitAudioIsActive(false);
+                pref.setAUXAudioIsActive(false);
+                pref.setRadioIsRun(true);
             }
         });
 
@@ -74,12 +79,17 @@ public class MainActivity extends AppCompatActivity {
             @Override
             public void onClick(View v) {
                 connectUsbService.write(audioValues.androidBTMode());
+                pref.setHeadUnitAudioIsActive(true);
+                pref.setAUXAudioIsActive(false);
+                pref.setRadioIsRun(false);
+
             }
         });
         pine.setOnLongClickListener(new View.OnLongClickListener() {
             @Override
             public boolean onLongClick(View view) {
-                connectUsbService.write("oth?");
+                /*connectUsbService.write("oth?");
+                connectUsbService.write(audioValues.auxMode());*/
                 return false;
             }
         });
@@ -88,109 +98,58 @@ public class MainActivity extends AppCompatActivity {
             @Override
             public void onClick(View v) {
                 connectUsbService.write(audioValues.auxMode());
+                myAudioManager.pauseHeadUnitMusicPlayer();
+                pref.setAUXAudioIsActive(true);
+                pref.setHeadUnitAudioIsActive(false);
+                pref.setRadioIsRun(false);
             }
         });
 
-        bluetooth.setOnClickListener(new View.OnClickListener() {
+        soundModule.setOnBoxedPointsChangeListener(new BoxedVertical.OnValuesChangeListener() {
             @Override
-            public void onClick(View view) {
-                startActivity(new Intent(MainActivity.this, SteeringWheelContorllerActivity.class));
-            }
-        });
-
-        lf.setOnSeekBarChangeListener(new SeekBar.OnSeekBarChangeListener() {
-            @Override
-            public void onProgressChanged(SeekBar seekBar, int progress, boolean fromUser) {
-                audioValues.setVolumeLeftFront(progress);
-                connectUsbService.write(audioValues.getAudioValues());
-            }
-
-            @Override
-            public void onStartTrackingTouch(SeekBar seekBar) {
+            public void onPointsChanged(BoxedVertical boxedVertical, int i) {
+                audioValues.setVolume(i);
+                sendData(audioValues.getAudioValues(),10);
 
             }
 
             @Override
-            public void onStopTrackingTouch(SeekBar seekBar) {
-
-            }
-        });
-
-        rf.setOnSeekBarChangeListener(new SeekBar.OnSeekBarChangeListener() {
-            @Override
-            public void onProgressChanged(SeekBar seekBar, int progress, boolean fromUser) {
-                audioValues.setVolumeRightFront(progress);
-                connectUsbService.write(audioValues.getAudioValues());
+            public void onStartTrackingTouch(BoxedVertical boxedVertical) {
 
             }
 
             @Override
-            public void onStartTrackingTouch(SeekBar seekBar) {
-
-            }
-
-            @Override
-            public void onStopTrackingTouch(SeekBar seekBar) {
+            public void onStopTrackingTouch(BoxedVertical boxedVertical) {
 
             }
         });
 
-        lr.setOnSeekBarChangeListener(new SeekBar.OnSeekBarChangeListener() {
-            @Override
-            public void onProgressChanged(SeekBar seekBar, int progress, boolean fromUser) {
-                audioValues.setVolumeLeftRear(progress);
-                connectUsbService.write(audioValues.getAudioValues());
 
-            }
 
-            @Override
-            public void onStartTrackingTouch(SeekBar seekBar) {
-
-            }
-
-            @Override
-            public void onStopTrackingTouch(SeekBar seekBar) {
-            }
-        });
-
-        rr.setOnSeekBarChangeListener(new SeekBar.OnSeekBarChangeListener() {
-            @Override
-            public void onProgressChanged(SeekBar seekBar, int progress, boolean fromUser) {
-                audioValues.setVolumeRightRear(progress);
-                connectUsbService.write(audioValues.getAudioValues());
-
-            }
-
-            @Override
-            public void onStartTrackingTouch(SeekBar seekBar) {
-            }
-
-            @Override
-            public void onStopTrackingTouch(SeekBar seekBar) {
-            }
-        });
 
     }
 
     @Override
     protected void onStart() {
         super.onStart();
-        startHardwareInitializing();
+        //startHardwareInitializing();
     }
 
     @Override
     public void onResume() {
         super.onResume();
+        soundModule.setValue(pref.getVolumeValue(0));
         //Start listening notifications from UsbService
-        startHardwareInitializing();
+        //startHardwareInitializing();
         //startService(UsbService.class, usbConnection, null); // Start UsbService(if it was not started before) and Bind it
     }
 
     @Override
     public void onPause() {
         super.onPause();
-        if (!pref.getRadioIsRun())
-            sendData(audioValues.androidBTMode(), 100);
+        /*if (!pref.getRadioIsRun()){
+            sendData(audioValues.androidBTMode(), 4000);
+            }*/
     }
 
     @Override
@@ -200,21 +159,12 @@ public class MainActivity extends AppCompatActivity {
     }
 
     private void startHardwareInitializing() {
-        if (!pref.getRadioIsRun())
+        /*if (!pref.getRadioIsRun()){  // make problem when the acc witched becuse sound modole is off and mcu will crash
             sendData(audioValues.androidBTMode(), 500);
             sendData(audioValues.getAudioValues(), 500);
+        }
+*/
 
-
-        lf.setProgress(pref.getVolumeValue(1));
-        rf.setProgress(pref.getVolumeValue(2));
-        lr.setProgress(pref.getVolumeValue(3));
-        rr.setProgress(pref.getVolumeValue(4));
-        /*sendData("aud-vol-" + (63 - pref.getVolumeValue(0)) + "?", 200);
-        sendData("aud-vlf-" + (223 - pref.getVolumeValue(1)) + "?", 300);
-        sendData("aud-vrf-" + (255 - pref.getVolumeValue(2)) + "?", 400);
-        sendData("aud-vlr-" + (159 - pref.getVolumeValue(3)) + "?", 500);
-        sendData("aud-vrr-" + (191 - pref.getVolumeValue(4)) + "?", 600);
-        sendData("aud-bas-" + (112 - pref.getVolumeValue(5)) + "?", 700);*/
 
     }
 

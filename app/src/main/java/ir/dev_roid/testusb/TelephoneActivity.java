@@ -34,6 +34,8 @@ import ir.dev_roid.testusb.bluetoothFragments.contacts.PkgTelephoneActivity.View
 import ir.dev_roid.testusb.bluetoothFragments.contacts.Pojo.Audience;
 import ir.dev_roid.testusb.bluetoothFragments.contacts.Pojo.PhoneNumber;
 
+import static ir.dev_roid.testusb.MyHandler.telephoneActivityIsOpen;
+
 
 public class TelephoneActivity extends AppCompatActivity implements RequiredViewOps
         , InfluenceOfPhoneLogToActivityOps, InfluenceOfAddUserToActivityOps
@@ -58,6 +60,7 @@ public class TelephoneActivity extends AppCompatActivity implements RequiredView
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+        telephoneActivityIsOpen = true;
         setContentView(R.layout.activity_telephone);
         connectUsbServiceStaticTelephone  = new ConnectUsbService(this);
 
@@ -126,6 +129,7 @@ public class TelephoneActivity extends AppCompatActivity implements RequiredView
     @Override
     protected void onStart() {
         super.onStart();
+        telephoneActivityIsOpen = true;
         currentFragment = viewPagerAdapter.getItem(ViewPagerAdapter.TITLE_PHONE_LOG);
         presenterOps.activityStart();
         toPhoneLogOps = (PhoneLogFragment) viewPagerAdapter.getItem(ViewPagerAdapter.TITLE_PHONE_LOG);
@@ -253,8 +257,26 @@ public class TelephoneActivity extends AppCompatActivity implements RequiredView
     }
 
     @Override
+    protected void onPause() {
+        super.onPause();
+        telephoneActivityIsOpen = false;
+    }
+
+    @Override
+    protected void onResume() {
+        super.onResume();
+        telephoneActivityIsOpen = true;
+    }
+
+    @Override
+    protected void onPostResume() {
+        super.onPostResume();
+    }
+
+    @Override
     protected void onDestroy() {
         super.onDestroy();
+        telephoneActivityIsOpen = false;
         unbindService(connectUsbServiceStaticTelephone.onDestroyUsb());
     }
 }

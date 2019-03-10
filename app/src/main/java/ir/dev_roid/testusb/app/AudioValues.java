@@ -23,6 +23,10 @@ public class AudioValues {
         return "aud-"+getVolume()+"-"+getVolumeLeftFront()+"-"+getVolumeRightFront()+"-"+getVolumeLeftRear()+"-"+getVolumeRightRear()+"-"+getBaseValue()+"-"+getTrebleValue()+"?";
     }
 
+    public String getMuteValue(){
+        return "aud-63?";
+    }
+
     public String getVolumeValue(){
         return "aud-"+getVolume()+"?";
     }

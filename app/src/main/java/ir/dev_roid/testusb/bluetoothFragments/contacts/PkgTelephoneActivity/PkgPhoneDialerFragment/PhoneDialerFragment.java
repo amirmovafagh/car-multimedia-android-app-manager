@@ -128,6 +128,7 @@ public class PhoneDialerFragment extends Fragment implements RequiredViewOps, Vi
             makeCall();
         }
 
+
     }
 
     @Nullable
@@ -167,6 +168,7 @@ public class PhoneDialerFragment extends Fragment implements RequiredViewOps, Vi
 
         backSpaceBtn = (ImageButton) view.findViewById(R.id.backspace);
         checkCallStatus();
+
         return view;
 
     }
@@ -424,7 +426,12 @@ public class PhoneDialerFragment extends Fragment implements RequiredViewOps, Vi
         runnableCallStatus = new Runnable() {
             @Override
             public void run() {
-                String number = String.valueOf(buffer.charAt(0));
+                connectUsbService.changeDelay(2500);
+                String number="";
+                try{
+                    number = String.valueOf(buffer.charAt(0));
+                }catch (Exception e){}
+
 
                 if (number.equalsIgnoreCase("0") || number.equalsIgnoreCase("+")) {
 
@@ -442,7 +449,8 @@ public class PhoneDialerFragment extends Fragment implements RequiredViewOps, Vi
                         pnumber = pnumber.trim();
                         setNameContactNumberCalling();
                         txtNumber.setText(pnumber);
-                        saveInComingCall(pnumber);
+                        if(!incomingCallStatus)
+                            saveInComingCall(pnumber);
                     }
 
                     visibleObj("Incoming Call...");
@@ -454,7 +462,7 @@ public class PhoneDialerFragment extends Fragment implements RequiredViewOps, Vi
                 }
 
                 if (buffer.equalsIgnoreCase("MG4")) {
-
+                    buffer="";
                     visibleObj("Outgoing Call...");
                     startRipple();
                     stopTimer();
@@ -463,14 +471,19 @@ public class PhoneDialerFragment extends Fragment implements RequiredViewOps, Vi
                     checkCallGetNumber = true;
                     Log.i(tag, "Outgoing Call...");
                 }
+                if (buffer.equalsIgnoreCase("MG5")) {
+                    buffer="";
+                }
                 //dar soorati ke tamas az noe vorudi ya khoruji bargharar shavad in shart ejra mishavad
                 if (checkCallGetNumber) {
                     if (buffer.equalsIgnoreCase("MG6")) {
+                        buffer="";
                         startTimer();
                         txtCallSituation.setText("On Call...");
                         incomingCallStatus = false;
                         outCallStatus = false;
                     } else if (buffer.equalsIgnoreCase("MG3")) {
+                        buffer="";
                         Toast.makeText(getActivity(), "end call", Toast.LENGTH_SHORT).show();
                         Log.i(tag, "end call");
                         endCall2();
@@ -480,6 +493,7 @@ public class PhoneDialerFragment extends Fragment implements RequiredViewOps, Vi
                         checkCallGetNumber = false;
                     } else if (buffer.equalsIgnoreCase("MG2") || buffer.equalsIgnoreCase("MG1")) {
                         Toast.makeText(getActivity(), "Error", Toast.LENGTH_SHORT).show();
+                        buffer="";
                         Log.i(tag, "Error");
                         endCall2();
                         stopTimer();
@@ -542,17 +556,18 @@ public class PhoneDialerFragment extends Fragment implements RequiredViewOps, Vi
 
     @Override
     public void showCallLogInsertSuccessfullyMessage() {
-        Toast.makeText(ctx, "callLog insert with successfully", Toast.LENGTH_SHORT).show();
+        //Toast.makeText(ctx, "callLog insert with successfully", Toast.LENGTH_SHORT).show();
     }
 
     @Override
     public void showCallLogNotInsertMessage() {
-        Toast.makeText(ctx, "callLog not insert", Toast.LENGTH_SHORT).show();
+        //Toast.makeText(ctx, "callLog not insert", Toast.LENGTH_SHORT).show();
     }
 
     @Override
     public void onResume() {
         super.onResume();
+
         dialFragmentIsRun = true;
         callStatusHandler.postDelayed(runnableCallStatus, 0);
         if (audioManager.isMusicPlay()) {
@@ -563,6 +578,7 @@ public class PhoneDialerFragment extends Fragment implements RequiredViewOps, Vi
     @Override
     public void onPause() {
         super.onPause();
+        connectUsbService.changeDelay(1000);
         dialFragmentIsRun = false;
         callStatusHandler.removeCallbacksAndMessages(null);
     }
@@ -571,7 +587,7 @@ public class PhoneDialerFragment extends Fragment implements RequiredViewOps, Vi
     public void onStart() {
         super.onStart();
         Bundle bundle = this.getArguments();
-
+//        connectUsbService.changeDelay(2500);
         if (bundle != null) {
             String receivedNumber = bundle.getString("num", ""); // Key, default value
             txtNumber.setText(receivedNumber);
@@ -582,6 +598,7 @@ public class PhoneDialerFragment extends Fragment implements RequiredViewOps, Vi
     @Override
     public void onStop() {
         super.onStop();
+        connectUsbService.changeDelay(500);
         dialFragmentIsRun = false;
         callStatusHandler.removeCallbacksAndMessages(null);
     }

@@ -1,84 +1,80 @@
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:background="@color/activityBackground"
+    android:background="@drawable/main_background_gradient"
     android:orientation="vertical"
     tools:context=".MainActivity">
     <include layout="@layout/toolbar"></include>
 
-    <Button
-        android:text="pine"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:id="@+id/pine"/>
-    <Button
-        android:text="aux"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:id="@+id/aux"/>
-    <Button
-        android:text="radio"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:id="@+id/radio"/>
-    <Button
-        android:text="Steering Wheel controller"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:id="@+id/bluetooth"/>
-    <TextView
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:text="left_front"/>
-    <SeekBar
-        android:id="@+id/left_front"
-        style="@style/Widget.AppCompat.SeekBar.Discrete"
+    <android.support.constraint.ConstraintLayout
         android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:max="32"
-        android:progress="0"
-        android:thumb="@drawable/thumb_seekbar"/>
+        android:layout_height="match_parent">
+
+        <Button
+            android:id="@+id/pine"
+            android:layout_width="100dp"
+            android:layout_height="100dp"
+            android:layout_marginStart="8dp"
+            android:layout_marginEnd="8dp"
+            android:text="Head Unit"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            tools:layout_editor_absoluteY="33dp" />
+
+        <Button
+            android:id="@+id/aux"
+            android:layout_width="100dp"
+            android:layout_height="100dp"
+            android:layout_marginStart="8dp"
+            android:layout_marginEnd="8dp"
+            android:text="aux"
+            app:layout_constraintEnd_toStartOf="@+id/pine"
+            app:layout_constraintStart_toStartOf="parent"
+            tools:layout_editor_absoluteY="33dp" />
+
+        <Button
+            android:id="@+id/radio"
+            android:layout_width="100dp"
+            android:layout_height="100dp"
+            android:layout_marginStart="8dp"
+            android:layout_marginEnd="8dp"
+            android:text="radio"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toEndOf="@+id/pine"
+            tools:layout_editor_absoluteY="33dp" />
+
+        <abak.tr.com.boxedverticalseekbar.BoxedVertical
+            android:id="@+id/sound_module_seekbar"
+            android:layout_width="80dp"
+            android:layout_height="300dp"
+            android:layout_gravity="center"
+
+            android:layout_marginStart="16dp"
+            android:layout_marginTop="8dp"
+            android:layout_marginBottom="8dp"
+            app:backgroundColor="@color/color_background"
+            app:cornerRadius="20dp"
+            app:defaultValue="55"
+            app:imageEnabled="false"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="parent"
+            app:layout_constraintVertical_bias="0.531"
+            app:max="55"
+            app:min="0"
+            app:progressColor="@color/color_progress"
+            app:step="1"
+            app:textBottomPadding="20"
+            app:textColor="#FF0000"
+            app:textEnabled="true"
+            app:textSize="30sp"
+            app:touchDisabled="false" />
+    </android.support.constraint.ConstraintLayout>
 
 
-    <TextView
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:text="right_front"/>
-    <SeekBar
-        android:id="@+id/right_front"
-        style="@style/Widget.AppCompat.SeekBar.Discrete"
-        android:layout_width="match_parent"
-        android:layout_height="20dp"
-        android:max="32"
-        android:progress="0"
-        android:thumb="@drawable/thumb_seekbar"/>
 
 
-    <TextView
-        android:layout_width="wrap_content"
-        android:layout_height="20dp"
-        android:text="left_rear"/>
-    <SeekBar
-
-        android:id="@+id/left_rear"
-        style="@style/Widget.AppCompat.SeekBar.Discrete"
-        android:layout_width="match_parent"
-        android:layout_height="20dp"
-        android:max="32"
-        android:progress="0"
-        android:thumb="@drawable/thumb_seekbar"/>
-    <TextView
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:text="right_rear"/>
-    <SeekBar
-        android:id="@+id/right_rear"
-        style="@style/Widget.AppCompat.SeekBar.Discrete"
-        android:layout_width="match_parent"
-        android:layout_height="20dp"
-        android:max="32"
-        android:progress="0"
-        android:thumb="@drawable/thumb_seekbar"/>
 
 </LinearLayout>

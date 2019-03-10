@@ -37,8 +37,6 @@ public class SettingsActivity extends AppCompatActivity implements View.OnTouchL
     private ImageView audioBalanceImg;
     private ConnectUsbService connectUsbService;
     private BoxedVertical basSeekbar, trebleSeekbar, gainSeekbar;
-    private double X_axislength =  230.0;
-    private double Y_axislength = 310.0;
     private ViewGroup relativeLayout = null;
     private Rect relativeLayoutRect = null;
     private boolean isCoordinatesInit_Level1 = false;
@@ -47,12 +45,27 @@ public class SettingsActivity extends AppCompatActivity implements View.OnTouchL
     private Handler handlerSetSpeakersData;
     private SwitchCompat loudSwitch;
     private Button resetBalance, frontBalance, driverBalance, rearBalance;
-    private int startLeftMargin = 100;
-    private int startTopMargin = 50;
-    public static float defaultX = 249 - 32;
-    public static float defaultY = 215 - 32;
+    /**
+     * -----Previuos config 1280*672
+     * private double X_axislength =  230.0;
+     * private double Y_axislength = 310.0;
+     * private int startLeftMargin = 100;
+     * private int startTopMargin = 50;
+     * public static float defaultX = 249 - 32;
+     * public static float defaultY = 215 - 32;
+     * private int imgSize = 32;
+     * private int step = 25;
+     */
+    private double X_axislength = 180.0;
+    private double Y_axislength = 250.0;
+    private int startLeftMargin = 70;
+    private int endRightMargin = 230;
+    private int startTopMargin = 10;
+    private int endBottomMargin = 250;
+    public static float defaultX = 195 - 32;
+    public static float defaultY = 170 - 32;
     private int imgSize = 32;
-    private int step = 25;
+    private int step = 20;
     ToolBar_ResideMenu toolBarResideMenu;
     private AudioValues audioValues;
 
@@ -73,7 +86,7 @@ public class SettingsActivity extends AppCompatActivity implements View.OnTouchL
         basSeekbar.setValue(prefManager.getVolumeValue(5));
         trebleSeekbar.setValue(prefManager.getVolumeValue(6));
         gainSeekbar.setValue(prefManager.getVolumeValue(8));
-        checkResolution();
+        //checkResolution();
         initAudioEQsettings();
     }
 
@@ -143,7 +156,7 @@ public class SettingsActivity extends AppCompatActivity implements View.OnTouchL
     }
 
     private void checkStateOfImageBalance(float getX, float getY) {
-        if (getX < 100 || getY < 50 || getX > 310 || getY > 320) {
+        if (getX < startLeftMargin || getY < startTopMargin || getX > endRightMargin || getY > endBottomMargin) {
             audioBalanceImg.animate()
                     .x(defaultX) //if touch out of the target area the image return to center
                     .y(defaultY)
@@ -159,7 +172,7 @@ public class SettingsActivity extends AppCompatActivity implements View.OnTouchL
     }
 
     private void changeStateOfImageBalanceWithDirectionalButtons(float getX, float getY) {
-        if (getX < 100 || getY < 50 || getX > 310 || getY > 320) {
+        if (getX < startLeftMargin || getY < startTopMargin || getX > endRightMargin || getY > endBottomMargin) {
             return;
         } else {
             audioBalanceImg.animate()
@@ -336,16 +349,32 @@ public class SettingsActivity extends AppCompatActivity implements View.OnTouchL
     }
 
 
-
     private void initAudioEQsettings() {
         loudSwitch.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
             @Override
             public void onCheckedChanged(CompoundButton compoundButton, boolean b) {
                 audioValues.loudState(b);
                 sendData(audioValues.androidBTMode());
-                Toast.makeText(SettingsActivity.this, ""+prefManager.getVolumeValue(11), Toast.LENGTH_SHORT).show();
+
+                if (prefManager.getDebugModeState())
+                    Toast.makeText(SettingsActivity.this, "" + prefManager.getVolumeValue(11), Toast.LENGTH_SHORT).show();
 
 
+            }
+        });
+
+        loudSwitch.setOnLongClickListener(new View.OnLongClickListener() {
+            @Override
+            public boolean onLongClick(View view) {
+                boolean i = prefManager.getDebugModeState();
+                if (i) {
+                    Toast.makeText(SettingsActivity.this, "Debug Off", Toast.LENGTH_SHORT).show();
+                    prefManager.setDebugModeState(false);
+                } else {
+                    Toast.makeText(SettingsActivity.this, "Debug On", Toast.LENGTH_SHORT).show();
+                    prefManager.setDebugModeState(true);
+                }
+                return false;
             }
         });
         basSeekbar.setOnBoxedPointsChangeListener(new BoxedVertical.OnValuesChangeListener() {
@@ -362,7 +391,8 @@ public class SettingsActivity extends AppCompatActivity implements View.OnTouchL
 
             @Override
             public void onStopTrackingTouch(BoxedVertical boxedVertical) {
-                Toast.makeText(SettingsActivity.this, ""+prefManager.getVolumeValue(11), Toast.LENGTH_SHORT).show();
+                if (prefManager.getDebugModeState())
+                    Toast.makeText(SettingsActivity.this, "" + prefManager.getVolumeValue(11), Toast.LENGTH_SHORT).show();
 
             }
         });
@@ -381,7 +411,8 @@ public class SettingsActivity extends AppCompatActivity implements View.OnTouchL
 
             @Override
             public void onStopTrackingTouch(BoxedVertical boxedVertical) {
-                Toast.makeText(SettingsActivity.this, ""+prefManager.getVolumeValue(11), Toast.LENGTH_SHORT).show();
+                if (prefManager.getDebugModeState())
+                    Toast.makeText(SettingsActivity.this, "" + prefManager.getVolumeValue(11), Toast.LENGTH_SHORT).show();
 
             }
         });
@@ -400,7 +431,8 @@ public class SettingsActivity extends AppCompatActivity implements View.OnTouchL
 
             @Override
             public void onStopTrackingTouch(BoxedVertical boxedVertical) {
-                Toast.makeText(SettingsActivity.this, ""+prefManager.getVolumeValue(11), Toast.LENGTH_SHORT).show();
+                if (prefManager.getDebugModeState())
+                    Toast.makeText(SettingsActivity.this, "" + prefManager.getVolumeValue(11), Toast.LENGTH_SHORT).show();
 
             }
         });
@@ -429,21 +461,21 @@ public class SettingsActivity extends AppCompatActivity implements View.OnTouchL
         frontBalance.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                chacgeBalanceWithButtons(310,50);
+                chacgeBalanceWithButtons(defaultX, startTopMargin);
             }
         });
 
         driverBalance.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                chacgeBalanceWithButtons(101,50);
+                chacgeBalanceWithButtons(startLeftMargin, startTopMargin);
             }
         });
 
         rearBalance.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                chacgeBalanceWithButtons(215,320);
+                chacgeBalanceWithButtons(defaultX, endBottomMargin - 12);
             }
         });
 
@@ -476,17 +508,17 @@ public class SettingsActivity extends AppCompatActivity implements View.OnTouchL
 
     private void chacgeBalanceWithButtons(float getX, float getY) {
 
-            audioBalanceImg.animate()
-                    .x(getX)
-                    .y(getY)
-                    .setDuration(0)
-                    .start();
-            calculateBalanceData(getX, getY);
-            prefManager.setXYcordinates(getX, getY);
+        audioBalanceImg.animate()
+                .x(getX)
+                .y(getY)
+                .setDuration(0)
+                .start();
+        calculateBalanceData(getX, getY);
+        prefManager.setXYcordinates(getX, getY);
 
     }
 
-    private void sendData(final String data){
+    private void sendData(final String data) {
         handlerSetSpeakersData = new Handler();
         handlerSetSpeakersData.postDelayed(new Runnable() {
             @Override

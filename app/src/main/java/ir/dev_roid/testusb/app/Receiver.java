@@ -1,16 +1,19 @@
-package ir.dev_roid.testusb;
+package ir.dev_roid.testusb.app;
 
 import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
 import android.widget.Toast;
 
+import ir.dev_roid.testusb.AudioStreamVolumeObserver;
+import ir.dev_roid.testusb.UsbService;
+
 /**
  * Created by hirad on 2/28/18.
  */
 
 public class Receiver extends BroadcastReceiver {
-    private static final String TAG = Receiver.class.getSimpleName();
+    private static final String TAG = AudioStreamVolumeObserver.class.getSimpleName();
     private static final String BOOT_COMPLETED = "android.intent.action.BOOT_COMPLETED";
     private static final String QUICKBOOT_POWERON = "android.intent.action.QUICKBOOT_POWERON";
     private static final String USB_DEVICE_ATTACHED = "android.hardware.usb.action.USB_DEVICE_ATTACHED";

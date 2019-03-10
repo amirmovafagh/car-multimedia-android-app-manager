@@ -51,7 +51,7 @@ public class CustomDialog {
         brightnessSeek.setMax(255);
         osVolumeSeek.setMax(audioManager.getStreamMaxVolume(AudioManager.STREAM_MUSIC));
         osVolumeSeek.setProgress(audioManager.getStreamVolume(AudioManager.STREAM_MUSIC));
-        carVolumeSeek.setMax(63);
+        carVolumeSeek.setMax(55);
         carVolumeSeek.setProgress(pref.getVolumeValue(0));
 
 
@@ -97,7 +97,7 @@ public class CustomDialog {
 
                         connectUsbService.write(audioValues.getVolumeValue());
                     }
-                },20);
+                },10);
 
             }
 

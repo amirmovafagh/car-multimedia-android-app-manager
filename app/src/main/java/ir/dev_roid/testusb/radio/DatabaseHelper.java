@@ -105,9 +105,7 @@ public class DatabaseHelper extends OrmLiteSqliteOpenHelper {
 
     public void insertRadioChannelsAM(String channelValue) {
         try {getRadioChannelAM_RuntimeExceptionDao().create(new RadioChannelAM(channelValue));
-            if(Integer.parseInt(channelValue)!=0){
 
-            }
         } catch (Exception e) {
         }
     }
