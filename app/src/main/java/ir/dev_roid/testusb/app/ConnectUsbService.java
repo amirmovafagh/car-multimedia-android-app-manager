@@ -34,15 +34,16 @@ public class ConnectUsbService {
             usbService.write(data.getBytes());
         }
     }
+    public void changeDelay(int delay) {
+        usbService.changeHandlerDelay(delay);
+    }
 
     public void enableCheckCallStatus() {
         usbService.enableCheckCallStatus();
         threadStatus = true;
         Log.i(tag,"enableCheckCallStatus");
     }
-    public void changeDelay(int delay) {
-        usbService.changeHandlerDelay(delay);
-    }
+
 
     public void disableCheckCallStatus() {
         usbService.disableCheckCallStatus();
@@ -50,6 +51,13 @@ public class ConnectUsbService {
         Log.i(tag,"disableCheckCallStatus");
     }
 
+    public void enableThreadService() {
+        usbService.enableThreadService();
+    }
+
+    public void disableThreadService() {
+        usbService.disableThreadService();
+    }
 
     public final ServiceConnection usbConnection = new ServiceConnection() {
         @Override

@@ -30,7 +30,12 @@ public class PhoneLogModel implements ProvidedModelOps {
 
     @Override
     public List<CallLog> retriveAllCallLogs() {
-        return modelDAOs.getCallInfoRuntimeExceptionDao().queryForAll();
+        try {
+            return modelDAOs.getCallInfoRuntimeExceptionDao().queryForAll();
+        }catch (Exception e){
+            return null;
+        }
+
     }
 
     @Override

@@ -10,7 +10,7 @@
     <string name="devices">Devices</string>
     <string name="media">Media</string>
     <string name="contacts">Contacts</string>
-    <string name="bluetoothModuleInfo">Bluetooth Name: HK\nPassword: 1234</string>
+    <string name="bluetoothModuleInfo">Bluetooth Name: POR 1007BT\nPassword: 0000</string>
 
     <!-- TODO: Remove or change this placeholder text -->
     <string name="hello_blank_fragment">Hello blank fragment</string>
@@ -25,4 +25,6 @@
 
     <string name="onClick_fav_radio_btn_channel_per">با لمس طولانی این گزینه فرکانس مورد علاقه خود را ذخیره نمایید.</string>
     <string name="onLongClick_fav_radio_btn_channel_per">فرکانس ذخیره شد.</string>
+    <string name="title_activity_aux">AUX</string>
+    <string name="title_activity_tv_channel">TV input</string>
 </resources>

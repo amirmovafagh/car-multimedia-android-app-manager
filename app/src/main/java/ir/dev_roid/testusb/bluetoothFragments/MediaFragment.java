@@ -21,6 +21,7 @@ import ir.dev_roid.testusb.R;
 import static ir.dev_roid.testusb.BluetoothActivity.connectUsbServiceStatic;
 import static ir.dev_roid.testusb.MyHandler.buffer;
 
+import ir.dev_roid.testusb.app.AudioValues;
 import ir.dev_roid.testusb.app.ConnectUsbService;
 import ir.dev_roid.testusb.app.MyAudioManager;
 import ir.dev_roid.testusb.app.PrefManager;
@@ -32,7 +33,8 @@ public class MediaFragment extends Fragment implements View.OnClickListener {
     private ConnectUsbService connectUsbService;
     private PrefManager prefManager;
     private MyAudioManager audioManager;
-    private Timer timer;
+    private AudioValues audioValues;
+
     private Handler handler;
     private Runnable runnable;
 
@@ -46,13 +48,13 @@ public class MediaFragment extends Fragment implements View.OnClickListener {
         super.onActivityCreated(savedInstanceState);
         connectUsbService = connectUsbServiceStatic;
         prefManager = new PrefManager(getContext());
+        audioValues = new AudioValues(prefManager);
         audioManager = new MyAudioManager(getContext());
-        timer = new Timer();
         handler = new Handler();
 
         audioManager.pauseHeadUnitMusicPlayer();
         prefManager.setHeadUnitAudioIsActive(false);
-
+        prefManager.setBluetoothPlayerState(true);
         startHandlerMusicPlayerState();
         if (prefManager.getBluetoothPlayerState()) {
             playWhithOutCMD();
@@ -75,7 +77,7 @@ public class MediaFragment extends Fragment implements View.OnClickListener {
                 } else if (buffer.equalsIgnoreCase("MA")) {
                     Log.i("test", ".");
                     stopWithoutCommand();
-                } else if(buffer.equalsIgnoreCase("MG1")){
+                } else if (buffer.equalsIgnoreCase("MG1")) {
                     pauseWhithOutCMD();
                 }
 
@@ -146,7 +148,7 @@ public class MediaFragment extends Fragment implements View.OnClickListener {
                 connectUsbService.write("blt-mus-fwd?");
                 return;
             case R.id.img_btn_play:
-                if(!prefManager.getBluetoothPlayerState())
+                if (prefManager.getBluetoothPlayerState())
                     play();
                 else
                     pause();
@@ -163,10 +165,21 @@ public class MediaFragment extends Fragment implements View.OnClickListener {
         }
     }
 
+    private void amplifireState() {
+        if (prefManager.getAmplifireState()) {
+            connectUsbService.write("oth-amp-001?");
+            sendData("oth-amp-001?", 100);
+        } else {
+            connectUsbService.write("oth-amp-000?");
+            sendData("oth-amp-000?", 100);
+        }
+    }
+
     @Override
     public void onStart() {
         super.onStart();
-        checkVoiceChannel ();
+        prefManager.setBluetoothPlayerState(true);
+        checkVoiceChannel();
     }
 
     @Override
@@ -179,12 +192,14 @@ public class MediaFragment extends Fragment implements View.OnClickListener {
     public void onStop() {
         super.onStop();
         handler.removeCallbacksAndMessages(null);
+
     }
 
     @Override
     public void onDestroy() {
         super.onDestroy();
-
+        connectUsbService.write("oth-amp-000?");
+        prefManager.setBluetoothPlayerState(false);
         handler.removeCallbacksAndMessages(null);
 
     }
@@ -192,13 +207,16 @@ public class MediaFragment extends Fragment implements View.OnClickListener {
     @Override
     public void onResume() {
         super.onResume();
-        checkVoiceChannel ();
-        handler.postDelayed(runnable,100);
+        prefManager.setBluetoothPlayerState(true);
+        amplifireState();
+        checkVoiceChannel();
+        handler.postDelayed(runnable, 100);
+
 
     }
 
     private void stopWithoutCommand() {
-        prefManager.setBluetoothPlayerState(false);
+        //prefManager.setBluetoothPlayerState(false);
         play.setImageResource(R.drawable.play);
 
         imgDisk.clearAnimation();
@@ -207,7 +225,7 @@ public class MediaFragment extends Fragment implements View.OnClickListener {
     }
 
     private void stop() {
-        prefManager.setBluetoothPlayerState(false);
+        //prefManager.setBluetoothPlayerState(false);
         play.setImageResource(R.drawable.play);
         connectUsbService.write("blt-mus-stp?");
         imgDisk.clearAnimation();
@@ -217,7 +235,7 @@ public class MediaFragment extends Fragment implements View.OnClickListener {
     }
 
     private void pause() {
-        prefManager.setBluetoothPlayerState(false);
+        //prefManager.setBluetoothPlayerState(false);
         play.setImageResource(R.drawable.play);
         connectUsbService.write("blt-mus-ppp?");
         imgDisk.clearAnimation();
@@ -225,21 +243,21 @@ public class MediaFragment extends Fragment implements View.OnClickListener {
     }
 
     private void pauseWhithOutCMD() {
-        prefManager.setBluetoothPlayerState(false);
+        //prefManager.setBluetoothPlayerState(false);
         play.setImageResource(R.drawable.play);
         imgDisk.clearAnimation();
 
     }
 
     private void play() {
-        prefManager.setBluetoothPlayerState(true);
+        //prefManager.setBluetoothPlayerState(true);
         if (audioManager.isMusicPlay()) {
             //sendData("mod-rad?");
             audioManager.pauseHeadUnitMusicPlayer();
         }
         connectUsbService.write("blt-mus-ppp?");
 
-        prefManager.setBluetoothPlayerState(true);
+        //prefManager.setBluetoothPlayerState(true);
         setAnimateMusicLogo(imgDisk);
         play = view.findViewById(R.id.img_btn_play);
         play.setImageResource(R.drawable.pause);
@@ -249,16 +267,25 @@ public class MediaFragment extends Fragment implements View.OnClickListener {
 
     private void playWhithOutCMD() {
 
-        prefManager.setBluetoothPlayerState(true);
+        //prefManager.setBluetoothPlayerState(true);
         setAnimateMusicLogo(imgDisk);
         play = view.findViewById(R.id.img_btn_play);
         play.setImageResource(R.drawable.pause);
 
     }
 
-    private void checkVoiceChannel (){
-        if (prefManager.getRadioIsRun()){
-            connectUsbService.write("mod-?");
+    private void sendData(final String data, int delay) {
+        new Handler().postDelayed(new Runnable() {
+            @Override
+            public void run() {
+                connectUsbService.write(data);
+            }
+        }, delay);
+    }
+
+    private void checkVoiceChannel() {
+        if (prefManager.getRadioIsRun()) {
+            connectUsbService.write(audioValues.androidBTMode());
             prefManager.setRadioIsRun(false);
         }
     }

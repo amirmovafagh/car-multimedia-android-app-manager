@@ -20,7 +20,7 @@
         android:scaleY="2"
         app:isb_clear_default_padding="false"
         app:isb_max="108"
-        app:isb_min="88"
+        app:isb_min="87.5"
         app:isb_progress="98"
         app:isb_progress_value_float="true"
         app:isb_seek_bar_type="continuous"

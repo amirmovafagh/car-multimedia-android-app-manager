@@ -53,7 +53,7 @@ public class MyHandler extends Handler {
 
                 try{
                     int i = Integer.parseInt(buffer);
-                    if(i<3350){
+                    if(i<3600){
                         steeringWheelDataStatus = true;
                         steeringWheelData = i/10 ;
 

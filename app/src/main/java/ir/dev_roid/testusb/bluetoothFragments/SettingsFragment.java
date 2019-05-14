@@ -19,8 +19,10 @@ import com.skyfishjy.library.RippleBackground;
 import ir.dev_roid.testusb.R;
 import ir.dev_roid.testusb.app.BluetoothService;
 import ir.dev_roid.testusb.app.ConnectUsbService;
+import ir.dev_roid.testusb.app.PrefManager;
 
 import static ir.dev_roid.testusb.BluetoothActivity.connectUsbServiceStatic;
+import static ir.dev_roid.testusb.UsbService.threadStatus;
 
 
 public class SettingsFragment extends Fragment {
@@ -34,6 +36,7 @@ public class SettingsFragment extends Fragment {
     private BluetoothService bluetoothService;
     private Handler handler;
     private Runnable runnable;
+    private PrefManager prefManager;
 
 
     public SettingsFragment() {
@@ -55,6 +58,7 @@ public class SettingsFragment extends Fragment {
         connectUsbService = connectUsbServiceStatic;
         bluetoothService = new BluetoothService(getActivity());
         connectionStatus();
+        prefManager= new PrefManager(getContext());
 
 
 
@@ -147,6 +151,7 @@ public class SettingsFragment extends Fragment {
             public void onClick(View view) {
                 connectUsbService.write("blt-stn-pon?");
                 connectionStatus();
+                threadStatus = true;
 
 
             }
@@ -158,6 +163,8 @@ public class SettingsFragment extends Fragment {
                 connectUsbService.write("blt-stn-pof?");
                 handler.removeCallbacksAndMessages(null);
                 rippleBackground.stopRippleAnimation();
+                prefManager.setBluetoothPlayerState(false);
+
 
 
             }

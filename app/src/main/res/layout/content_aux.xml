@@ -1,0 +1,65 @@
+<?xml version="1.0" encoding="utf-8"?>
+<android.support.constraint.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    app:layout_behavior="@string/appbar_scrolling_view_behavior"
+    android:background="@drawable/main_background_gradient"
+    android:orientation="horizontal"
+    tools:context=".AUXActivity"
+    tools:showIn="@layout/activity_aux">
+
+    <ImageView
+        android:id="@+id/imageView2"
+        android:layout_width="300dp"
+        android:layout_height="300dp"
+        android:layout_marginStart="8dp"
+        android:layout_marginTop="8dp"
+        android:layout_marginEnd="8dp"
+        android:layout_marginBottom="8dp"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent"
+        app:srcCompat="@drawable/aux_cable"
+        tools:ignore="MissingConstraints" />
+
+    <FrameLayout
+        android:layout_width="314dp"
+        android:layout_height="520dp"
+        android:layout_marginStart="8dp"
+        android:layout_marginTop="8dp"
+        android:layout_marginEnd="8dp"
+        android:layout_marginBottom="8dp"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toStartOf="@+id/imageView2"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent">
+    <abak.tr.com.boxedverticalseekbar.BoxedVertical
+        android:id="@+id/sound_module_seekbar_aux"
+        android:layout_width="80dp"
+        android:layout_height="300dp"
+        android:layout_gravity="center"
+        app:backgroundColor="@color/color_background"
+        app:cornerRadius="20dp"
+        app:defaultValue="55"
+        app:imageEnabled="false"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintVertical_bias="0.531"
+        app:max="55"
+        app:min="0"
+        app:progressColor="@color/color_progress"
+        app:step="1"
+        app:textBottomPadding="20"
+        app:textColor="#FF0000"
+        app:textEnabled="true"
+        app:textSize="30sp"
+        app:touchDisabled="false" />
+
+
+    </FrameLayout>
+
+</android.support.constraint.ConstraintLayout>

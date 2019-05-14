@@ -14,6 +14,8 @@ import android.os.Binder;
 import android.os.Handler;
 import android.os.IBinder;
 import android.os.Looper;
+import android.os.PowerManager;
+import android.provider.Settings;
 import android.util.Log;
 import android.widget.Toast;
 
@@ -31,6 +33,8 @@ import java.util.TimerTask;
 
 import ir.dev_roid.testusb.app.AudioValues;
 import ir.dev_roid.testusb.app.Brightness;
+import ir.dev_roid.testusb.app.CpuManager;
+import ir.dev_roid.testusb.app.Logger;
 import ir.dev_roid.testusb.app.MyAudioManager;
 import ir.dev_roid.testusb.app.ObservableInteger;
 import ir.dev_roid.testusb.app.PrefManager;
@@ -39,9 +43,12 @@ import ir.dev_roid.testusb.steeringWheelController.Pojo.Options;
 import ir.dev_roid.testusb.steeringWheelController.ProvidedModelOps;
 import ir.dev_roid.testusb.steeringWheelController.SteeringWheelControllerModel;
 
+import static ir.dev_roid.testusb.AUXActivity.auxSoundChannelActivity;
 import static ir.dev_roid.testusb.MyHandler.buffer;
 import static ir.dev_roid.testusb.MyHandler.steeringWheelData;
 import static ir.dev_roid.testusb.MyHandler.telephoneActivityIsOpen;
+import static ir.dev_roid.testusb.RadioActivity.RadioSoundChannelActivity;
+
 import static ir.dev_roid.testusb.bluetoothFragments.contacts.PkgTelephoneActivity.PkgPhoneDialerFragment.PhoneDialerFragment.dialFragmentIsRun;
 import static ir.dev_roid.testusb.steeringWheelController.SteeringWheelControllerPresenter.SteeringWheelControllerActivityIsRun;
 
@@ -77,18 +84,22 @@ public class UsbService extends Service {
     private ObservableInteger obsInit;
     private Brightness brightness;
     private Context context;
-    private Handler mHandler;
+    private Handler mHandler, checkCpuTempHandler, audioStreamHandler;
+    private Runnable checkCpuTempRunnable;
     private MyHandler myHandler;
     private UsbManager usbManager;
     private UsbDevice device;
     private UsbDeviceConnection connection;
     private UsbSerialDevice serialPort;
-    private Thread thread;
-    private Runnable threadRunnable;
+    private CpuManager cpu;
     public static boolean threadStatus = true;
-    private boolean muteState = false;
+    private boolean swcDelay, isPlayMusic, isStopMusic = false;
     private AudioValues audioValues;
-    private int handlerDelay = 1000;
+    private int handlerDelay = 1500;
+    private Logger logger;
+    private static int maxTemp = 75;
+    private static int minTemp = 59;
+    private static int emergencyTemp = 79;
 
     private boolean serialPortConnected;
 
@@ -126,6 +137,7 @@ public class UsbService extends Service {
                     arg0.sendBroadcast(intent);
                     connection = usbManager.openDevice(device);
                     new ConnectionThread().start();
+
                 } else // User not accepted our USB connection. Send an Intent to the Main Activity
                 {
                     Intent intent = new Intent(ACTION_USB_PERMISSION_NOT_GRANTED);
@@ -158,10 +170,22 @@ public class UsbService extends Service {
     public void onCreate() {
         this.context = this;
         serialPortConnected = false;
-
+        cpu = new CpuManager();
         modelOps = SteeringWheelControllerModel.getInstance(this);
         modelOps.createAllDaosIfNotExsit();
         steeringWheelData = 999;
+        audioStreamHandler = new Handler(Looper.getMainLooper());
+
+        checkCpuTempHandler = new Handler(Looper.getMainLooper());
+        checkCpuTempRunnable = new Runnable() {
+            @Override
+            public void run() {
+                checkCpuTemp();
+                checkCpuTempHandler.postDelayed(checkCpuTempRunnable, 5000);
+            }
+        };
+        checkCpuTempHandler.postDelayed(checkCpuTempRunnable, 2000);
+        //logger = new Logger();
 
         audioManager = new MyAudioManager(context);
         prefManager = new PrefManager(context);
@@ -185,14 +209,14 @@ public class UsbService extends Service {
             public void onIntegerChanged(final int newValue) {
                 if (newValue != prefManager.getBrightnessValue()) {
 
-                    new Timer().schedule(new TimerTask() {
+                    /*new Timer().schedule(new TimerTask() {
                         @Override
                         public void run() {
                             //Do something after 100ms
-                            String data = "mod-brg-" + newValue / 5 + "?";
-                            write(data.getBytes());
+
                         }
-                    }, 100);
+                    }, 250);*/
+                    sendData("oth-brg-" + (newValue / 5) + "?", 250);
 
                     prefManager.setBrightnessValue(newValue);
                 }
@@ -215,6 +239,8 @@ public class UsbService extends Service {
                         int i = co.getValue();
                         if (i - 3 <= steeringWheelData && steeringWheelData <= i + 3) {
                             Options id = co.getId();
+                            mAudioStreamVolumeObserver.swcDelayOn();
+                            swcDelay = true;
                             switch (id) {
                                 case OPT0:
                                     Log.i(tag, "#power" + steeringWheelData);
@@ -228,51 +254,95 @@ public class UsbService extends Service {
                                     break;
                                 case OPT2:
                                     Log.i(tag, "#gps" + steeringWheelData);
-                                    Intent launchIntent = getPackageManager().getLaunchIntentForPackage("com.waze");
+                                    Intent launchIntent = getPackageManager().getLaunchIntentForPackage("com.sygic.aura");
                                     if (launchIntent != null) {
                                         startActivity(launchIntent);//null pointer check in case package name was not found
                                     }
                                     break;
                                 case OPT3:
                                     Log.i(tag, "#upVolume" + steeringWheelData);
+                                    mAudioStreamVolumeObserver.increaseVolumeSWC();
+                                    /*
+
                                     int vol = prefManager.getVolumeValue(0);
-                                    if (vol < 61 && vol >= 0) {
-                                        audioValues.setVolume(vol + 3);
-                                        sendData(audioValues.getVolumeValue(), 50);
+                                    if (vol < 51 && vol >= 0) {
+                                        audioValues.setVolume(vol + 5);
+                                        write(audioValues.getVolumeValue().getBytes());
+                                        sendData(audioValues.getVolumeValue(), 40);
+                                    } else if (vol >= 51) {
+                                        audioValues.setVolume(55);//max size
+                                        write(audioValues.getVolumeValue().getBytes());
+                                        sendData(audioValues.getVolumeValue(), 40);
                                     }
+                                    */
+
                                     break;
                                 case OPT4:
                                     Log.i(tag, "#downVolume" + steeringWheelData);
+                                    mAudioStreamVolumeObserver.decreaseVolumeSWC();
+                                    /*disableCheckCallStatus();
+
                                     int vold = prefManager.getVolumeValue(0);
-                                    if (vold <= 63 && vold > 3) {
-                                        audioValues.setVolume(vold - 3);
-                                        sendData(audioValues.getVolumeValue(), 50);
+                                    if (vold <= 55 && vold > 5) {
+                                        audioValues.setVolume(vold - 5);
+                                        write(audioValues.getVolumeValue().getBytes());
+                                        sendData(audioValues.getVolumeValue(), 40);
+                                    } else if (vold <= 5) {
+                                        audioValues.setVolume(0);//max size
+                                        write(audioValues.getVolumeValue().getBytes());
+                                        sendData(audioValues.getVolumeValue(), 40);
                                     }
+                                    */
+
                                     break;
                                 case OPT5:
-                                    Log.i(tag, "#mute" + steeringWheelData);
 
-                                    int lastVal = prefManager.getVolumeValue(0);
+                                    Log.i(tag, "#mute" + steeringWheelData);
+                                    mAudioStreamVolumeObserver.muteSWC();
+                                    /*int lastVal = prefManager.getVolumeValue(0);
                                     if (lastVal != 0) {
+
                                         prefManager.setVolumeValue(12, lastVal);
                                         audioValues.setVolume(0);
-                                        sendData(audioValues.getVolumeValue(), 50);
+                                        write(audioValues.getVolumeValue().getBytes());
+                                        sendData(audioValues.getVolumeValue(), 40);
                                     } else {
+                                        Log.i(tag, "#unmute" + steeringWheelData);
                                         audioValues.setVolume(prefManager.getVolumeValue(12));
-                                        sendData(audioValues.getVolumeValue(), 50);
-                                    }
+                                        write(audioValues.getVolumeValue().getBytes());
+                                        sendData(audioValues.getVolumeValue(), 40);
+                                    }*/
+
                                     break;
                                 case OPT6:
+                                    disableCheckCallStatus();
                                     Log.i(tag, "#play" + steeringWheelData);
-                                    audioManager.playHeadUnitMusicPlayer();
+                                    if (prefManager.getBluetoothPlayerState()) {
+                                        sendData("blt-mus-ppp?", 450);
+                                        Log.i("AMIR", "ppp");
+                                    } else
+                                        audioManager.playHeadUnitMusicPlayer();
+
                                     break;
                                 case OPT7:
+                                    disableCheckCallStatus();
                                     Log.i(tag, "#back" + steeringWheelData);
-                                    audioManager.previousHeadUnitMusicPlayer();
+                                    if (prefManager.getBluetoothPlayerState()) {
+                                        sendData("blt-mus-bwd?", 450);
+                                        Log.i("AMIR", "bwd");
+                                    } else
+                                        audioManager.previousHeadUnitMusicPlayer();
+
                                     break;
                                 case OPT8:
+
                                     Log.i(tag, "#next" + steeringWheelData);
-                                    audioManager.nextHeadUnitMusicPlayer();
+                                    if (prefManager.getBluetoothPlayerState()) {
+                                        sendData("blt-mus-fwd?", 450);
+                                        Log.i("AMIR", "fwd");
+                                    } else
+                                        audioManager.nextHeadUnitMusicPlayer();
+
                                     break;
                                 case OPT10:
                                     Log.i(tag, "#<--" + steeringWheelData);
@@ -298,8 +368,7 @@ public class UsbService extends Service {
 
                             }
                             steeringWheelData = 999;
-
-
+                            swcDelay = false;
                         }
                     }
                     //Log.i(tag, "Dynamic Array Index #" + num.getId() );
@@ -307,6 +376,8 @@ public class UsbService extends Service {
             }
         };
         performOnBackgroundThread(runnable);
+
+
     }
 
     public static Thread performOnBackgroundThread(final Runnable runnable) {
@@ -316,7 +387,7 @@ public class UsbService extends Service {
             public void run() {
                 try {
                     while (true) {
-                        sleep(100);
+                        sleep(10);
                         //Log.i(tag, "#RUN" );
                         if (!SteeringWheelControllerActivityIsRun) {
                             runnable.run();
@@ -346,63 +417,91 @@ public class UsbService extends Service {
         nh.postDelayed(new Runnable() {
             @Override
             public void run() {
-                if (threadStatus) {
-                    //Log.d(tag, "service...");
-                    String data = "blt-cll-chk?";
-                    write(data.getBytes());
+                if (!swcDelay) {
+                    if (threadStatus) {
+                        //Log.d(tag, "service...");
+                        String data = "blt-cll-chk?";
+                        write(data.getBytes());
+                    }
+                    if (!dialFragmentIsRun) {
+                        checkAudioManager();
+                    }
+                    obsInit.set(brightness.getScreenBrightness());
+                    checkResetMCUstate();
+
                 }
-                if (!dialFragmentIsRun) {
-                    checkAudioManager();
-                }
-                obsInit.set(brightness.getScreenBrightness());
-                checkResetMCUstate();
+
                 nh.postDelayed(this, handlerDelay);
             }
         }, handlerDelay);
+    }
 
-
-        /*thread = new Thread() {
-            @Override
-            public void run() {
-                while (threadStatus) {
-                    try {
-                        sleep(2500);
-                        Log.i(tag,"sleep");
-                        threadRunnable.run();
-
-                    } catch (InterruptedException e) {
-                        e.printStackTrace();
-                    }
-                }
-
+    private void checkCpuTemp() {
+        if (!swcDelay) {
+            float temp = cpu.getTemperature();
+            //logger.info(String.valueOf(temp));
+            //Log.i(tag, " "+temp);
+            if (temp > 85) {
+                Toast.makeText(context, "HIGH Temperature " + temp + "C !!!", Toast.LENGTH_SHORT).show();
             }
-        };
 
-        threadRunnable = new Runnable() {
-            @Override
-            public void run() {
+            if (temp > maxTemp) {
 
-                Log.d(tag, "service...");
-                String data = "blt-cll-chk?";
-                write(data.getBytes());
-                if (!dialFragmentIsRun) {
+                sendData("oth-tmp-001?", 300);
+                //fanState = true;
+                Log.i(tag, " fan on");
 
-                    checkAudioManager();
+                if (temp > emergencyTemp) {
+                    sendData("oth-tmp-001?", 1000);
                 }
-                obsInit.set(brightness.getScreenBrightness());
-                checkResetMCUstate();
+            } else if (temp < minTemp) {
 
-
+                write("oth-tmp-000?".getBytes());
+                //fanState = false;
+                Log.i(tag, " fan off");
             }
-        };
-        thread.start();*/
+        }
+    }
 
+    private void gotoMainScreen() {
+        Intent startMain = new Intent(Intent.ACTION_MAIN);
+        startMain.addCategory(Intent.CATEGORY_HOME);
+        startMain.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+        context.startActivity(startMain);
     }
 
     private void checkResetMCUstate() {
         if (buffer.equalsIgnoreCase("RUN")) {
-            sendData(audioValues.getAudioValues(), 50);
+            gotoMainScreen();
+
+            maxTemp = 73;
+            minTemp = 58;
+
+            cpu.cpuGoverner("interactive");
+            Settings.System.putInt(getApplicationContext().getContentResolver(),
+                    Settings.System.SCREEN_OFF_TIMEOUT, 1800000);
+            PowerManager.WakeLock wakeLock;
+            PowerManager pm = (PowerManager) getSystemService(Context.POWER_SERVICE);
+            wakeLock = pm.newWakeLock(PowerManager.SCREEN_BRIGHT_WAKE_LOCK | PowerManager.ACQUIRE_CAUSES_WAKEUP, "wake");
+            wakeLock.acquire();
+            threadStatus = true;
+            //sendData(audioValues.getAudioValues(), 100);
+            //sendData(audioValues.getAudioValues(), 400);
             buffer = "";
+
+        }
+        if (buffer.equalsIgnoreCase("OFF")) {
+            gotoMainScreen();
+            maxTemp = 76;
+            minTemp = 63;
+            threadStatus = false;
+
+            cpu.cpuGoverner("powersave");
+            Settings.System.putInt(getApplicationContext().getContentResolver(),
+                    Settings.System.SCREEN_OFF_TIMEOUT, 15000);
+            buffer = "";
+            if (audioManager.isMusicPlay())
+                audioManager.pauseHeadUnitMusicPlayer();
         }
     }
 
@@ -413,9 +512,23 @@ public class UsbService extends Service {
          *
          */
         if (audioManager.isMusicPlay()) {
+
+            if (!isPlayMusic) {
+                isPlayMusic = true;
+                isStopMusic = false;
+                Log.i(tag, "0.1");
+                if (prefManager.getAmplifireState()) {
+                    sendData("oth-amp-001?", 100);
+
+                    if (prefManager.getDebugModeState())
+                        Toast.makeText(context, "<<--amplifire is on-->>0.1", Toast.LENGTH_SHORT).show();
+                }
+            }
+
             //Log.i(tag, "1");
-            if (prefManager.getBluetoothPlayerState()) {
-                sendData("blt-mus-stp?", 100);
+            /*if (prefManager.getBluetoothPlayerState()) {
+                write("blt-mus-stp?".getBytes());
+                sendData("blt-mus-stp?", 300);
                 //  Log.i(tag, "1.1");
                 if (prefManager.getDebugModeState())
                     Toast.makeText(context, "<<--send stop bluetooth command-->>1.1", Toast.LENGTH_SHORT).show();
@@ -425,29 +538,29 @@ public class UsbService extends Service {
                 prefManager.setBluetoothPlayerState(false);
             }
 
-            if (!prefManager.getHeadUnitAudioIsActive() && prefManager.getBluetoothPlayerState() ) {
+            if (!prefManager.getHeadUnitAudioIsActive() && prefManager.getBluetoothPlayerState()) {
                 //delayTimer("mod-pin?");
-                sendData("blt-mus-stp?", 200);
+                sendData("blt-mus-stp?", 300);
                 if (prefManager.getDebugModeState())
                     Toast.makeText(context, "<<--send stop bluetooth command-->>1.2", Toast.LENGTH_SHORT).show();
 
                 // Log.i(tag, "1.2");
                 prefManager.setHeadUnitAudioIsActive(true);
                 prefManager.setBluetoothPlayerState(false);
-            }
+            }*/
 
-            if (!prefManager.getHeadUnitAudioIsActive() && prefManager.getRadioIsRun()) { //if radio is run switch channnel to the headUnit
-                sendData(audioValues.androidBTMode(), 300);
-                //Log.i(tag, "1.3");
+            if (!prefManager.getHeadUnitAudioIsActive() && prefManager.getRadioIsRun() && !RadioSoundChannelActivity) { //if radio is run switch channnel to the headUnit
+                sendData(audioValues.androidBTMode(), 250);
+                Log.i(tag, "1.3");
                 if (prefManager.getDebugModeState())
                     Toast.makeText(context, "<<--set sound channel from RADIO to HU-->>1.3", Toast.LENGTH_SHORT).show();
                 prefManager.setHeadUnitAudioIsActive(true);
                 prefManager.setRadioIsRun(false);
             }
 
-            if (!prefManager.getHeadUnitAudioIsActive() && prefManager.getAUXAudioIsActive()) { //if AUX is ACTIVATE switch channnel to the headUnit
-                sendData(audioValues.androidBTMode(), 100);
-                //Log.i(tag, "1.4");
+            if (!prefManager.getHeadUnitAudioIsActive() && prefManager.getAUXAudioIsActive() && !auxSoundChannelActivity) { //if AUX is ACTIVATE switch channnel to the headUnit
+                sendData(audioValues.androidBTMode(), 150);
+                Log.i(tag, "1.4");
                 if (prefManager.getDebugModeState())
                     Toast.makeText(context, "<<--set sound channel from AUX to HU-->>1.4", Toast.LENGTH_SHORT).show();
 
@@ -459,7 +572,17 @@ public class UsbService extends Service {
 
         } else {
             prefManager.setHeadUnitAudioIsActive(false);
+            if (!isStopMusic) {
+                isPlayMusic = false;
+                isStopMusic = true;
+                Log.i(tag, "0.2");
+                if (prefManager.getAmplifireState() && !prefManager.getBluetoothPlayerState() && !prefManager.getRadioIsRun()) {
+                    sendData("oth-amp-000?", 200);
+                    if (prefManager.getDebugModeState())
+                        Toast.makeText(context, "<<--amplifire is off-->>0.2", Toast.LENGTH_SHORT).show();
+                }
 
+            }
         }
     }
 
@@ -500,6 +623,13 @@ public class UsbService extends Service {
         threadStatus = false;
     }
 
+    public void disableThreadService() {
+        swcDelay = true;
+    }
+
+    public void enableThreadService() {
+        swcDelay = false;
+    }
     public void changeHandlerDelay(int delay) {
         handlerDelay = delay;
     }
@@ -688,6 +818,10 @@ public class UsbService extends Service {
                     // Everything went as expected. Send an intent to MainActivity
                     Intent intent = new Intent(ACTION_USB_READY);
                     context.sendBroadcast(intent);
+
+                    //check volume change and set pt2313 volume
+                    mAudioStreamVolumeObserver = new AudioStreamVolumeObserver(context, audioStreamHandler, audioValues, serialPort);
+                    context.getContentResolver().registerContentObserver(Settings.System.CONTENT_URI, true, mAudioStreamVolumeObserver);
                 } else {
                     // Serial port could not be opened, maybe an I/O error or if CDC driver was chosen, it does not really fit
                     // Send an Intent to Main Activity
@@ -729,9 +863,9 @@ public class UsbService extends Service {
         PendingIntent pendingIntent = PendingIntent.getActivity(this, 0, notificationIntent, 0);
         Notification notification = null;
         if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.JELLY_BEAN) {
-            notification = new Notification.Builder(this).setContentTitle("multimedia service")
-                    .setContentText("multimedia")
-                    .setSmallIcon(R.mipmap.ic_launcher)
+            notification = new Notification.Builder(this).setContentTitle("سرویس مولتی مدیا")
+                    .setContentText("فعال")
+                    .setSmallIcon(R.mipmap.car_multimedia_icon)
                     .setContentIntent(pendingIntent)
                     .setTicker("سرویس مولتی مدیا فعال شد.")
                     .build();

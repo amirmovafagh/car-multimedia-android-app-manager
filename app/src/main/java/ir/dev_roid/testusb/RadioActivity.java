@@ -22,6 +22,7 @@ import com.special.ResideMenu.ResideMenu;
 
 import com.warkiz.widget.IndicatorSeekBar;
 
+import java.text.DecimalFormat;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Timer;
@@ -45,6 +46,8 @@ import static ir.dev_roid.testusb.MyHandler.buffer;
 
 public class RadioActivity extends AppCompatActivity implements View.OnClickListener {
     private static final String tag = RadioActivity.class.getSimpleName();
+
+    public static boolean RadioSoundChannelActivity = true;
     private List<ChannelFrequency> channelFrequenciesList = new ArrayList<>();
     private ChannelFrequency channelFrequency;
     private List<RadioChannelFM> channelsFM;
@@ -55,7 +58,7 @@ public class RadioActivity extends AppCompatActivity implements View.OnClickList
 
 
     private ImageButton nextImgBtn, previousImgBtn;
-    private ImageView modeSwitch,autoSearch,soundGain;
+    private ImageView modeSwitch, autoSearch, soundGain;
     private TextView toolbarTextView, txtFrequency;
     private ResideMenu resideMenu;
     private IndicatorSeekBar frqSeekbar;
@@ -63,7 +66,7 @@ public class RadioActivity extends AppCompatActivity implements View.OnClickList
     private PrefManager prefManager;
     private CustomDialog dialog;
     private Float frequencyFM;
-    private int frequencyAM;
+    private int frequencyAM, handlerDelay;
     private ToolBar_ResideMenu toolBarResideMenu;
     private MyAudioManager audioManager;
     private AudioValues audioValues;
@@ -81,7 +84,7 @@ public class RadioActivity extends AppCompatActivity implements View.OnClickList
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_radio);
         databaseHelper = DatabaseHelper.getInstance(this);
-        autoSearchDialog = new ProgressDialog(RadioActivity.this,R.style.AppCompatAlertDialogStyle);
+        autoSearchDialog = new ProgressDialog(RadioActivity.this, R.style.AppCompatAlertDialogStyle);
 
 
         prefManager = new PrefManager(this);
@@ -100,14 +103,13 @@ public class RadioActivity extends AppCompatActivity implements View.OnClickList
         setRecyclerView();
 
 
-
         nextImgBtn.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                if(!AMFMmode){
+                if (!AMFMmode) {
                     frequencyAM += 1;
                     frqSeekbar.setProgress(frequencyAM);
-                }else {
+                } else {
                     frequencyFM += (float) 0.1;
                     frqSeekbar.setProgress(frequencyFM);
                 }
@@ -119,10 +121,10 @@ public class RadioActivity extends AppCompatActivity implements View.OnClickList
             @Override
             public void onClick(View view) {
 
-                if(!AMFMmode){
+                if (!AMFMmode) {
                     frequencyAM -= 1;
                     frqSeekbar.setProgress(frequencyAM);
-                }else {
+                } else {
                     frequencyFM -= (float) 0.1;
                     frqSeekbar.setProgress(frequencyFM);
                 }
@@ -133,12 +135,12 @@ public class RadioActivity extends AppCompatActivity implements View.OnClickList
             @Override
             public void onProgressChanged(IndicatorSeekBar seekBar, int progress, float progressFloat, boolean fromUserTouch) {
                 checkVoiceChannel();
-                if(!AMFMmode){
+                if (!AMFMmode) {
                     //AM
                     frequencyAM = progress;
                     txtFrequency.setText(String.valueOf(frequencyAM));
                     radioValues.setFrequencyAM(frequencyAM);
-                }else {
+                } else {
                     //FM
                     frequencyFM = progressFloat;
                     txtFrequency.setText(String.valueOf(frequencyFM));
@@ -182,12 +184,12 @@ public class RadioActivity extends AppCompatActivity implements View.OnClickList
     }
 
     private void getRadioMode() {
-        if(radioValues.getMode()==0){
+        if (radioValues.getMode() == 0) {
             //AM
             AMFMmode = false;
-        }else {
+        } else {
             //FM
-            AMFMmode=true;
+            AMFMmode = true;
         }
     }
 
@@ -199,28 +201,34 @@ public class RadioActivity extends AppCompatActivity implements View.OnClickList
         recyclerView.addItemDecoration(new DividerItemDecoration(this, LinearLayoutManager.VERTICAL));
         recyclerView.setAdapter(frequencyAdapter);
 
-        if(!AMFMmode){
+        if (!AMFMmode) {
             readAMtableSetInRec();
-        }else {
+        } else {
             readFMtableSetInRec();
         }
 
     }
 
     private void readFMtableSetInRec() {
-        if(!channelFrequenciesList.isEmpty()){channelFrequenciesList.clear();}
+        if (!channelFrequenciesList.isEmpty()) {
+            channelFrequenciesList.clear();
+        }
 
         channelsFM = databaseHelper.getAllRadioChannelsFM(); //read frequenies from FM table
         for (RadioChannelFM rc : channelsFM) {
-            float i = Float.parseFloat(rc.getFrq());
-            channelFrequency = new ChannelFrequency(String.valueOf(i / 20));
+            double i = Float.parseFloat(rc.getFrq());
+            i = (i / 20);
+            DecimalFormat value = new DecimalFormat("#.#");
+            channelFrequency = new ChannelFrequency(String.valueOf(value.format(i)));
             channelFrequenciesList.add(channelFrequency);
         }
         frequencyAdapter.notifyDataSetChanged();
     }
 
     private void readAMtableSetInRec() {
-        if(!channelFrequenciesList.isEmpty()){channelFrequenciesList.clear();}
+        if (!channelFrequenciesList.isEmpty()) {
+            channelFrequenciesList.clear();
+        }
 
         channelsAM = databaseHelper.getAllRadioChannelsAM(); //read frequenies from AM table
         for (RadioChannelAM rc : channelsAM) {
@@ -295,21 +303,21 @@ public class RadioActivity extends AppCompatActivity implements View.OnClickList
     }
 
     private void soundGainFunction() {
-        if(radioValues.getSoundGain()==0){
+        if (radioValues.getSoundGain() == 0) {
             radioValues.setSoundGain(1);
             soundGain.setImageResource(R.drawable.radio_sound_gain_on_96);
-        }else {
+        } else {
             radioValues.setSoundGain(0);
             soundGain.setImageResource(R.drawable.radio_sound_gain_off_96);
         }
         connectUsbService.write(radioValues.getRadioManualSearchValues());
     }
 
-    private void changeMode(){
+    private void changeMode() {
         if (!AMFMmode) {
             radioValues.setMode(1);
             getRadioMode();
-            setFrequencySeekbarMode(88,108,true);
+            setFrequencySeekbarMode((float) 87.5, 108, true);
 
             modeSwitch.setImageResource(R.drawable.fm_mode_96);
             readFMtableSetInRec();
@@ -324,14 +332,14 @@ public class RadioActivity extends AppCompatActivity implements View.OnClickList
             //AM
             radioValues.setMode(0);
             getRadioMode();
-            setFrequencySeekbarMode(540,1720,false);
+            setFrequencySeekbarMode(540, 1720, false);
 
             modeSwitch.setImageResource(R.drawable.am_mode_96);
 
             readAMtableSetInRec();
             for (int i = 0; i < 6; i++) {
                 favRadioButton = findViewById(favBtnRadioIDs[i]);
-                favRadioButton.setText(prefManager.getFavoriteRadioFrequency(i+6));
+                favRadioButton.setText(prefManager.getFavoriteRadioFrequency(i + 6));
             }
 
         }
@@ -339,40 +347,45 @@ public class RadioActivity extends AppCompatActivity implements View.OnClickList
     }
 
     private void autoSearchFunction() {
+        buffer = "rad-0";
+        connectUsbService.disableThreadService();
         connectUsbService.write(radioValues.getRadioAutoSearchValues());
         autoSearchDialog.setMessage("SEARCHING, please wait...");
         autoSearchDialog.setCancelable(false);
         autoSearchDialog.show();
         final Handler handler = new Handler();
-        if(radioValues.getMode()==0){
+        if (radioValues.getMode() == 0) {
             //AM
+            handlerDelay = 35000;
+            //Toast.makeText(this, "جستجوی خودکار به زودی در دسترس خواهد بود.", Toast.LENGTH_LONG).show();
             databaseHelper.removeAllRadioChannelsAM();
             handler.postDelayed(new Runnable() {
 
                 @Override
                 public void run() {
-                    if (buffer.contains("rad-") && Float.parseFloat(buffer.substring(4))!= 0) {
+                    if (buffer.contains("rad-") && Float.parseFloat(buffer.substring(4)) != 0) {
 
                         //Toast.makeText(RadioActivity.this, buffer.substring(4), Toast.LENGTH_SHORT).show();
                         databaseHelper.insertRadioChannelsAM(buffer.substring(4));
                     }
-                    Log.i("amir","runAM");
-                    handler.postDelayed(this, 100);
+                    Log.i("amir", "runAM");
+                    handler.postDelayed(this, 20);
                 }
             }, 0);
-        }else {
+        } else {
             //FM
+            handlerDelay = 15000;
             databaseHelper.removeAllRadioChannelsFM();
             handler.postDelayed(new Runnable() {
                 @Override
                 public void run() {
-                    if (buffer.contains("rad-") && Float.parseFloat(buffer.substring(4))!= 0) {
+                    if (buffer.contains("rad-") && Float.parseFloat(buffer.substring(4)) != 0) {
 
                         //Toast.makeText(RadioActivity.this, buffer.substring(4), Toast.LENGTH_SHORT).show();
                         databaseHelper.insertRadioChannelsFM(buffer.substring(4));
                     }
-                    Log.i("amir","runFM");
-                    handler.postDelayed(this, 100);
+                    Log.i("amir", "runFM");
+                    handler.postDelayed(this, 20);
                 }
             }, 0);
         }
@@ -383,8 +396,9 @@ public class RadioActivity extends AppCompatActivity implements View.OnClickList
                 handler.removeMessages(0);
                 setRecyclerView();
                 autoSearchDialog.cancel();
+                connectUsbService.enableThreadService();
             }
-        },15000);
+        }, handlerDelay);
 
         /*Timer t = new Timer();
         t.schedule(new TimerTask() {
@@ -403,7 +417,7 @@ public class RadioActivity extends AppCompatActivity implements View.OnClickList
         favBtn1.setOnLongClickListener(new View.OnLongClickListener() {
             @Override
             public boolean onLongClick(View view) {
-                favBtnSaveFunction(6, 0,favBtn1);
+                favBtnSaveFunction(6, 0, favBtn1);
                 return false;
 
             }
@@ -412,7 +426,7 @@ public class RadioActivity extends AppCompatActivity implements View.OnClickList
         favBtn2.setOnLongClickListener(new View.OnLongClickListener() {
             @Override
             public boolean onLongClick(View view) {
-                favBtnSaveFunction(7, 1,favBtn2);
+                favBtnSaveFunction(7, 1, favBtn2);
                 return false;
             }
         });
@@ -420,7 +434,7 @@ public class RadioActivity extends AppCompatActivity implements View.OnClickList
         favBtn3.setOnLongClickListener(new View.OnLongClickListener() {
             @Override
             public boolean onLongClick(View view) {
-                favBtnSaveFunction(8, 2,favBtn3);
+                favBtnSaveFunction(8, 2, favBtn3);
                 return false;
             }
         });
@@ -428,7 +442,7 @@ public class RadioActivity extends AppCompatActivity implements View.OnClickList
         favBtn4.setOnLongClickListener(new View.OnLongClickListener() {
             @Override
             public boolean onLongClick(View view) {
-                favBtnSaveFunction(9, 3,favBtn4);
+                favBtnSaveFunction(9, 3, favBtn4);
                 return false;
             }
         });
@@ -436,7 +450,7 @@ public class RadioActivity extends AppCompatActivity implements View.OnClickList
         favBtn5.setOnLongClickListener(new View.OnLongClickListener() {
             @Override
             public boolean onLongClick(View view) {
-                favBtnSaveFunction(10, 4,favBtn5);
+                favBtnSaveFunction(10, 4, favBtn5);
                 return false;
             }
         });
@@ -444,7 +458,7 @@ public class RadioActivity extends AppCompatActivity implements View.OnClickList
         favBtn6.setOnLongClickListener(new View.OnLongClickListener() {
             @Override
             public boolean onLongClick(View view) {
-                favBtnSaveFunction(11, 5,favBtn6);
+                favBtnSaveFunction(11, 5, favBtn6);
                 return false;
             }
         });
@@ -489,7 +503,7 @@ public class RadioActivity extends AppCompatActivity implements View.OnClickList
 
 
         if (!AMFMmode) {
-            setFrequencySeekbarMode(540,1720,false);
+            setFrequencySeekbarMode(540, 1720, false);
             modeSwitch.setImageResource(R.drawable.am_mode_96);
 
             //AM
@@ -501,7 +515,7 @@ public class RadioActivity extends AppCompatActivity implements View.OnClickList
 
         } else {
             //FM
-            setFrequencySeekbarMode(88,108,true);
+            setFrequencySeekbarMode((float) 87.5, 108, true);
 
             modeSwitch.setImageResource(R.drawable.fm_mode_96);
             for (int i = 0; i < favBtnRadioIDs.length; i++) {
@@ -510,9 +524,9 @@ public class RadioActivity extends AppCompatActivity implements View.OnClickList
                 favRadioButton.setOnClickListener(this);
             }
         }
-        if(radioValues.getSoundGain()==0){
+        if (radioValues.getSoundGain() == 0) {
             soundGain.setImageResource(R.drawable.radio_sound_gain_off_96);
-        }else soundGain.setImageResource(R.drawable.radio_sound_gain_on_96);
+        } else soundGain.setImageResource(R.drawable.radio_sound_gain_on_96);
 
 
         favBtn1 = findViewById(favBtnRadioIDs[0]);
@@ -525,16 +539,16 @@ public class RadioActivity extends AppCompatActivity implements View.OnClickList
     }
 
 
-    private void setFrequencySeekbarMode(int min, int max, boolean b) {
+    private void setFrequencySeekbarMode(float min, int max, boolean b) {
         frqSeekbar.setMax(max);
         frqSeekbar.setMin(min);
         frqSeekbar.setMax(max);// need for problem in set period min to max
-        if(!b){
+        if (!b) {
 
             frequencyAM = prefManager.getRadioFrequencyAM();
             txtFrequency.setText(String.valueOf(frequencyAM));
             frqSeekbar.setProgress(frequencyAM);
-        }else {
+        } else {
             frequencyFM = prefManager.getRadioFrequencyFM();
             txtFrequency.setText(String.valueOf(frequencyFM));
             frqSeekbar.setProgress(frequencyFM);
@@ -560,9 +574,21 @@ public class RadioActivity extends AppCompatActivity implements View.OnClickList
                 audioManager.pauseHeadUnitMusicPlayer();
             }
 
-            sendData(audioValues.radioMode(), 100);
+            sendData(audioValues.radioMode(), 10);
             prefManager.setBluetoothPlayerState(false);
             prefManager.setHeadUnitAudioIsActive(false);
+        }
+    }
+
+    private void amplifireState() {
+        if (prefManager.getAmplifireState()) {
+
+            sendData("oth-amp-001?", 100);
+            sendData("oth-amp-001?", 500);
+        } else {
+            connectUsbService.write("oth-amp-000?");
+            sendData("oth-amp-000?", 100);
+            sendData("oth-amp-000?", 500);
         }
     }
 
@@ -570,8 +596,9 @@ public class RadioActivity extends AppCompatActivity implements View.OnClickList
     protected void onStart() {
         super.onStart();
         audioManager.pauseHeadUnitMusicPlayer();
-        sendData(audioValues.radioMode(), 1500);
-        sendData(radioValues.getRadioManualSearchValues(), 1000);
+        connectUsbService.write(audioValues.radioMode());
+
+        sendData(radioValues.getRadioManualSearchValues(), 700);
         Log.i(tag, "onStart");
         prefManager.setRadioIsRun(true);
     }
@@ -579,15 +606,20 @@ public class RadioActivity extends AppCompatActivity implements View.OnClickList
     @Override
     protected void onResume() {
         super.onResume();
+        RadioSoundChannelActivity = true;
         audioManager.pauseHeadUnitMusicPlayer();
         prefManager.setHeadUnitAudioIsActive(false);
+        sendData(audioValues.radioMode(), 1500);
         Log.i(tag, "onResume");
+        amplifireState();
         prefManager.setRadioIsRun(true);
     }
 
     @Override
     protected void onPause() {
         super.onPause();
+        RadioSoundChannelActivity = false;
+        connectUsbService.enableThreadService();
         Log.i(tag, "onPause");
 
     }
@@ -603,6 +635,8 @@ public class RadioActivity extends AppCompatActivity implements View.OnClickList
     protected void onDestroy() {
         super.onDestroy();
         sendData(audioValues.androidBTMode(), 300);
+        sendData("oth-amp-000?", 200);
+        sendData("oth-amp-000?", 400);
         Log.i(tag, "onDESTROy");
         prefManager.setRadioIsRun(false);
 

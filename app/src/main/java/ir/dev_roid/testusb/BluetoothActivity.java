@@ -123,7 +123,14 @@ public class BluetoothActivity extends AppCompatActivity {
     @Override
     protected void onDestroy() {
         super.onDestroy();
-        unbindService(connectUsbServiceStatic.onDestroyUsb());
+        if (connectUsbServiceStatic != null)
+            unbindService(connectUsbServiceStatic.onDestroyUsb());
 
+    }
+
+    @Override
+    public void onBackPressed() {
+        super.onBackPressed();
+        finish();
     }
 }

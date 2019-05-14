@@ -44,20 +44,18 @@ public class CustomDialog {
         dialog.getWindow().setBackgroundDrawable(new ColorDrawable(Color.TRANSPARENT));
         dialog.setCanceledOnTouchOutside(true);
         audioManager = (AudioManager) activity.getSystemService(Context.AUDIO_SERVICE);
-        mute = (ImageButton) dialog.findViewById(R.id.ib_mute_cDialog);
-        SeekBar carVolumeSeek = (SeekBar) dialog.findViewById(R.id.seekbar_car_volume);
-        SeekBar osVolumeSeek = (SeekBar) dialog.findViewById(R.id.seekbar_os_volume);
-        SeekBar brightnessSeek = (SeekBar) dialog.findViewById(R.id.seekbar_brightness);
+        mute = dialog.findViewById(R.id.ib_mute_cDialog);
+        SeekBar carVolumeSeek = dialog.findViewById(R.id.seekbar_car_volume);
+        SeekBar osVolumeSeek = dialog.findViewById(R.id.seekbar_os_volume);
+        SeekBar brightnessSeek = dialog.findViewById(R.id.seekbar_brightness);
         brightnessSeek.setMax(255);
         osVolumeSeek.setMax(audioManager.getStreamMaxVolume(AudioManager.STREAM_MUSIC));
         osVolumeSeek.setProgress(audioManager.getStreamVolume(AudioManager.STREAM_MUSIC));
-        carVolumeSeek.setMax(55);
+        carVolumeSeek.setMax(audioValues.getSoundLimitValue());
         carVolumeSeek.setProgress(pref.getVolumeValue(0));
-
 
         brightness = new Brightness(activity);
         brightnessSeek.setProgress(brightness.getScreenBrightness());
-
 
         mute.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -117,8 +115,7 @@ public class CustomDialog {
             @Override
             public void onProgressChanged(SeekBar seekBar, int i, boolean b) {
                 brightness.setScreenBrightness(i);
-
-                connectUsbService.write("mod-brg-" + i / 5 + "?");
+                connectUsbService.write("oth-brg-" + i / 5 + "?");
             }
 
             @Override

@@ -162,12 +162,24 @@
                 android:orientation="vertical"
                 >
 
+                <android.support.v7.widget.SwitchCompat
+                    android:id="@+id/amplifire_switch"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="30dp"
+
+                    android:layout_gravity="center"
+                    android:scaleY="2"
+                    android:scaleX="2"
+                    android:text="AMP"
+                    android:textColor="@android:color/white"
+                    />
                 <abak.tr.com.boxedverticalseekbar.BoxedVertical
                     android:id="@+id/base_vertical_seekbar"
                     android:layout_width="80dp"
                     android:layout_height="300dp"
                     android:layout_gravity="center"
-                    android:layout_marginTop="100dp"
+                    android:layout_marginTop="45dp"
                     android:layout_marginBottom="30dp"
 
                     app:backgroundColor="@color/color_background"
@@ -204,12 +216,25 @@
 
                 >
 
+                <android.support.v7.widget.SwitchCompat
+                    android:id="@+id/sound_limit_switch"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="30dp"
+
+                    android:layout_gravity="center"
+                    android:scaleY="2"
+                    android:scaleX="2"
+                    android:text="Limit"
+                    android:textColor="@android:color/white"
+                    />
+
                 <abak.tr.com.boxedverticalseekbar.BoxedVertical
                     android:id="@+id/treble_vertical_seekbar"
                     android:layout_width="80dp"
                     android:layout_height="300dp"
                     android:layout_gravity="center"
-                    android:layout_marginTop="100dp"
+                    android:layout_marginTop="45dp"
                     android:layout_marginBottom="30dp"
 
                     app:backgroundColor="@color/color_background"

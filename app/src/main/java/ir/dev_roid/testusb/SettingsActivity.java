@@ -43,7 +43,7 @@ public class SettingsActivity extends AppCompatActivity implements View.OnTouchL
     private PrefManager prefManager;
     private ImageButton balanceUpBtn, balanceDownBtn, balanceRightBtn, balanceLeftBtn;
     private Handler handlerSetSpeakersData;
-    private SwitchCompat loudSwitch;
+    private SwitchCompat loudSwitch, amplifire, soundLimitSwitch;
     private Button resetBalance, frontBalance, driverBalance, rearBalance;
     /**
      * -----Previuos config 1280*672
@@ -288,14 +288,13 @@ public class SettingsActivity extends AppCompatActivity implements View.OnTouchL
 
 
         fl = checkPercent(frontLeft);
-        audioValues.setVolumeLeftFront(fl);
         fr = checkPercent(frontRight);
-        audioValues.setVolumeRightFront(fr);
-
         rl = checkPercent(rearLeft);
-        audioValues.setVolumeLeftRear(rl);
         rr = checkPercent(rearRight);
-        audioValues.setVolumeRightRear(rr);
+        audioValues.setVolumeLeftFront(rl);
+        audioValues.setVolumeRightFront(rr);
+        audioValues.setVolumeLeftRear(fl);
+        audioValues.setVolumeRightRear(fr);
 
         Log.d(TAG, " fl : " + fl + " fr : " + fr + " rl : " + rl + " rr : " + rr);
         sendData(audioValues.getAudioValues());
@@ -324,7 +323,9 @@ public class SettingsActivity extends AppCompatActivity implements View.OnTouchL
     }
 
     private void initObjectsView() {
+        amplifire = findViewById(R.id.amplifire_switch);
         loudSwitch = findViewById(R.id.loudness_switch);
+        soundLimitSwitch = findViewById(R.id.sound_limit_switch);
         audioBalanceImg = findViewById(R.id.audio_balance_img);
         audioBalanceImg.setOnTouchListener(this);
         balanceUpBtn = findViewById(R.id.balance_up_imgbtn);
@@ -348,13 +349,43 @@ public class SettingsActivity extends AppCompatActivity implements View.OnTouchL
         initButtons();
     }
 
+    private void setSound() {
+
+        if (prefManager.getAUXAudioIsActive()) {
+            sendData(audioValues.auxMode());
+            return;
+        } else if (prefManager.getRadioIsRun()) {
+            sendData(audioValues.radioMode());
+            return;
+        } else sendData(audioValues.androidBTMode());
+    }
+
 
     private void initAudioEQsettings() {
+
+        soundLimitSwitch.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
+            @Override
+            public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
+                if (isChecked) {
+                    prefManager.setVolumeValue(13,55);
+                }else prefManager.setVolumeValue(13,63);
+            }
+        });
+
+        amplifire.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
+            @Override
+            public void onCheckedChanged(CompoundButton compoundButton, boolean b) {
+                prefManager.setAmplifireState(b);
+                if (!b)
+                    sendData("oth-amp-000?");
+            }
+        });
+
         loudSwitch.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
             @Override
             public void onCheckedChanged(CompoundButton compoundButton, boolean b) {
                 audioValues.loudState(b);
-                sendData(audioValues.androidBTMode());
+                setSound();
 
                 if (prefManager.getDebugModeState())
                     Toast.makeText(SettingsActivity.this, "" + prefManager.getVolumeValue(11), Toast.LENGTH_SHORT).show();
@@ -362,6 +393,7 @@ public class SettingsActivity extends AppCompatActivity implements View.OnTouchL
 
             }
         });
+
 
         loudSwitch.setOnLongClickListener(new View.OnLongClickListener() {
             @Override
@@ -421,7 +453,7 @@ public class SettingsActivity extends AppCompatActivity implements View.OnTouchL
             @Override
             public void onPointsChanged(BoxedVertical boxedVertical, int i) {
                 audioValues.setGainValue(i);
-                sendData(audioValues.androidBTMode());
+                setSound();
             }
 
             @Override
@@ -538,6 +570,15 @@ public class SettingsActivity extends AppCompatActivity implements View.OnTouchL
         else
             loudSwitch.setChecked(false);
 
+        if (prefManager.getAmplifireState())
+            amplifire.setChecked(true);
+        else
+            amplifire.setChecked(false);
+
+        if (prefManager.getVolumeValue(13) == 55)
+            soundLimitSwitch.setChecked(true);
+        else soundLimitSwitch.setChecked(false);
+
 
         //checkResolution();
         audioBalanceImg.animate()
@@ -545,6 +586,12 @@ public class SettingsActivity extends AppCompatActivity implements View.OnTouchL
                 .y(prefManager.getYcordinate())
                 .setDuration(100)
                 .start();
+    }
+
+    @Override
+    protected void onDestroy() {
+        super.onDestroy();
+        unbindService(connectUsbService.onDestroyUsb());
     }
 
     @Override

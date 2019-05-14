@@ -2,11 +2,14 @@
 <resources>
     <color name="colorPrimary">#212121</color>
     <color name="colorPrimaryDark">#000000</color>
-    <color name="activityBackground">#393939</color>
+    <color name="activityBackground">#303030</color>
+    <color name="my_app_background_color">#303030</color>
+    <color name="my_app_secondary_color">#03Dac5</color>
+    <color name="my_app_error_color">#B00020</color>
     <color name="cards_dialogs">#424242</color>
     <color name="colorAccent">#F44336</color>
     <color name="color_text">#FFFFFF</color>
-    <color name="bgBottomNavigation">#F44336</color>
+    <color name="bgBottomNavigation">#424242</color>
     <color name="bgMedia">#1C0C2E</color>
 
     <color name="dark_green">#2e3837</color>

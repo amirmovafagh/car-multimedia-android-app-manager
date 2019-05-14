@@ -3,78 +3,101 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:background="@drawable/main_background_gradient"
+    android:background="@color/activityBackground"
     android:orientation="vertical"
     tools:context=".MainActivity">
     <include layout="@layout/toolbar"></include>
 
-    <android.support.constraint.ConstraintLayout
-        android:layout_width="match_parent"
-        android:layout_height="match_parent">
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="horizontal"
+            android:padding="20dp">
+            <ImageButton
+                android:id="@+id/image_view_bluetooth"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_weight="0.25"
+                android:layout_marginRight="20dp"
+                android:background="@drawable/main_activity_image_button"
+                android:gravity="center"
+                android:src="@mipmap/car_bluetooth_icon"
+                />
 
-        <Button
-            android:id="@+id/pine"
-            android:layout_width="100dp"
-            android:layout_height="100dp"
-            android:layout_marginStart="8dp"
-            android:layout_marginEnd="8dp"
-            android:text="Head Unit"
-            app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintStart_toStartOf="parent"
-            tools:layout_editor_absoluteY="33dp" />
+            <ImageButton
+                android:id="@+id/image_view_radio"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_weight="0.25"
+                android:layout_marginRight="20dp"
+                android:background="@drawable/main_activity_image_button"
+                android:gravity="center"
+                android:src="@mipmap/car_radio_icon"
+                />
+            <ImageButton
+                android:id="@+id/image_view_aux"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_weight="0.25"
+                android:layout_marginRight="20dp"
+                android:background="@drawable/main_activity_image_button"
+                android:src="@mipmap/car_aux_icon"
+                 />
 
-        <Button
-            android:id="@+id/aux"
-            android:layout_width="100dp"
-            android:layout_height="100dp"
-            android:layout_marginStart="8dp"
-            android:layout_marginEnd="8dp"
-            android:text="aux"
-            app:layout_constraintEnd_toStartOf="@+id/pine"
-            app:layout_constraintStart_toStartOf="parent"
-            tools:layout_editor_absoluteY="33dp" />
+            <ImageButton
+                android:id="@+id/image_view_tv"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_weight="0.25"
+                android:layout_marginRight="10dp"
+                android:background="@drawable/main_activity_image_button"
+                android:src="@mipmap/car_tv_icon"
+                />
+        </LinearLayout>
 
-        <Button
-            android:id="@+id/radio"
-            android:layout_width="100dp"
-            android:layout_height="100dp"
-            android:layout_marginStart="8dp"
-            android:layout_marginEnd="8dp"
-            android:text="radio"
-            app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintStart_toEndOf="@+id/pine"
-            tools:layout_editor_absoluteY="33dp" />
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="horizontal"
+            android:padding="20dp">
+            <android.support.constraint.Guideline
+                android:id="@+id/sound_module_seekbar"
+                android:layout_width="0dp"
+                android:layout_height="300dp"
+                android:layout_weight="0.1"
+                android:layout_marginRight="160dp"
+                 />
+            <ImageButton
+                android:id="@+id/image_view_audioSettings"
+                android:layout_width="0dp"
+                android:layout_height="match_parent"
+                android:layout_weight="0.3"
+                android:layout_marginRight="20dp"
+                android:layout_marginTop="60dp"
+                android:layout_marginBottom="60dp"
+                android:background="@drawable/main_activity_image_button"
+                android:src="@drawable/speaker"/>
+            <ImageButton
+                android:id="@+id/image_view_map"
+                android:layout_width="0dp"
+                android:layout_height="match_parent"
+                android:layout_weight="0.3"
+                android:layout_marginRight="20dp"
+                android:layout_marginTop="60dp"
+                android:layout_marginBottom="60dp"
+                android:background="@drawable/main_activity_image_button"
+                android:src="@drawable/set_time_gps"/>
+            <ImageButton
+                android:id="@+id/image_view_steering_wheel"
+                android:layout_width="0dp"
+                android:layout_height="match_parent"
+                android:layout_weight="0.3"
+                android:layout_marginRight="10dp"
+                android:layout_marginTop="60dp"
+                android:layout_marginBottom="60dp"
+                android:background="@drawable/main_activity_image_button"
+                android:src="@drawable/steering_wheel"/>
 
-        <abak.tr.com.boxedverticalseekbar.BoxedVertical
-            android:id="@+id/sound_module_seekbar"
-            android:layout_width="80dp"
-            android:layout_height="300dp"
-            android:layout_gravity="center"
 
-            android:layout_marginStart="16dp"
-            android:layout_marginTop="8dp"
-            android:layout_marginBottom="8dp"
-            app:backgroundColor="@color/color_background"
-            app:cornerRadius="20dp"
-            app:defaultValue="55"
-            app:imageEnabled="false"
-            app:layout_constraintBottom_toBottomOf="parent"
-            app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toTopOf="parent"
-            app:layout_constraintVertical_bias="0.531"
-            app:max="55"
-            app:min="0"
-            app:progressColor="@color/color_progress"
-            app:step="1"
-            app:textBottomPadding="20"
-            app:textColor="#FF0000"
-            app:textEnabled="true"
-            app:textSize="30sp"
-            app:touchDisabled="false" />
-    </android.support.constraint.ConstraintLayout>
-
-
-
-
-
+        </LinearLayout>
 </LinearLayout>

@@ -1,6 +1,6 @@
 <shape xmlns:android="http://schemas.android.com/apk/res/android" >
 
-    <solid android:color="@color/activityBackground" />
+    <solid android:color="@color/cards_dialogs" />
 
     <stroke
         android:width="2dp"

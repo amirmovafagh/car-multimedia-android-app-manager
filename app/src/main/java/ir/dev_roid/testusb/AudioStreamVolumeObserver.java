@@ -5,6 +5,7 @@ import android.content.Context;
 import android.database.ContentObserver;
 import android.media.AudioManager;
 import android.os.Handler;
+import android.os.Looper;
 import android.provider.Settings;
 import android.support.annotation.NonNull;
 import android.util.Log;
@@ -27,14 +28,18 @@ public class AudioStreamVolumeObserver extends ContentObserver {
     int previousVolume;
     private Context context;
     private AudioValues audioValues;
+    private UsbSerialDevice serialPort;
+    private AudioManager audio;
+    private boolean swcDelay = false;
 
-    public AudioStreamVolumeObserver(Context c, Handler handler, AudioValues audioValues) {
+
+    public AudioStreamVolumeObserver(Context c, Handler handler, AudioValues audioValues, UsbSerialDevice serialPort) {
         super(handler);
-
+        this.serialPort = serialPort;
         context = c;
         this.audioValues = audioValues;
 
-        AudioManager audio = (AudioManager) context.getSystemService(Context.AUDIO_SERVICE);
+        audio = (AudioManager) context.getSystemService(Context.AUDIO_SERVICE);
         previousVolume = audio.getStreamVolume(AudioManager.STREAM_MUSIC);
     }
 
@@ -47,35 +52,87 @@ public class AudioStreamVolumeObserver extends ContentObserver {
     public void onChange(boolean selfChange) {
         super.onChange(selfChange);
 
+        audio = (AudioManager) context.getSystemService(Context.AUDIO_SERVICE);
+        float currentVolume = audio.getStreamVolume(AudioManager.STREAM_MUSIC);
+        //audioValues.setAndroidLastVolume((int) currentVolume);
+        //int delta = previousVolume - currentVolume;
+        int pt23Volume = audioValues.getVolumeFromPref();
 
-        //write(data.getBytes());
-        AudioManager audio = (AudioManager) context.getSystemService(Context.AUDIO_SERVICE);
-        int currentVolume = audio.getStreamVolume(AudioManager.STREAM_MUSIC);
-        int delta = previousVolume - currentVolume;
-        int moduleVolume = Integer.parseInt(audioValues.getVolumeValue());
 
-
-        if (delta > 0) {
-            audio.setStreamVolume(AudioManager.STREAM_MUSIC, 15, AudioManager.FLAG_PLAY_SOUND);
+        float vol = (currentVolume / 15) * audioValues.getSoundLimitValue();
+        //Log.i(TAG, "currentVolume :" + currentVolume + " , ptVolume :" + pt23Volume + " , vol :" + vol);
+        setSoundModuleVolume(Math.round(vol));
+        audio.adjustStreamVolume(AudioManager.STREAM_MUSIC, AudioManager.ADJUST_SAME, AudioManager.FLAG_SHOW_UI);
+        /*if (delta > 0) {
+            //audio.setStreamVolume(AudioManager.STREAM_MUSIC, 15, AudioManager.FLAG_PLAY_SOUND);
             Log.d(TAG, "Decreased");
             previousVolume = currentVolume;
 
-            if(moduleVolume < 63 && moduleVolume > 0)
-                setSoundModuleVolume(moduleVolume-1);
+            if (moduleVolume < 56 && moduleVolume >= 3) {
+                setSoundModuleVolume(moduleVolume - 3);
+                Log.i(TAG, "  ptVolume :" + moduleVolume);
+            }
         } else if (delta < 0) {
-            audio.setStreamVolume(AudioManager.STREAM_MUSIC, 15, AudioManager.FLAG_PLAY_SOUND);
+            //audio.setStreamVolume(AudioManager.STREAM_MUSIC, 15, AudioManager.FLAG_PLAY_SOUND);
             Log.d(TAG, "Increased");
             previousVolume = currentVolume;
 
-            if(moduleVolume < 63 && moduleVolume > 0)
-                setSoundModuleVolume(moduleVolume+1);
-        }
+            if (moduleVolume <= 52 && moduleVolume >= 0) {
+                setSoundModuleVolume(moduleVolume + 3);
+                Log.i(TAG, "  ptVolume :" + moduleVolume);
+            }
+        }*/
 
     }
 
     private void setSoundModuleVolume(int volume) {
         audioValues.setVolume(volume);
         //mConnectUsbServiceStatic.write(audioValues.getVolumeValue());
+        if (serialPort != null) {
+            serialPort.syncWrite(audioValues.getVolumeValue().getBytes(), 0);
+            serialPort.syncWrite(audioValues.getVolumeValue().getBytes(), 300);
+            if (swcDelay){
+                new Handler(Looper.getMainLooper()).postDelayed(new Runnable() {
+                    @Override
+                    public void run() {
+                        serialPort.syncWrite(audioValues.getVolumeValue().getBytes(), 1000);
+
+                    }
+                },700);
+
+            }
+            swcDelay = false;
+
+        }
+    }
+
+    public void increaseVolumeSWC() {
+        int volume = audio.getStreamVolume(AudioManager.STREAM_MUSIC);
+        audio.setStreamVolume(AudioManager.STREAM_MUSIC, volume + 1, AudioManager.FLAG_PLAY_SOUND);
+
+    }
+
+    public void decreaseVolumeSWC() {
+        int volume = audio.getStreamVolume(AudioManager.STREAM_MUSIC);
+        audio.setStreamVolume(AudioManager.STREAM_MUSIC, volume - 1, AudioManager.FLAG_PLAY_SOUND);
+
+    }
+
+    public void muteSWC() {
+        int volume = audio.getStreamVolume(AudioManager.STREAM_MUSIC);
+        if(volume ==0){
+            audio.setStreamVolume(AudioManager.STREAM_MUSIC, audioValues.getAndroidLastVolume() , AudioManager.FLAG_PLAY_SOUND);
+        }else {
+            audioValues.setAndroidLastVolume(volume);
+            audioValues.setVolume(0);
+            audio.setStreamVolume(AudioManager.STREAM_MUSIC, 0, AudioManager.FLAG_PLAY_SOUND);
+        }
+
+
+    }
+
+    public void swcDelayOn() {
+        swcDelay = true;
     }
 }
 

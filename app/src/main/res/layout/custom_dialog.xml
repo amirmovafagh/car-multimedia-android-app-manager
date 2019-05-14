@@ -58,7 +58,8 @@
         <SeekBar
             android:id="@+id/seekbar_car_volume"
             android:layout_width="0dp"
-            android:max="55"
+            android:max="63"
+            android:progressDrawable="@drawable/seek_bar_volume_mcu"
             android:layout_height="match_parent"
             android:layout_weight="0.81"
             android:thumb="@drawable/thumb_seekbar"/>
@@ -77,7 +78,7 @@
             style="@style/spaceSeekbar"/>
         <ImageView
             android:layout_width="0dp"
-            android:layout_height="40dp"
+            android:layout_height="30dp"
             android:layout_weight="0.1"
             android:src="@drawable/brightness"/>
         <Space
@@ -87,6 +88,7 @@
             android:layout_width="0dp"
             android:layout_height="match_parent"
             android:layout_weight="0.81"
+            android:progressDrawable="@drawable/seek_bar_brighness"
             android:thumb="@drawable/thumb_seekbar"/>
         <Space
             style="@style/spaceSeekbar"/>
