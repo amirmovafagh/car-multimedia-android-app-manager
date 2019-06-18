@@ -583,11 +583,11 @@ public class RadioActivity extends AppCompatActivity implements View.OnClickList
     private void amplifireState() {
         if (prefManager.getAmplifireState()) {
 
-            sendData("oth-amp-001?", 100);
+
             sendData("oth-amp-001?", 500);
         } else {
             connectUsbService.write("oth-amp-000?");
-            sendData("oth-amp-000?", 100);
+
             sendData("oth-amp-000?", 500);
         }
     }
@@ -635,7 +635,6 @@ public class RadioActivity extends AppCompatActivity implements View.OnClickList
     protected void onDestroy() {
         super.onDestroy();
         sendData(audioValues.androidBTMode(), 300);
-        sendData("oth-amp-000?", 200);
         sendData("oth-amp-000?", 400);
         Log.i(tag, "onDESTROy");
         prefManager.setRadioIsRun(false);

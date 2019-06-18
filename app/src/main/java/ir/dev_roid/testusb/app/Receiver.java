@@ -30,10 +30,10 @@ public class Receiver extends BroadcastReceiver {
         if (intent.getAction().equals(BOOT_COMPLETED) || intent.getAction().equals(QUICKBOOT_POWERON)) {
             context.startService(new Intent(context, UsbService.class));
             Toast.makeText(context, "سرویس مولتی مدیا راه اندازی شد", Toast.LENGTH_SHORT).show();
-            cpuManager = new CpuManager();
+            /*cpuManager = new CpuManager();
             cpuManager.cpuMinFrequency(480000);
             cpuManager.cpuMaxFrequency(816000);
-            cpuManager.cpuGoverner("interactive");
+            cpuManager.cpuGoverner("interactive");*/
 
             /*//******go to main screen  do not need for now
             Intent startMain = new Intent(Intent.ACTION_MAIN);

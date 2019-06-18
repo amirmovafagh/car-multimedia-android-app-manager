@@ -12,142 +12,146 @@
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         android:orientation="horizontal">
-
-        <LinearLayout
+        <android.support.design.card.MaterialCardView
+            android:id="@+id/card_view_controllers"
             android:layout_width="0dp"
+            android:layout_margin="8dp"
+
             android:layout_height="match_parent"
             android:layout_weight="0.5"
+            app:cardCornerRadius="5dp"
+            app:cardBackgroundColor="@color/cards_dialogs">
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
             android:orientation="vertical">
-            <LinearLayout
-                android:layout_width="match_parent"
-                android:layout_height="0dp"
-                android:layout_weight="0.1"
-                android:layout_marginTop="10dp"
-                android:orientation="horizontal">
-                <Button
-                    android:id="@+id/driver_button"
-                    android:layout_width="0dp"
-                    android:layout_height="match_parent"
-                    android:layout_weight="0.33"
-                    android:layout_marginLeft="10dp"
-                    android:layout_marginRight="10dp"
-                    android:textSize="25sp"
-                    android:text="Driver"
-                    android:backgroundTint="@color/seek_bar_secondary_progress"
-                    style="@style/AppTheme.RoundedCornerMaterialButton"/>
-
-                <ImageButton
-                    android:id="@+id/balance_up_imgbtn"
-                    style="?android:attr/borderlessButtonStyle"
-                    android:layout_width="0dp"
-                    android:layout_height="wrap_content"
-                    android:layout_weight="0.33"
-                    android:src="@drawable/balance_up" />
-                <Button
-                    android:id="@+id/front_button"
-                    android:layout_width="0dp"
-                    android:layout_height="match_parent"
-                    android:layout_weight="0.33"
-                    android:layout_marginLeft="10dp"
-                    android:layout_marginRight="10dp"
-                    android:textSize="25sp"
-                    android:text="front"
-                    style="@style/AppTheme.RoundedCornerMaterialButton"/>
-            </LinearLayout>
-
-            <LinearLayout
-                android:layout_width="match_parent"
-                android:layout_height="0dp"
-                android:layout_weight="0.8"
-                android:layout_marginRight="10dp"
-                android:orientation="horizontal"
-                android:padding="5dp"
-                android:layout_margin="-10dp">
-
-
-                <ImageButton
-                    android:id="@+id/balance_right_imgbtn"
-                    android:layout_width="0dp"
-                    android:layout_height="wrap_content"
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="0dp"
                     android:layout_weight="0.1"
-                    android:layout_gravity="center"
-                    style="?android:attr/borderlessButtonStyle"
-                    android:src="@drawable/balance_left"/>
-                <android.support.design.widget.CoordinatorLayout
-                    android:layout_width="0dp"
-                    android:layout_height="match_parent"
-                    android:layout_weight="0.8">
-                    <RelativeLayout
-
-                        android:layout_width="match_parent"
+                    android:layout_marginTop="10dp"
+                    android:orientation="horizontal">
+                    <Button
+                        android:id="@+id/driver_button"
+                        android:layout_width="0dp"
                         android:layout_height="match_parent"
+                        android:layout_weight="0.33"
+                        android:layout_marginLeft="10dp"
+                        android:layout_marginRight="10dp"
+                        android:textSize="25sp"
+                        android:text="Driver"
+                        android:backgroundTint="@color/seek_bar_secondary_progress"
+                        style="@style/AppTheme.RoundedCornerMaterialButton"/>
 
-                        android:id="@+id/relative_layout"
-                        >
-                        <ImageView
+                    <ImageButton
+                        android:id="@+id/balance_up_imgbtn"
+                        style="?android:attr/borderlessButtonStyle"
+                        android:layout_width="0dp"
+                        android:layout_height="wrap_content"
+                        android:layout_weight="0.33"
+                        android:src="@drawable/balance_up" />
+                    <Button
+                        android:id="@+id/front_button"
+                        android:layout_width="0dp"
+                        android:layout_height="match_parent"
+                        android:layout_weight="0.33"
+                        android:layout_marginLeft="10dp"
+                        android:layout_marginRight="10dp"
+                        android:textSize="25sp"
+                        android:text="front"
+                        style="@style/AppTheme.RoundedCornerMaterialButton"/>
+                </LinearLayout>
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="0dp"
+                    android:layout_weight="0.8"
+                    android:layout_marginRight="10dp"
+                    android:orientation="horizontal"
+                    android:padding="5dp"
+                    android:layout_margin="-10dp">
+
+
+                    <ImageButton
+                        android:id="@+id/balance_right_imgbtn"
+                        android:layout_width="0dp"
+                        android:layout_height="wrap_content"
+                        android:layout_weight="0.1"
+                        android:layout_gravity="center"
+                        style="?android:attr/borderlessButtonStyle"
+                        android:src="@drawable/balance_left"/>
+                    <android.support.design.widget.CoordinatorLayout
+                        android:layout_width="0dp"
+                        android:layout_height="match_parent"
+                        android:layout_weight="0.8">
+                        <RelativeLayout
+
                             android:layout_width="match_parent"
                             android:layout_height="match_parent"
-                            android:src="@drawable/new_car_top_view"
-                            android:layout_centerHorizontal="true"
-                            android:layout_centerVertical="true"/>
-                        <ImageView
-                            android:layout_width="64dp"
-                            android:layout_height="64dp"
-                            android:layout_centerHorizontal="true"
-                            android:layout_centerVertical="true"
-                            android:id="@+id/audio_balance_img"
-                            android:src="@drawable/balance_icon"/>
 
-                    </RelativeLayout>
-                </android.support.design.widget.CoordinatorLayout>
+                            android:id="@+id/relative_layout"
+                            >
+                            <ImageView
+                                android:layout_width="match_parent"
+                                android:layout_height="match_parent"
+                                android:src="@drawable/new_car_top_view"
+                                android:layout_centerHorizontal="true"
+                                android:layout_centerVertical="true"/>
+                            <ImageView
+                                android:layout_width="64dp"
+                                android:layout_height="64dp"
+                                android:layout_centerHorizontal="true"
+                                android:layout_centerVertical="true"
+                                android:id="@+id/audio_balance_img"
+                                android:src="@drawable/balance_icon"/>
+
+                        </RelativeLayout>
+                    </android.support.design.widget.CoordinatorLayout>
 
 
-                <ImageButton
-                    android:id="@+id/balance_left_imgbtn"
-                    android:layout_width="0dp"
-                    android:layout_height="wrap_content"
-                    android:layout_weight="0.1"
-                    android:layout_gravity="center"
-                    style="?android:attr/borderlessButtonStyle"
-                    android:src="@drawable/balance_right"/>
-            </LinearLayout>
+                    <ImageButton
+                        android:id="@+id/balance_left_imgbtn"
+                        android:layout_width="0dp"
+                        android:layout_height="wrap_content"
+                        android:layout_weight="0.1"
+                        android:layout_gravity="center"
+                        style="?android:attr/borderlessButtonStyle"
+                        android:src="@drawable/balance_right"/>
+                </LinearLayout>
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="0dp"
+                    android:layout_weight="0.15"
+                    android:orientation="horizontal">
+                    <android.support.design.button.MaterialButton
+                        android:id="@+id/reset_button"
+                        android:layout_width="0dp"
+                        android:layout_height="match_parent"
+                        android:layout_weight="0.33"
+                        android:layout_margin="7dp"
 
-            <LinearLayout
-                android:layout_width="match_parent"
-                android:layout_height="0dp"
-                android:layout_weight="0.15"
-                android:orientation="horizontal">
-                <android.support.design.button.MaterialButton
-                    android:id="@+id/reset_button"
-                    android:layout_width="0dp"
-                    android:layout_height="match_parent"
-                    android:layout_weight="0.33"
-                    android:layout_margin="7dp"
+                        android:text="RESET"
+                        android:textSize="25sp"
+                        style="@style/AppTheme.RoundedCornerMaterialButton"/>
 
-                    android:text="RESET"
-                    android:textSize="25sp"
-                    style="@style/AppTheme.RoundedCornerMaterialButton"/>
-
-                <ImageButton
-                    android:id="@+id/balance_down_imgbtn"
-                    android:layout_width="0dp"
-                    android:layout_height="wrap_content"
-                    android:layout_weight="0.33"
-                    style="?android:attr/borderlessButtonStyle"
-                    android:src="@drawable/balance_down"/>
-                <Button
-                    android:id="@+id/rear_button"
-                    android:layout_width="0dp"
-                    android:layout_height="match_parent"
-                    android:layout_weight="0.33"
-                    android:layout_margin="7dp"
-                    android:textSize="25sp"
-                    android:text="Rear"
-                    style="@style/AppTheme.RoundedCornerMaterialButton"/>
-            </LinearLayout>
-
+                    <ImageButton
+                        android:id="@+id/balance_down_imgbtn"
+                        android:layout_width="0dp"
+                        android:layout_height="wrap_content"
+                        android:layout_weight="0.33"
+                        style="?android:attr/borderlessButtonStyle"
+                        android:src="@drawable/balance_down"/>
+                    <Button
+                        android:id="@+id/rear_button"
+                        android:layout_width="0dp"
+                        android:layout_height="match_parent"
+                        android:layout_weight="0.33"
+                        android:layout_margin="7dp"
+                        android:textSize="25sp"
+                        android:text="Rear"
+                        style="@style/AppTheme.RoundedCornerMaterialButton"/>
+                </LinearLayout>
         </LinearLayout>
-
+        </android.support.design.card.MaterialCardView>
 
         <LinearLayout
             android:layout_width="0dp"

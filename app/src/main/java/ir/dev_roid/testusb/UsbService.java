@@ -28,8 +28,7 @@ import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
-import java.util.Timer;
-import java.util.TimerTask;
+
 
 import ir.dev_roid.testusb.app.AudioValues;
 import ir.dev_roid.testusb.app.Brightness;
@@ -100,6 +99,8 @@ public class UsbService extends Service {
     private static int maxTemp = 75;
     private static int minTemp = 59;
     private static int emergencyTemp = 79;
+    private int vendorId = 6790;
+    private int productId = 29987;
 
     private boolean serialPortConnected;
 
@@ -181,7 +182,7 @@ public class UsbService extends Service {
             @Override
             public void run() {
                 checkCpuTemp();
-                checkCpuTempHandler.postDelayed(checkCpuTempRunnable, 5000);
+                checkCpuTempHandler.postDelayed(checkCpuTempRunnable, 8000);
             }
         };
         checkCpuTempHandler.postDelayed(checkCpuTempRunnable, 2000);
@@ -418,6 +419,8 @@ public class UsbService extends Service {
             @Override
             public void run() {
                 if (!swcDelay) {
+                    checkResetMCUstate();
+
                     if (threadStatus) {
                         //Log.d(tag, "service...");
                         String data = "blt-cll-chk?";
@@ -427,8 +430,6 @@ public class UsbService extends Service {
                         checkAudioManager();
                     }
                     obsInit.set(brightness.getScreenBrightness());
-                    checkResetMCUstate();
-
                 }
 
                 nh.postDelayed(this, handlerDelay);
@@ -472,23 +473,20 @@ public class UsbService extends Service {
 
     private void checkResetMCUstate() {
         if (buffer.equalsIgnoreCase("RUN")) {
-            gotoMainScreen();
-
+            //gotoMainScreen();
             maxTemp = 73;
             minTemp = 58;
-
             cpu.cpuGoverner("interactive");
             Settings.System.putInt(getApplicationContext().getContentResolver(),
                     Settings.System.SCREEN_OFF_TIMEOUT, 1800000);
-            PowerManager.WakeLock wakeLock;
-            PowerManager pm = (PowerManager) getSystemService(Context.POWER_SERVICE);
-            wakeLock = pm.newWakeLock(PowerManager.SCREEN_BRIGHT_WAKE_LOCK | PowerManager.ACQUIRE_CAUSES_WAKEUP, "wake");
-            wakeLock.acquire();
+            try{PowerManager.WakeLock wakeLock;
+                PowerManager pm = (PowerManager) getSystemService(Context.POWER_SERVICE);
+                wakeLock = pm.newWakeLock(PowerManager.SCREEN_BRIGHT_WAKE_LOCK | PowerManager.ACQUIRE_CAUSES_WAKEUP, "wake");
+                wakeLock.acquire();}catch (Exception e){}
             threadStatus = true;
             //sendData(audioValues.getAudioValues(), 100);
             //sendData(audioValues.getAudioValues(), 400);
             buffer = "";
-
         }
         if (buffer.equalsIgnoreCase("OFF")) {
             gotoMainScreen();
@@ -500,8 +498,8 @@ public class UsbService extends Service {
             Settings.System.putInt(getApplicationContext().getContentResolver(),
                     Settings.System.SCREEN_OFF_TIMEOUT, 15000);
             buffer = "";
-            if (audioManager.isMusicPlay())
-                audioManager.pauseHeadUnitMusicPlayer();
+            //if (audioManager.isMusicPlay())
+                //audioManager.pauseHeadUnitMusicPlayer();
         }
     }
 
@@ -653,6 +651,7 @@ public class UsbService extends Service {
     public void onDestroy() {
         super.onDestroy();
         Log.d(tag, "onDestroy service");
+        serialPort.syncClose();
         UsbService.SERVICE_CONNECTED = false;
         getApplicationContext().getContentResolver().unregisterContentObserver(mAudioStreamVolumeObserver);
 
@@ -689,11 +688,12 @@ public class UsbService extends Service {
                 device = entry.getValue();
                 int deviceVID = device.getVendorId();
                 int devicePID = device.getProductId();
+                Log.i(tag,"Pid: "+devicePID+" Vid: "+deviceVID);
                 //Toast.makeText(context, "veID: "+deviceVID+" proID: "+devicePID, Toast.LENGTH_SHORT).show();
 
                 if (deviceVID != 0x1d6b && (devicePID != 0x0001 && devicePID != 0x0002 && devicePID != 0x0003)) {
                     // There is a device connected to our Android device. Try to open it as a Serial Port.
-                    if (devicePID == 29987 && deviceVID == 6790) {
+                    if (devicePID == productId && deviceVID == vendorId) {
                         requestUserPermission();
                         keep = false;
                     } else {
@@ -725,8 +725,7 @@ public class UsbService extends Service {
     private boolean checkUsbID() {
         boolean check = false;
 
-        int vendorId = 6790;
-        int productId = 29987;
+
         UsbManager usbManager = (UsbManager) context.getSystemService(Context.USB_SERVICE);
 
         if (usbManager.getDeviceList().isEmpty()) {
@@ -801,7 +800,7 @@ public class UsbService extends Service {
                      * UsbSerialInterface.FLOW_CONTROL_DSR_DTR only for CP2102 and FT232
                      */
                     serialPort.setFlowControl(UsbSerialInterface.FLOW_CONTROL_OFF);
-                    serialPort.read(mCallback);
+                    //serialPort.read(mCallback);
 
 
                     new ReadThread().start();
@@ -838,6 +837,7 @@ public class UsbService extends Service {
                 Intent intent = new Intent(ACTION_USB_NOT_SUPPORTED);
                 context.sendBroadcast(intent);
             }
+
         }
     }
 
@@ -853,6 +853,7 @@ public class UsbService extends Service {
                     System.arraycopy(buffer, 0, received, 0, n);
                     String receivedStr = new String(received);
                     mHandler.obtainMessage(SYNC_READ, receivedStr).sendToTarget();
+
                 }
             }
         }

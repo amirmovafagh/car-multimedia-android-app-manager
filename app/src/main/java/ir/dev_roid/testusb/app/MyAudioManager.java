@@ -17,6 +17,10 @@ public class MyAudioManager {
     public static final String CMDNAME = "command";
     public static final String CMDSTOP = "stop";
 
+    private static final String ACTION_PLAY_PAUSE_MUSIC = "play_pause_music";
+    private static final String ACTION_NEXT_MUSIC = "next_music";
+    private static final String ACTION_PREVIOUS_MUSIC = "previous_music";
+
     long eventtime ;
     private AudioManager audioManager;
     private Context context;
@@ -34,6 +38,7 @@ public class MyAudioManager {
     }
 
     public boolean pauseHeadUnitMusicPlayer(){
+        context.sendBroadcast(new Intent().setAction(ACTION_PLAY_PAUSE_MUSIC));
         int result = audioManager.requestAudioFocus(null,
                 // Use the music stream.
                 AudioManager.STREAM_MUSIC,
@@ -49,6 +54,7 @@ public class MyAudioManager {
             Intent i = new Intent(SERVICECMD);
             i.putExtra(CMDNAME , CMDNEXT );
             context.sendBroadcast(i);
+            //context.sendBroadcast(new Intent().setAction(ACTION_NEXT_MUSIC));
         }
     }
 
@@ -57,6 +63,8 @@ public class MyAudioManager {
             Intent i = new Intent(SERVICECMD);
             i.putExtra(CMDNAME , CMDPREVIOUS );
             context.sendBroadcast(i);
+
+            //context.sendBroadcast(new Intent().setAction(ACTION_PREVIOUS_MUSIC));
         }
     }
 
@@ -65,7 +73,10 @@ public class MyAudioManager {
             Intent i = new Intent(SERVICECMD);
             i.putExtra(CMDNAME , CMDPLAY );
             context.sendBroadcast(i);
+
+            //context.sendBroadcast(new Intent().setAction(ACTION_PLAY_PAUSE_MUSIC));
         }
+        //context.sendBroadcast(new Intent().setAction(ACTION_PLAY_PAUSE_MUSIC));
     }
 
 }

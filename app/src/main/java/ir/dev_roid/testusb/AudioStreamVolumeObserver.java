@@ -62,7 +62,7 @@ public class AudioStreamVolumeObserver extends ContentObserver {
         float vol = (currentVolume / 15) * audioValues.getSoundLimitValue();
         //Log.i(TAG, "currentVolume :" + currentVolume + " , ptVolume :" + pt23Volume + " , vol :" + vol);
         setSoundModuleVolume(Math.round(vol));
-        audio.adjustStreamVolume(AudioManager.STREAM_MUSIC, AudioManager.ADJUST_SAME, AudioManager.FLAG_SHOW_UI);
+
         /*if (delta > 0) {
             //audio.setStreamVolume(AudioManager.STREAM_MUSIC, 15, AudioManager.FLAG_PLAY_SOUND);
             Log.d(TAG, "Decreased");
@@ -90,15 +90,15 @@ public class AudioStreamVolumeObserver extends ContentObserver {
         //mConnectUsbServiceStatic.write(audioValues.getVolumeValue());
         if (serialPort != null) {
             serialPort.syncWrite(audioValues.getVolumeValue().getBytes(), 0);
-            serialPort.syncWrite(audioValues.getVolumeValue().getBytes(), 300);
-            if (swcDelay){
+            //serialPort.syncWrite(audioValues.getVolumeValue().getBytes(), 300);
+            if (swcDelay) {
                 new Handler(Looper.getMainLooper()).postDelayed(new Runnable() {
                     @Override
                     public void run() {
-                        serialPort.syncWrite(audioValues.getVolumeValue().getBytes(), 1000);
+                        //serialPort.syncWrite(audioValues.getVolumeValue().getBytes(), 1000);
 
                     }
-                },700);
+                }, 700);
 
             }
             swcDelay = false;
@@ -109,26 +109,33 @@ public class AudioStreamVolumeObserver extends ContentObserver {
     public void increaseVolumeSWC() {
         int volume = audio.getStreamVolume(AudioManager.STREAM_MUSIC);
         audio.setStreamVolume(AudioManager.STREAM_MUSIC, volume + 1, AudioManager.FLAG_PLAY_SOUND);
-
+        showVolumeUI();
     }
 
     public void decreaseVolumeSWC() {
         int volume = audio.getStreamVolume(AudioManager.STREAM_MUSIC);
         audio.setStreamVolume(AudioManager.STREAM_MUSIC, volume - 1, AudioManager.FLAG_PLAY_SOUND);
-
+        showVolumeUI();
     }
 
     public void muteSWC() {
         int volume = audio.getStreamVolume(AudioManager.STREAM_MUSIC);
-        if(volume ==0){
-            audio.setStreamVolume(AudioManager.STREAM_MUSIC, audioValues.getAndroidLastVolume() , AudioManager.FLAG_PLAY_SOUND);
-        }else {
+        if (volume == 0) {
+            audio.setStreamVolume(AudioManager.STREAM_MUSIC, audioValues.getAndroidLastVolume(), AudioManager.FLAG_PLAY_SOUND);
+        } else {
             audioValues.setAndroidLastVolume(volume);
             audioValues.setVolume(0);
             audio.setStreamVolume(AudioManager.STREAM_MUSIC, 0, AudioManager.FLAG_PLAY_SOUND);
         }
 
+        showVolumeUI();
 
+
+    }
+
+    private void showVolumeUI() {
+        if (audio != null)
+            audio.adjustStreamVolume(AudioManager.STREAM_MUSIC, AudioManager.ADJUST_SAME, AudioManager.FLAG_SHOW_UI);
     }
 
     public void swcDelayOn() {

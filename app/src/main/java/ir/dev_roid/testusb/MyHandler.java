@@ -43,12 +43,13 @@ public class MyHandler extends Handler {
 
             case UsbService.MESSAGE_FROM_SERIAL_PORT:
                 data = (String) msg.obj;
+                //Log.i(TAG, "data "+data);
                 //Toast.makeText(context, "1 "+data, Toast.LENGTH_SHORT).show();
                 break;
             case UsbService.SYNC_READ:
 
                 buffer = (String) msg.obj;
-
+                //Log.i(TAG, " "+buffer);
                 if(dbug){Toast.makeText(context, "2 "+buffer, Toast.LENGTH_SHORT).show();}
 
                 try{

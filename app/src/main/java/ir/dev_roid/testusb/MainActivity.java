@@ -188,6 +188,7 @@ public class MainActivity extends AppCompatActivity {
         bluetooth.setOnLongClickListener(new View.OnLongClickListener() {
             @Override
             public boolean onLongClick(View view) {
+
                 /*connectUsbService.write("oth?");
                 connectUsbService.write(audioValues.auxMode());*/
                 return false;
@@ -270,7 +271,7 @@ public class MainActivity extends AppCompatActivity {
             sendData("oth-tmp-001?", 0);
 
         }
-
+        sendData(audioValues.getAudioValues(),500);
         //Start listening notifications from UsbService
         //startHardwareInitializing();
         //startService(UsbService.class, usbConnection, null); // Start UsbService(if it was not started before) and Bind it
