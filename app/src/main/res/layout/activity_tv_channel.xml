@@ -4,7 +4,7 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    tools:context=".TvChannelActivity">
+    tools:context="com.hooshmandkhodro.carservice.TvChannelActivity">
 
     <include layout="@layout/content_tv_channel" />
 

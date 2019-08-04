@@ -7,7 +7,7 @@
     app:layout_behavior="@string/appbar_scrolling_view_behavior"
     android:background="@drawable/main_background_gradient"
     android:orientation="horizontal"
-    tools:context=".AUXActivity"
+    tools:context="com.hooshmandkhodro.carservice.AUXActivity"
     tools:showIn="@layout/activity_aux">
 
     <ImageView

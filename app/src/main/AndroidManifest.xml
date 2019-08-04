@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:tools="http://schemas.android.com/tools"
-    package="ir.dev_roid.testusb">
+    package="com.hooshmandkhodro.carservice">
 
     <uses-feature
         android:name="android.hardware.usb.host"
@@ -17,6 +17,9 @@
     <uses-permission android:name="android.permission.ACCESS_FINE_LOCATION" />
     <uses-permission android:name="android.permission.LOCATION_HARDWARE" />
     <uses-permission android:name="android.permission.ACCESS_COARSE_LOCATION"/>
+
+    <uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE"/>
+    <uses-permission android:name="android.permission.READ_EXTERNAL_STORAGE"/>
     <application
 
         android:allowBackup="true"
@@ -28,7 +31,7 @@
         android:theme="@style/AppTheme"
         tools:replace="android:supportsRtl">
         <activity
-            android:name=".MainActivity"
+            android:name="com.hooshmandkhodro.carservice.MainActivity"
             android:launchMode="singleTop"
             android:screenOrientation="landscape">
             <intent-filter>
@@ -48,11 +51,11 @@
         </activity>
 
         <service
-            android:name=".UsbService"
+            android:name="com.hooshmandkhodro.carservice.UsbService"
             android:enabled="true" />
 
         <activity
-            android:name=".AUXActivity"
+            android:name="com.hooshmandkhodro.carservice.AUXActivity"
             android:icon="@mipmap/car_aux_icon"
             android:label="@string/title_activity_aux"
             android:launchMode="singleTop"
@@ -66,7 +69,7 @@
             </intent-filter>
         </activity>
         <activity
-            android:name=".SteeringWheelContorllerActivity"
+            android:name="com.hooshmandkhodro.carservice.SteeringWheelContorllerActivity"
             android:icon="@mipmap/car_steering_wheel_icon"
             android:label="SteeringWheelContorller"
             android:screenOrientation="landscape"
@@ -79,7 +82,7 @@
             </intent-filter>
         </activity>
 
-        <receiver android:name=".app.Receiver">
+        <receiver android:name="com.hooshmandkhodro.carservice.app.Receiver">
             <intent-filter>
                 <action android:name="android.hardware.usb.action.USB_DEVICE_ATTACHED" />
                 <action android:name="android.intent.action.BOOT_COMPLETED" />
@@ -99,7 +102,7 @@
         </receiver>
 
         <activity
-            android:name=".BluetoothActivity"
+            android:name="com.hooshmandkhodro.carservice.BluetoothActivity"
             android:icon="@mipmap/car_bluetooth_icon"
             android:label="@string/title_activity_bluetooth"
             android:launchMode="singleTop"
@@ -113,7 +116,7 @@
             </intent-filter>
         </activity>
         <activity
-            android:name=".TelephoneActivity"
+            android:name="com.hooshmandkhodro.carservice.TelephoneActivity"
             android:icon="@mipmap/car_phone_icon"
             android:label="@string/title_activity_telephone"
             android:launchMode="singleTop"
@@ -127,7 +130,7 @@
             </intent-filter>
         </activity>
         <activity
-            android:name=".RadioActivity"
+            android:name="com.hooshmandkhodro.carservice.RadioActivity"
             android:icon="@mipmap/car_radio_icon"
             android:label="@string/title_activity_radio"
             android:launchMode="singleTop"
@@ -141,7 +144,7 @@
             </intent-filter>
         </activity>
         <activity
-            android:name=".SettingsActivity"
+            android:name="com.hooshmandkhodro.carservice.SettingsActivity"
             android:icon="@mipmap/car_settings_icon"
             android:label="@string/title_activity_settings"
             android:launchMode="singleTop"
@@ -155,7 +158,7 @@
             </intent-filter>
         </activity>
         <activity
-            android:name=".TvChannelActivity"
+            android:name="com.hooshmandkhodro.carservice.TvChannelActivity"
             android:label="@string/title_activity_tv_channel"
             android:icon="@mipmap/car_tv_icon"
             android:launchMode="singleTop"

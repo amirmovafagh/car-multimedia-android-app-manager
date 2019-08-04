@@ -6,7 +6,7 @@
     android:layout_height="match_parent"
     android:background="@color/activityBackground"
     android:orientation="vertical"
-    tools:context="ir.dev_roid.testusb.RadioActivity">
+    tools:context="ir.dev_roid.testusb.com.dev_roid.testusb.RadioActivity">
 
     <include layout="@layout/toolbar" />
 
