@@ -12,7 +12,8 @@ import com.hooshmandkhodro.carservice.app.GpioUart;
 
 /**
  * check the increase and decrease state of media volume
- * for now this function not used in program
+ *
+ * @author Amir Movafagh
  */
 
 public class AudioStreamVolumeObserver extends ContentObserver {
@@ -24,7 +25,14 @@ public class AudioStreamVolumeObserver extends ContentObserver {
     private AudioManager audio;
     private boolean swcDelay = false;
 
-
+    /**
+     * build Audio manager and get previos State of volume
+     *
+     * @param c             context from destination class
+     * @param handler       handler for Content observer
+     * @param audioValues   call sound values from audioValues Class
+     * @param gpioUart      using for send sound details to MCU
+     * */
     public AudioStreamVolumeObserver(Context c, Handler handler, AudioValues audioValues, GpioUart gpioUart) {
         super(handler);
         this.gpioUart = gpioUart;
@@ -95,18 +103,22 @@ public class AudioStreamVolumeObserver extends ContentObserver {
         }
     }
 
+    /*
+    * increase volume with steering wheel key*/
     public void increaseVolumeSWC() {
         int volume = audio.getStreamVolume(AudioManager.STREAM_MUSIC);
         audio.setStreamVolume(AudioManager.STREAM_MUSIC, volume + 1, AudioManager.FLAG_PLAY_SOUND);
         showVolumeUI();
     }
-
+    /*
+     * decrease volume with steering wheel key*/
     public void decreaseVolumeSWC() {
         int volume = audio.getStreamVolume(AudioManager.STREAM_MUSIC);
         audio.setStreamVolume(AudioManager.STREAM_MUSIC, volume - 1, AudioManager.FLAG_PLAY_SOUND);
         showVolumeUI();
     }
 
+     /* mute volume with steering wheel key*/
     public void muteSWC() {
         int volume = audio.getStreamVolume(AudioManager.STREAM_MUSIC);
         if (volume == 0) {

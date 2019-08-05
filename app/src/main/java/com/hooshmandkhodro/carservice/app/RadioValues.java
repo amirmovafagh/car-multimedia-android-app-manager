@@ -1,5 +1,13 @@
 package com.hooshmandkhodro.carservice.app;
 
+/**
+ * this class config the frequency of radio / AM or FM station and radioGain
+ * convert this specifications to the String and send this with GpioUart to MCU and
+ * will set on radio chip:tef6621
+ *
+ * @author Amir Movafagh
+ * */
+
 public class RadioValues {
 
     private int mode, soundGain;

@@ -3,6 +3,7 @@ package com.hooshmandkhodro.carservice.app;
 import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
+import android.provider.Settings;
 import android.widget.Toast;
 
 import com.hooshmandkhodro.carservice.AudioStreamVolumeObserver;
@@ -28,9 +29,11 @@ public class Receiver extends BroadcastReceiver {
             context.startService(new Intent(context, UsbService.class));
             Toast.makeText(context, "سرویس مولتی مدیا راه اندازی شد", Toast.LENGTH_SHORT).show();
             Intent i = new Intent();
-            i.setClassName("ir.dev_roid.testusb", "MainActivity");
+            i.setClassName("com.hooshmandkhodro.carservice", "MainActivity");
             i.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
             context.startActivity(i);
+            Settings.System.putInt(context.getContentResolver(),
+                    Settings.System.SCREEN_OFF_TIMEOUT, 9999999);
             /*cpuManager = new CpuManager();
             cpuManager.cpuMinFrequency(480000);
             cpuManager.cpuMaxFrequency(816000);

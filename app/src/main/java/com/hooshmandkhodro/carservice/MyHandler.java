@@ -34,7 +34,11 @@ public class MyHandler extends Handler {
         prefManager = new PrefManager(context);
 
     }
-
+    /**
+     * handle the incoming serial data from background Service
+     *
+     * @param msg   get from service
+     * */
     @Override
     public void handleMessage(Message msg) {
         boolean dbug = prefManager.getDebugModeState();
@@ -49,7 +53,7 @@ public class MyHandler extends Handler {
                     Log.i(TAG, " "+buffer);
                     if(dbug){Toast.makeText(context, "2 "+buffer, Toast.LENGTH_SHORT).show();}
                     int i = Integer.parseInt(buffer);
-                    if(i<3600){
+                    if(i<3600){ /*control wheel data value check and convert*/
                         steeringWheelDataStatus = true;
                         steeringWheelData = i/10 ;
 
@@ -74,6 +78,7 @@ public class MyHandler extends Handler {
 
     }
 
+    /*check if there is incoming call from bluetooth */
     private void checkIncomingCall(){
         if(buffer.equalsIgnoreCase("MG5") && !PhoneDialerFragment.dialFragmentIsRun)
         {
@@ -87,7 +92,7 @@ public class MyHandler extends Handler {
         }
 
     }
-
+    /*check if there is outgoing call from bluetooth */
     private void checkOutgoingCall(){
         if(buffer.equalsIgnoreCase("MG4") && !PhoneDialerFragment.dialFragmentIsRun)
         {

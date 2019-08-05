@@ -3,7 +3,7 @@
     android:background="@color/activityBackground"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    tools:context="ir.dev_roid.testusb.bluetoothFragments.RadioFragment">
+    >
 
     <!-- TODO: Update blank fragment layout -->
     <TextView

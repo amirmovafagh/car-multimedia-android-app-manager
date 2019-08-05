@@ -5,6 +5,13 @@ import android.content.Intent;
 import android.media.AudioManager;
 import android.os.SystemClock;
 
+/**
+ * this class manage the android music Audio states
+ * play/pause/next/previous
+ *
+ * @author Amir Movafagh
+ * */
+
 public class MyAudioManager {
 
     public static final String CMDTOGGLEPAUSE = "togglepause";

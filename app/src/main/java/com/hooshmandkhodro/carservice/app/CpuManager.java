@@ -5,6 +5,13 @@ import java.io.InputStreamReader;
 
 import eu.chainfire.libsuperuser.Shell;
 
+/**
+ * manage cpu frequency , get temperature
+ * and initializing/deinitializing touchscreen driver
+ *
+ * @author Amir Movafagh
+ * */
+
 public class CpuManager {
     private static final String tag = CpuManager.class.getSimpleName();
     private boolean rootPermission = false;

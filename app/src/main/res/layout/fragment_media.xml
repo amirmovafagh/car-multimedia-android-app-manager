@@ -3,7 +3,7 @@
     android:background="@color/bgMedia"
     android:layout_width="1830dp"
     android:layout_height="match_parent"
-    tools:context="ir.dev_roid.testusb.com.dev_roid.testusb.bluetoothFragments.MediaFragment">
+    tools:context="com.hooshmandkhodro.carservice.bluetoothFragments.MediaFragment">
 
     <LinearLayout
 

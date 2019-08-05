@@ -14,6 +14,11 @@ import android.widget.SeekBar;
 
 import com.hooshmandkhodro.carservice.R;
 
+/**
+ * build a customDialog in every activity for control volume And brightness
+ *
+ * @author Amir Movafagh
+ * */
 
 public class CustomDialog {
 

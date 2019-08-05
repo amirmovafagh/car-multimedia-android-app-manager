@@ -3,6 +3,13 @@ package com.hooshmandkhodro.carservice.app;
 import android.content.Context;
 import android.provider.Settings;
 
+/**
+ * this class will sync the default android brightness with lcd backlight
+ * that is connected
+ *
+ * @author Amir Movafagh
+ * */
+
 public class Brightness {
     Context mContext;
 

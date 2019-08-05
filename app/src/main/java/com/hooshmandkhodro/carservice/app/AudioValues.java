@@ -1,14 +1,24 @@
 package com.hooshmandkhodro.carservice.app;
 
-public class AudioValues {
-    /*
-     *
-     * this class make a string value for pushing the audio values to sound module
-     */
-    private PrefManager prefManager;
+/**
+ * this class make a string value for pushing the audio
+ * values to sound module PT2313 and set Output volume
+ * on all of output 4 channels
+ *
+ * @author Amir Movafagh
+ */
 
+public class AudioValues {
+
+    private PrefManager prefManager;
     private String vol, vlf, vrf, vlr, vrr, base, treble;
 
+    /**
+     * AudioValues *constructor*
+     * get all of saved volume values from prefManager and work on them in other functions
+     *
+     * @param   prefManager
+     * */
     public AudioValues(PrefManager prefManager) {
         this.prefManager = prefManager;
         getVolume();
@@ -20,6 +30,13 @@ public class AudioValues {
         getTrebleValue();
     }
 
+    /**
+     * getAudioValues
+     * return a string with all of volume requirments for set on pt2313 module
+     * # is Intended value
+     *
+     * @return String   "aud-##-###-###-###-###-###-###?"
+     * */
     public String getAudioValues() {
         return "aud-" + getVolume() + "-" + getVolumeLeftFront() + "-" + getVolumeRightFront() + "-" + getVolumeLeftRear() + "-" + getVolumeRightRear() + "-" + getBaseValue() + "-" + getTrebleValue() + "?";
     }
@@ -28,26 +45,62 @@ public class AudioValues {
         return "aud-63?";
     }
 
+    /**
+     * getSoundLimitValue *function*
+     * define sound module has limitation on output or not
+     * and will be using in other classes
+     *
+     * @return  prefManager.getVolumeValue(13)  an int number
+     * */
     public int getSoundLimitValue() {
         return prefManager.getVolumeValue(13);
     }
 
+
     public int getAndroidLastVolume() {
         return prefManager.getVolumeValue(12);
     }
-
+    /**
+     * getAndroidLastVolume   setAndroidLastVolume
+     * set and get last volume on pt2313
+     * and will be using in other classes
+     *
+     * @param   lastVolume  int num for set the last value of volume
+     * @return  prefManager.getVolumeValue(12)  an int number
+     *
+     * */
     public void setAndroidLastVolume(int lastVolume) {
         prefManager.setVolumeValue(12, lastVolume);
     }
 
+    /**
+     * getVolumeValue
+     * get total output volume
+     * and will using in other classes
+     *
+     * @return "aud-##?"  type is String
+     * */
     public String getVolumeValue() {
         return "aud-" + getVolume() + "?";
     }
 
+    /**
+     * setVolume
+     * set total output volume
+     *
+     * @param value will save in prefManager
+     * */
     public void setVolume(int value) {
         prefManager.setVolumeValue(0, value);
     }
 
+    /**
+     * getVolume
+     * get total output volume as int type and convert to string
+     * and control lentgh of that string must be 2.
+     *
+     * @return "##?"  type is String
+     * */
     private String getVolume() {
         int min = (63 - prefManager.getVolumeValue(0));
         if (min < 10) {
@@ -160,6 +213,13 @@ public class AudioValues {
         }
     }
 
+    /**
+     * modify aux, androiHeaunit\BT or radio output channels
+     * in order to set base, loud, treble and gain settings On every one of the outputs
+     *
+     * @param position
+     * @param bitValue
+     * */
     private void modifySoundModeChannel(int position, int bitValue) {
 
         int aux = modifyBit(prefManager.getVolumeValue(9), position, bitValue); //aux
@@ -177,6 +237,9 @@ public class AudioValues {
                 ((bitValue << position) & mask);
     }
 
+    /**
+     *these three functions will set output of pt2313
+     * */
     public String auxMode() {
         return "mod-" + prefManager.getVolumeValue(9) + "?";
     }

@@ -7,6 +7,12 @@ import java.io.InputStream;
 import java.util.List;
 import eu.chainfire.libsuperuser.Shell;
 
+    /**
+     * read and write serial data fom gpio pins on HeadUnit board
+     * using chainfire library because of don't get su permission in every  command running
+     *
+     * @author  Amir Movafagh
+     * */
 
 public class GpioUart {
     public String port;
@@ -15,10 +21,9 @@ public class GpioUart {
     private Handler h;
     StringBuilder cmdReturn;
     private static String command;
-    static ProcessBuilder readProcessBuilder, sendProcessBuilder;
     private boolean rootPermission = false;
 
-    private boolean suAvailable = false;
+
     private String suVersion = null;
     private String suVersionInternal = null;
     private List<String> suResult = null;
@@ -26,7 +31,13 @@ public class GpioUart {
     private Shell.ThreadedAutoCloseable getShell;
 
 
-    //Constructor
+    /**
+     * Constructor
+     * set target UART pin for communication
+     * and get permission for first time the app install and run
+     *
+     * @param pin   serial pin number
+     * */
     public GpioUart(int pin)  {
         this.pin = pin;
         this.port = "ttyS" + this.pin;
@@ -45,6 +56,7 @@ public class GpioUart {
             suVersion = Shell.SU.version(false);
             suVersionInternal = Shell.SU.version(true);
             try {
+                //fix the loopback echo tx in rx problem
                 Runtime.getRuntime().exec(new String[]{"su", "-c",  "stty -F /dev/ttyS1 -echo -onlcr"});
 
                 //readProcessBuilder = new ProcessBuilder("su", "-c", command);
