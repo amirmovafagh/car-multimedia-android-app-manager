@@ -361,7 +361,6 @@ public class UsbService extends Service {
                     if (threadStatus) {
                         //Log.d(tag, "service...");
                         String data = "blt-cll-chk?";
-                        Log.i(tag, " set on 912mhz");
                         sendData(data);
                     }
                     if (!PhoneDialerFragment.dialFragmentIsRun) {
@@ -380,7 +379,7 @@ public class UsbService extends Service {
             float temp = cpu.getTemperature();
             //logger.info(String.valueOf(temp));
             //Log.i(tag, " "+temp);
-            if (temp > 80) {
+            if (temp > 82) {
                 Toast.makeText(context, "HIGH Temperature " + temp + "C !!!", Toast.LENGTH_SHORT).show();
                 if(!criticalTemp){
                     new Handler().postDelayed(() -> {

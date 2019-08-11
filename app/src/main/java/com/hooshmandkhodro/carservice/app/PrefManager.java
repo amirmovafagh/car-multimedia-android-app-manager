@@ -53,6 +53,8 @@ public class PrefManager {
     private static final String RADIO_MODE_CHANNEL = "radioModeChannel";
     private static final String RADIO_SOUND_GAIN = "radioSoundGain";
     private static final String AMPLIFIRE_STATE ="ampliFire";
+    private static final String BLUETOOTH_AUTOCONNECT = "btAutoConnect";
+    private static final String BLUETOOTH_AUTOANSWER ="btAutoAnswer";
 
     public PrefManager(Context context) {
 
@@ -231,6 +233,26 @@ public class PrefManager {
 
     public boolean getDebugModeState() {
         return pref.getBoolean(DEBUG_MODE, false);
+    }
+
+    public void setBtAutoConnect(boolean value) {
+        editor.putBoolean(BLUETOOTH_AUTOCONNECT, value);
+        editor.commit();
+
+    }
+
+    public boolean getBtAutoConnect() {
+        return pref.getBoolean(BLUETOOTH_AUTOCONNECT, false);
+    }
+
+    public void setBtAutoAnswer(boolean value) {
+        editor.putBoolean(BLUETOOTH_AUTOANSWER, value);
+        editor.commit();
+
+    }
+
+    public boolean getBtAutoAnswer() {
+        return pref.getBoolean(BLUETOOTH_AUTOANSWER, false);
     }
 
 

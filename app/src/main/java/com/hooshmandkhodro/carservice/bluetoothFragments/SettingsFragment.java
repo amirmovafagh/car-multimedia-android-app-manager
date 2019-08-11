@@ -144,7 +144,8 @@ public class SettingsFragment extends Fragment {
     @Override
     public void onResume() {
         super.onResume();
-
+        autoAnswerTbtn.setChecked(prefManager.getBtAutoAnswer());
+        autoConnectTbtn.setChecked(prefManager.getBtAutoConnect());
     }
 
     public void initSetOnClick(){
@@ -175,10 +176,13 @@ public class SettingsFragment extends Fragment {
         autoConnectTbtn.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
             @Override
             public void onCheckedChanged(CompoundButton compoundButton, boolean b) {
+                prefManager.setBtAutoConnect(b);
+
                 if(b){
                     gpioUart.sendData("blt-stn-eac?");
                 }else {
                     gpioUart.sendData("blt-stn-dac?");
+
                 }
             }
         });
@@ -186,6 +190,7 @@ public class SettingsFragment extends Fragment {
         autoAnswerTbtn.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
             @Override
             public void onCheckedChanged(CompoundButton compoundButton, boolean b) {
+                prefManager.setBtAutoAnswer(b);
                 if(b){
                     gpioUart.sendData("blt-stn-ean?");
                 }else {
