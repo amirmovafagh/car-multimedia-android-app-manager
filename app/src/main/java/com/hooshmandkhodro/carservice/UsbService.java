@@ -8,6 +8,7 @@ import android.content.Intent;
 import android.os.Handler;
 import android.os.IBinder;
 import android.os.Looper;
+import android.os.PowerManager;
 import android.provider.Settings;
 import android.util.Log;
 import android.widget.Toast;
@@ -431,16 +432,17 @@ public class UsbService extends Service {
             cpu.cpuGoverner("interactive");
             Settings.System.putInt(getApplicationContext().getContentResolver(),
                     Settings.System.SCREEN_OFF_TIMEOUT, 9999999);
-            /*try {
+            try {
                 PowerManager.WakeLock wakeLock;
                 PowerManager pm = (PowerManager) getSystemService(Context.POWER_SERVICE);
                 wakeLock = pm.newWakeLock(PowerManager.SCREEN_BRIGHT_WAKE_LOCK | PowerManager.ACQUIRE_CAUSES_WAKEUP, "lock_me");
                 wakeLock.acquire();
             } catch (Exception e) {
-            }*/
+            }
             threadStatus = true;
             //sendData(audioValues.getAudioValues(), 100);
             //sendData(audioValues.getAudioValues(), 400);
+            //cpu.cpuOnlineStateConfig(3,1);
             MyHandler.buffer = "";
         }
         if (MyHandler.buffer.equalsIgnoreCase("OFF")) {
@@ -454,6 +456,7 @@ public class UsbService extends Service {
             Settings.System.putInt(getApplicationContext().getContentResolver(),
                     Settings.System.SCREEN_OFF_TIMEOUT, 15000);
             MyHandler.buffer = "";
+            //cpu.cpuOnlineStateConfig(3,0);
             if (audioManager.isMusicPlay())
                 audioManager.pauseHeadUnitMusicPlayer();
         }

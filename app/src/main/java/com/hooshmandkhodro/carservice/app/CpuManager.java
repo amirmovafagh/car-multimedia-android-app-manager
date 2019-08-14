@@ -101,6 +101,10 @@ public class CpuManager {
         shellExe(new String[]{"modprobe gt9xxf_ts"});
     }
 
+    public void cpuOnlineStateConfig(int CoreNum,int state){
+        shellExe(new String[]{"echo "+state+" > /sys/devices/system/cpu/cpu"+CoreNum+"/online"});
+    }
+
     private void shellExe(String[] cmd) {
         if (rootPermission) {
             try {
