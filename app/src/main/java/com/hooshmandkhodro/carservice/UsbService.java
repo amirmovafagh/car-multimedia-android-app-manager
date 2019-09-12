@@ -28,7 +28,6 @@ import com.hooshmandkhodro.carservice.steeringWheelController.SteeringWheelContr
 import java.util.List;
 
 
-
 import com.hooshmandkhodro.carservice.steeringWheelController.Pojo.ControllerOption;
 import com.hooshmandkhodro.carservice.steeringWheelController.Pojo.Options;
 
@@ -69,9 +68,11 @@ public class UsbService extends Service {
     private AudioValues audioValues;
     public static int handlerDelay = 2500;
     private static boolean criticalTemp = false;
-    private static int maxTemp = 75;
-    private static int minTemp = 59;
-    private static int emergencyTemp = 79;
+    private static int maxTemp = 68;
+    private static int middleTemp = 60;
+    private static int minTemp = 52;
+    private static int emergencyTemp = 75;
+    private static boolean emergencyTempOn = false;
 
 
     /*
@@ -126,7 +127,7 @@ public class UsbService extends Service {
 
                         }
                     }, 250);*/
-                    sendData_delay("oth-brg-" + (newValue / 5) + "?", 250);
+                    sendData_delay("oth-brg-" + (newValue / 3) + "?", 250);
 
                     prefManager.setBrightnessValue(newValue);
                 }
@@ -134,7 +135,7 @@ public class UsbService extends Service {
         });
 
 
-        mAudioStreamVolumeObserver = new AudioStreamVolumeObserver(this, new Handler(), audioValues,gpioUart);
+        mAudioStreamVolumeObserver = new AudioStreamVolumeObserver(this, new Handler(), audioValues, gpioUart);
         this.getContentResolver().registerContentObserver(Settings.System.CONTENT_URI, true, mAudioStreamVolumeObserver);
 
 
@@ -332,7 +333,7 @@ public class UsbService extends Service {
                         sleep(100);
                         //Log.i(tag, "#RUN" );
 
-                            runnable.run();
+                        runnable.run();
                     }
                 } catch (InterruptedException e) {
                     e.printStackTrace();
@@ -356,7 +357,7 @@ public class UsbService extends Service {
         nh.postDelayed(new Runnable() {
             @Override
             public void run() {
-                if (!swcDelay ) {
+                if (!swcDelay) {
                     checkMCUstate();
 
                     if (threadStatus) {
@@ -380,34 +381,36 @@ public class UsbService extends Service {
             float temp = cpu.getTemperature();
             //logger.info(String.valueOf(temp));
             //Log.i(tag, " "+temp);
-            if (temp > 82) {
+            if (temp > 80) {
                 Toast.makeText(context, "HIGH Temperature " + temp + "C !!!", Toast.LENGTH_SHORT).show();
-                if(!criticalTemp){
+                if (!criticalTemp) {
                     new Handler().postDelayed(() -> {
                         cpu.cpuMaxFrequency(912000);
                         criticalTemp = true;
-                    },0);
+                    }, 0);
                 }
             }
+            if (temp > emergencyTemp) {
+                emergencyTempOn = true;
+                sendData_delay("oth-tmp-003?", 300);
+            } else if (temp > maxTemp && !emergencyTempOn && threadStatus) {
 
-            if (temp > maxTemp) {
-
-                sendData_delay("oth-tmp-001?", 300);
+                sendData_delay("oth-tmp-002?", 300);
                 //fanState = true;
                 //Log.i(tag, " fan on");
 
-                if (temp > emergencyTemp) {
-                    sendData_delay("oth-tmp-001?", 1000);
-                }
-            } else if (temp < minTemp) {
 
+            } else if (temp > middleTemp && !emergencyTempOn  && threadStatus) {
+                sendData_delay("oth-tmp-001?", 300);
+            } else if (temp < minTemp) {
+                emergencyTempOn = false;
                 sendData("oth-tmp-000?");
-                if(criticalTemp){
+                if (criticalTemp) {
                     new Handler().postDelayed(() -> {
-                        cpu.cpuMaxFrequency(1200000);
-                        Log.i(tag, " set on 1.2gh");
+                        cpu.cpuMaxFrequency(1104000);
+                        Log.i(tag, " set on 1.1gh");
                         criticalTemp = false;
-                    },0);
+                    }, 0);
                 }
                 //fanState = false;
                 //Log.i(tag, " fan off");
@@ -427,18 +430,20 @@ public class UsbService extends Service {
         if (MyHandler.buffer.equalsIgnoreCase("RUN")) {
             cpu.InitTouchConfig();
             //gotoMainScreen();
-            maxTemp = 72;
-            minTemp = 57;
+            maxTemp = 68;
+            middleTemp = 60;
+            minTemp = 52;
+            emergencyTemp = 75;
             cpu.cpuGoverner("interactive");
             Settings.System.putInt(getApplicationContext().getContentResolver(),
                     Settings.System.SCREEN_OFF_TIMEOUT, 9999999);
-            try {
+            /*try {
                 PowerManager.WakeLock wakeLock;
                 PowerManager pm = (PowerManager) getSystemService(Context.POWER_SERVICE);
                 wakeLock = pm.newWakeLock(PowerManager.SCREEN_BRIGHT_WAKE_LOCK | PowerManager.ACQUIRE_CAUSES_WAKEUP, "lock_me");
                 wakeLock.acquire();
             } catch (Exception e) {
-            }
+            }*/
             threadStatus = true;
             //sendData(audioValues.getAudioValues(), 100);
             //sendData(audioValues.getAudioValues(), 400);
@@ -448,8 +453,9 @@ public class UsbService extends Service {
         if (MyHandler.buffer.equalsIgnoreCase("OFF")) {
             cpu.deInitTouchConfig();
             gotoMainScreen();
-            maxTemp = 75;
-            minTemp = 62;
+            minTemp = 59;
+            emergencyTemp = 74;
+
             threadStatus = false;
 
             cpu.cpuGoverner("powersave");

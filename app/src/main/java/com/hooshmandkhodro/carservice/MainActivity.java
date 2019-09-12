@@ -1,6 +1,7 @@
 package com.hooshmandkhodro.carservice;
 
 import android.Manifest;
+import android.content.Context;
 import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.location.Location;
@@ -8,6 +9,7 @@ import android.location.LocationListener;
 import android.location.LocationManager;
 import android.os.Build;
 import android.os.Handler;
+import android.os.PowerManager;
 import android.support.annotation.RequiresApi;
 import android.support.v4.app.ActivityCompat;
 import android.support.v7.app.AppCompatActivity;
@@ -41,6 +43,7 @@ public class MainActivity extends AppCompatActivity {
     MyAudioManager myAudioManager;
     CpuManager cpuManager;
     LocationManager mLocationManager;
+
 
     private AudioValues audioValues;
 
@@ -77,8 +80,7 @@ public class MainActivity extends AppCompatActivity {
 
 
         cpuManager = new CpuManager();
-        //cpuManager.cpuMinFrequency(480000);
-        //cpuManager.cpuMaxFrequency(816000);
+
 
         //toolbarInit
         toolBarResideMenu = new ToolBar_ResideMenu(this, "Multi Media", gpioUart, pref);
@@ -98,7 +100,6 @@ public class MainActivity extends AppCompatActivity {
         swc = findViewById(R.id.image_view_steering_wheel);
         map = findViewById(R.id.image_view_map);
 
-
         if (cpuManager.getTemperature() > 79) {
             sendData("oth-tmp-001?", 100);
 
@@ -107,7 +108,10 @@ public class MainActivity extends AppCompatActivity {
         swc.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                startActivity(new Intent(MainActivity.this, SteeringWheelContorllerActivity.class));
+                //startActivity(new Intent(MainActivity.this, SteeringWheelContorllerActivity.class));
+                //sendData(audioValues.androidBTMode(),100);
+                sendData("oth-tmp-000?", 300);
+
             }
         });
 
@@ -123,7 +127,9 @@ public class MainActivity extends AppCompatActivity {
                     locationUpdated = false;
                 } else
                     Toast.makeText(MainActivity.this, "اطلاعات موقعیت یاب به روز نیست", Toast.LENGTH_SHORT).show();*/
-                sendData("oth-tmp-000?", 300);
+                sendData("oth-tmp-001?", 300);
+
+
             }
         });
 
@@ -131,15 +137,15 @@ public class MainActivity extends AppCompatActivity {
             @Override
             public void onClick(View view) {
                 //startActivity(new Intent(MainActivity.this, SettingsActivity.class));
-                sendData("oth-tmp-001?", 300);
+                sendData("oth-tmp-002?", 300);
             }
         });
 
         radio.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-
-                startActivity(new Intent(MainActivity.this, RadioActivity.class));
+                sendData("oth-tmp-003?", 100);
+                //startActivity(new Intent(MainActivity.this, RadioActivity.class));
                 /*connectUsbService.write(audioValues.radioMode());
                 myAudioManager.pauseHeadUnitMusicPlayer();
                 pref.setHeadUnitAudioIsActive(false);

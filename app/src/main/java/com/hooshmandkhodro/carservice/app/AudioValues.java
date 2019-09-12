@@ -224,10 +224,10 @@ public class AudioValues {
 
         int aux = modifyBit(prefManager.getVolumeValue(9), position, bitValue); //aux
         prefManager.setVolumeValue(9, aux);
-        int androidBT = modifyBit(prefManager.getVolumeValue(10), position, bitValue); //android AND BT
-        prefManager.setVolumeValue(10, androidBT);
-        int radio = modifyBit(prefManager.getVolumeValue(11), position, bitValue); //RADIO
-        prefManager.setVolumeValue(11, radio);
+        int androidBT = modifyBit(prefManager.getVolumeValue(11), position, bitValue); //android AND BT
+        prefManager.setVolumeValue(11, androidBT);
+        int radio = modifyBit(prefManager.getVolumeValue(10), position, bitValue); //RADIO
+        prefManager.setVolumeValue(10, radio);
     }
 
     private int modifyBit(int number, int position, int bitValue) {
@@ -245,11 +245,11 @@ public class AudioValues {
     }
 
     public String androidBTMode() {
-        return "mod-" + prefManager.getVolumeValue(10) + "?";
+        return "mod-" + prefManager.getVolumeValue(11) + "?";
     }
 
     public String radioMode() {
-        return "mod-" + prefManager.getVolumeValue(11) + "?";
+        return "mod-" + prefManager.getVolumeValue(10) + "?";
     }
 
 }

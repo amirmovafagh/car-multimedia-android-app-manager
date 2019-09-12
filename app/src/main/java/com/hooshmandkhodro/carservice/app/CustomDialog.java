@@ -7,6 +7,7 @@ import android.graphics.Color;
 import android.graphics.drawable.ColorDrawable;
 import android.media.AudioManager;
 import android.os.Handler;
+import android.util.Log;
 import android.view.View;
 import android.view.Window;
 import android.widget.ImageButton;
@@ -119,7 +120,8 @@ public class CustomDialog {
             @Override
             public void onProgressChanged(SeekBar seekBar, int i, boolean b) {
                 brightness.setScreenBrightness(i);
-                gpioUart.sendData("oth-brg-" + i / 5 + "?");
+                gpioUart.sendData("oth-brg-" + i / 3 + "?");
+                Log.i("brg",""+i/3);
             }
 
             @Override
