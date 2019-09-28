@@ -1,7 +1,6 @@
 package com.hooshmandkhodro.carservice;
 
 import android.Manifest;
-import android.content.Context;
 import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.location.Location;
@@ -9,7 +8,7 @@ import android.location.LocationListener;
 import android.location.LocationManager;
 import android.os.Build;
 import android.os.Handler;
-import android.os.PowerManager;
+import android.os.Looper;
 import android.support.annotation.RequiresApi;
 import android.support.v4.app.ActivityCompat;
 import android.support.v7.app.AppCompatActivity;
@@ -20,6 +19,7 @@ import android.view.View;
 import android.widget.ImageButton;
 import android.widget.Toast;
 
+import com.hooshmandkhodro.carservice.app.ArmRTC;
 import com.hooshmandkhodro.carservice.app.AudioValues;
 import com.hooshmandkhodro.carservice.app.CpuManager;
 import com.hooshmandkhodro.carservice.app.GpioUart;
@@ -30,8 +30,11 @@ import com.hooshmandkhodro.carservice.app.ToolBar_ResideMenu;
 import java.io.DataOutputStream;
 import java.io.IOException;
 import java.text.SimpleDateFormat;
+import java.util.Calendar;
 import java.util.Date;
 import java.util.Locale;
+
+import static com.hooshmandkhodro.carservice.MyHandler.buffer;
 
 
 public class MainActivity extends AppCompatActivity {
@@ -43,6 +46,8 @@ public class MainActivity extends AppCompatActivity {
     MyAudioManager myAudioManager;
     CpuManager cpuManager;
     LocationManager mLocationManager;
+    ArmRTC armRTC;
+
 
 
     private AudioValues audioValues;
@@ -80,7 +85,7 @@ public class MainActivity extends AppCompatActivity {
 
 
         cpuManager = new CpuManager();
-
+        armRTC = new ArmRTC(gpioUart);
 
         //toolbarInit
         toolBarResideMenu = new ToolBar_ResideMenu(this, "Multi Media", gpioUart, pref);
@@ -118,16 +123,16 @@ public class MainActivity extends AppCompatActivity {
         map.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                /*Intent launchIntent = getPackageManager().getLaunchIntentForPackage("com.sygic.aura");
-                if (launchIntent != null) {
-                    startActivity(launchIntent);//null pointer check in case package name was not found
-                }*/
+                //changeSystemTime("2019","10","23","02","40","55"); just test
+
                 /*if (parts[0] != null && parts[0] != "" && parts[5] != null && parts[5] != "" && locationUpdated) {
                     changeSystemTime(parts[0], parts[1], parts[2], parts[3], parts[4], parts[5]);
                     locationUpdated = false;
                 } else
                     Toast.makeText(MainActivity.this, "اطلاعات موقعیت یاب به روز نیست", Toast.LENGTH_SHORT).show();*/
-                sendData("oth-tmp-001?", 300);
+
+
+
 
 
             }
@@ -144,7 +149,14 @@ public class MainActivity extends AppCompatActivity {
         radio.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                sendData("oth-tmp-003?", 100);
+                gpioUart.sendData("oth-rtg?");
+                if (buffer.contains("rtc-") && buffer.substring(10).equalsIgnoreCase("-") && Integer.parseInt(buffer.substring(11, 13)) != 0) {
+
+                    changeSystemTime(buffer.substring(4, 6), buffer.substring(6, 8), buffer.substring(8, 10), "20" + buffer.substring(11, 13),
+                            buffer.substring(13, 15), buffer.substring(15, 17));
+
+                }
+                //sendData("oth-tmp-003?", 100);
                 //startActivity(new Intent(MainActivity.this, RadioActivity.class));
                 /*connectUsbService.write(audioValues.radioMode());
                 myAudioManager.pauseHeadUnitMusicPlayer();

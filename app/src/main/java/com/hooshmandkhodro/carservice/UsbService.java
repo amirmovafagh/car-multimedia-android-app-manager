@@ -13,6 +13,7 @@ import android.provider.Settings;
 import android.util.Log;
 import android.widget.Toast;
 
+import com.hooshmandkhodro.carservice.app.ArmRTC;
 import com.hooshmandkhodro.carservice.app.AudioValues;
 import com.hooshmandkhodro.carservice.app.Brightness;
 import com.hooshmandkhodro.carservice.app.CpuManager;
@@ -49,6 +50,7 @@ public class UsbService extends Service {
     private PrefManager prefManager;
     private MyAudioManager audioManager;
     private GpioUart gpioUart;
+    private ArmRTC armRTC;
 
     private ObservableInteger obsInit;
     private Brightness brightness;
@@ -83,6 +85,7 @@ public class UsbService extends Service {
     public void onCreate() {
         this.context = this;
         gpioUart = new GpioUart(1);
+        armRTC = new ArmRTC(gpioUart);
         cpu = new CpuManager();
         cpu.InitTouchConfig();
         modelOps = SteeringWheelControllerModel.getInstance(this);
@@ -105,6 +108,8 @@ public class UsbService extends Service {
         prefManager = new PrefManager(context);
         brightness = new Brightness(context);
         obsInit = new ObservableInteger();
+
+        armRTC.setTimeOnHeadUnit();
 
 
         myHandler = new MyHandler(context);
