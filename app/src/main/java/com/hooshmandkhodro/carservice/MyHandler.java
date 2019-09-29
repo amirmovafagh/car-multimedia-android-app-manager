@@ -8,7 +8,7 @@ import android.util.Log;
 import android.widget.Toast;
 
 import com.hooshmandkhodro.carservice.app.MyAudioManager;
-import com.hooshmandkhodro.carservice.app.PrefManager;
+import com.hooshmandkhodro.carservice.app.SharedPreference;
 import com.hooshmandkhodro.carservice.bluetoothFragments.contacts.PkgTelephoneActivity.PkgPhoneDialerFragment.PhoneDialerFragment;
 
 /**
@@ -23,7 +23,7 @@ public class MyHandler extends Handler {
     public static boolean telephoneActivityIsOpen = false;
     public static boolean steeringWheelDataStatus = false ;
     private MyAudioManager audioManager;
-    private PrefManager prefManager;
+    private SharedPreference sharedPreference;
 
     //private final WeakReference<MainActivity> mActivity;
     private Context context;
@@ -31,7 +31,7 @@ public class MyHandler extends Handler {
 
     public MyHandler(Context context) {
         this.context= context;
-        prefManager = new PrefManager(context);
+        sharedPreference = new SharedPreference(context);
 
     }
     /**
@@ -41,7 +41,7 @@ public class MyHandler extends Handler {
      * */
     @Override
     public void handleMessage(Message msg) {
-        boolean dbug = prefManager.getDebugModeState();
+        boolean dbug = sharedPreference.getDebugModeState();
         switch (msg.what) {
 
             case UsbService.MESSAGE_FROM_GPIO_UART_TTYS1:

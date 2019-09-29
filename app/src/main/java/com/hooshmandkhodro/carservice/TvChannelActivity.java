@@ -7,18 +7,17 @@ import android.view.MotionEvent;
 
 import com.hooshmandkhodro.carservice.app.AudioValues;
 import com.hooshmandkhodro.carservice.app.MyAudioManager;
-import com.hooshmandkhodro.carservice.app.PrefManager;
+import com.hooshmandkhodro.carservice.app.SharedPreference;
 
 
 
 import com.hooshmandkhodro.carservice.app.GpioUart;
 
 
-
 public class TvChannelActivity extends AppCompatActivity {
     private GpioUart gpioUart;
     private MyAudioManager myAudioManager;
-    private PrefManager pref;
+    private SharedPreference pref;
     private AudioValues audioValues;
 
     @Override
@@ -30,7 +29,7 @@ public class TvChannelActivity extends AppCompatActivity {
         gpioUart = new GpioUart(1);
 
         myAudioManager = new MyAudioManager(getApplicationContext());
-        pref = new PrefManager(getApplicationContext());
+        pref = new SharedPreference(getApplicationContext());
         audioValues = new AudioValues(pref);
 
 

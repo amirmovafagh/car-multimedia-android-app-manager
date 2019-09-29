@@ -16,11 +16,11 @@ import android.widget.ToggleButton;
 
 import com.hooshmandkhodro.carservice.R;
 import com.hooshmandkhodro.carservice.app.BluetoothService;
+import com.hooshmandkhodro.carservice.app.SharedPreference;
 import com.skyfishjy.library.RippleBackground;
 
 
 import com.hooshmandkhodro.carservice.app.GpioUart;
-import com.hooshmandkhodro.carservice.app.PrefManager;
 
 import static com.hooshmandkhodro.carservice.BluetoothActivity.connectGpioUartBt;
 
@@ -38,7 +38,7 @@ public class SettingsFragment extends Fragment {
     private BluetoothService bluetoothService;
     private Handler handler;
     private Runnable runnable;
-    private PrefManager prefManager;
+    private SharedPreference sharedPreference;
 
 
     public SettingsFragment() {
@@ -60,7 +60,7 @@ public class SettingsFragment extends Fragment {
         gpioUart = connectGpioUartBt;
         bluetoothService = new BluetoothService(getActivity());
         connectionStatus();
-        prefManager= new PrefManager(getContext());
+        sharedPreference = new SharedPreference(getContext());
 
 
 
@@ -144,8 +144,8 @@ public class SettingsFragment extends Fragment {
     @Override
     public void onResume() {
         super.onResume();
-        autoAnswerTbtn.setChecked(prefManager.getBtAutoAnswer());
-        autoConnectTbtn.setChecked(prefManager.getBtAutoConnect());
+        autoAnswerTbtn.setChecked(sharedPreference.getBtAutoAnswer());
+        autoConnectTbtn.setChecked(sharedPreference.getBtAutoConnect());
     }
 
     public void initSetOnClick(){
@@ -166,7 +166,7 @@ public class SettingsFragment extends Fragment {
                 gpioUart.sendData("blt-stn-pof?");
                 handler.removeCallbacksAndMessages(null);
                 rippleBackground.stopRippleAnimation();
-                prefManager.setBluetoothPlayerState(false);
+                sharedPreference.setBluetoothPlayerState(false);
 
 
 
@@ -176,7 +176,7 @@ public class SettingsFragment extends Fragment {
         autoConnectTbtn.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
             @Override
             public void onCheckedChanged(CompoundButton compoundButton, boolean b) {
-                prefManager.setBtAutoConnect(b);
+                sharedPreference.setBtAutoConnect(b);
 
                 if(b){
                     gpioUart.sendData("blt-stn-eac?");
@@ -190,7 +190,7 @@ public class SettingsFragment extends Fragment {
         autoAnswerTbtn.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
             @Override
             public void onCheckedChanged(CompoundButton compoundButton, boolean b) {
-                prefManager.setBtAutoAnswer(b);
+                sharedPreference.setBtAutoAnswer(b);
                 if(b){
                     gpioUart.sendData("blt-stn-ean?");
                 }else {

@@ -10,7 +10,7 @@ import android.view.View;
 
 import com.hooshmandkhodro.carservice.app.AudioValues;
 import com.hooshmandkhodro.carservice.app.MyAudioManager;
-import com.hooshmandkhodro.carservice.app.PrefManager;
+import com.hooshmandkhodro.carservice.app.SharedPreference;
 
 import abak.tr.com.boxedverticalseekbar.BoxedVertical;
 
@@ -22,7 +22,7 @@ public class AUXActivity extends AppCompatActivity {
     private GpioUart gpioUart;
     private AudioValues audioValues;
     private BoxedVertical soundModule;
-    private PrefManager pref;
+    private SharedPreference pref;
     MyAudioManager myAudioManager;
 
     @Override
@@ -34,7 +34,7 @@ public class AUXActivity extends AppCompatActivity {
 
             gpioUart = new GpioUart(1);
 
-        pref = new PrefManager(AUXActivity.this);
+        pref = new SharedPreference(AUXActivity.this);
         audioValues = new AudioValues(pref);
         myAudioManager = new MyAudioManager(getApplicationContext());
         soundModule = findViewById(R.id.sound_module_seekbar_aux);

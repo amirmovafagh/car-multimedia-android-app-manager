@@ -10,9 +10,6 @@ import android.widget.Toast;
 import com.hooshmandkhodro.carservice.AudioStreamVolumeObserver;
 import com.hooshmandkhodro.carservice.UsbService;
 
-import java.util.Calendar;
-import java.util.Date;
-
 
 /**
  * Created by hirad on 2/28/18.
@@ -26,7 +23,7 @@ public class Receiver extends BroadcastReceiver {
     private static final String USB_DEVICE_ATTACHED = "android.hardware.usb.action.USB_DEVICE_ATTACHED";
     public static boolean timeWasSet = false;
     GpioUart gpioUart;
-    PrefManager prefManager;
+    SharedPreference sharedPreference;
     AudioValues audioValues;
     ArmRTC armRTC;
 
@@ -45,8 +42,8 @@ public class Receiver extends BroadcastReceiver {
         if (intent.getAction().equals(BOOT_COMPLETED) || intent.getAction().equals(QUICKBOOT_POWERON)) {
             gpioUart = new GpioUart(1);
             armRTC = new ArmRTC(gpioUart);
-            prefManager = new PrefManager(context);
-            audioValues   = new AudioValues(prefManager);
+            sharedPreference = new SharedPreference(context);
+            audioValues   = new AudioValues(sharedPreference);
             context.startService(new Intent(context, UsbService.class));
             Toast.makeText(context, "سرویس مولتی مدیا راه اندازی شد", Toast.LENGTH_SHORT).show();
             Intent i = new Intent();
@@ -57,9 +54,9 @@ public class Receiver extends BroadcastReceiver {
                     Settings.System.SCREEN_OFF_TIMEOUT, 9999999);
 
             gpioUart.sendData(audioValues.androidBTMode());
-            prefManager.setHeadUnitAudioIsActive(true);
-            prefManager.setAUXAudioIsActive(false);
-            prefManager.setRadioIsRun(false);
+            sharedPreference.setHeadUnitAudioIsActive(true);
+            sharedPreference.setAUXAudioIsActive(false);
+            sharedPreference.setRadioIsRun(false);
 
 
             /*cpuManager = new CpuManager();

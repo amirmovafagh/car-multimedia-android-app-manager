@@ -27,15 +27,15 @@ public class CustomDialog {
     private ImageButton mute;
     private AudioManager audioManager;
     private GpioUart gpioUart;
-    private PrefManager pref;
+    private SharedPreference pref;
     private Brightness brightness;
     private int frqSeekVal;
     private AudioValues audioValues;
 
-    public CustomDialog(Activity activity, PrefManager prefManager, GpioUart gpioUart) {
+    public CustomDialog(Activity activity, SharedPreference sharedPreference, GpioUart gpioUart) {
         this.activity = activity;
         this.gpioUart = gpioUart;
-        this.pref = prefManager;
+        this.pref = sharedPreference;
         audioValues = new AudioValues(pref);
     }
 

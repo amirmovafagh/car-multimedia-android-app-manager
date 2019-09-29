@@ -53,6 +53,10 @@ dependencies {
     implementation 'com.sdsmdg.harjot:croller:1.0.7'
     implementation 'eu.chainfire:libsuperuser:+'
 
-
+    implementation 'com.google.dagger:dagger-android:2.20'
+    implementation 'com.google.dagger:dagger-android-support:2.20'
+// if you use the support libraries
+    annotationProcessor 'com.google.dagger:dagger-android-processor:2.20'
+    annotationProcessor 'com.google.dagger:dagger-compiler:2.20'
 
 }

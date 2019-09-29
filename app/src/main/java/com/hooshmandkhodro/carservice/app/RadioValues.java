@@ -12,10 +12,10 @@ public class RadioValues {
 
     private int mode, soundGain;
     private String frequenceFM,frequenceAM;
-    private PrefManager prefManager;
+    private SharedPreference sharedPreference;
 
-    public RadioValues(PrefManager prefManager) {
-        this.prefManager = prefManager;
+    public RadioValues(SharedPreference sharedPreference) {
+        this.sharedPreference = sharedPreference;
         getMode();
         getFrequencyFM();
         getFrequencyAM();
@@ -35,7 +35,7 @@ public class RadioValues {
     }
 
     private void getFrequencyFM() {
-        float frq = prefManager.getRadioFrequencyFM() * 10;
+        float frq = sharedPreference.getRadioFrequencyFM() * 10;
         frequenceFM = String.valueOf(frq);
         frequenceFM = frequenceFM.replaceAll("\\.0", "");
 
@@ -46,7 +46,7 @@ public class RadioValues {
     }
 
     private void getFrequencyAM() {
-        int frq = prefManager.getRadioFrequencyAM();
+        int frq = sharedPreference.getRadioFrequencyAM();
         frequenceAM = String.valueOf(frq);
 
 
@@ -57,32 +57,32 @@ public class RadioValues {
     }
 
     public int getMode() {
-        mode = prefManager.getRadioMode();
+        mode = sharedPreference.getRadioMode();
         return mode;
     }
 
     public int getSoundGain() {
-        soundGain = prefManager.getRadioSoundGain();
+        soundGain = sharedPreference.getRadioSoundGain();
         return soundGain;
     }
 
     public void setMode(int mode) {
-        prefManager.setRadioMode(mode);
+        sharedPreference.setRadioMode(mode);
         getMode();
     }
 
     public void setSoundGain(int soundGain){
 
-        prefManager.setRadioSoundGain(soundGain);
+        sharedPreference.setRadioSoundGain(soundGain);
         getSoundGain();
     }
 
     public void setFrequencyFM (float frequency){
-        prefManager.setRadioFrequencyFM(frequency);
+        sharedPreference.setRadioFrequencyFM(frequency);
         getFrequencyFM();
     }
     public void setFrequencyAM (int frequency){
-        prefManager.setRadioFrequencyAM(frequency);
+        sharedPreference.setRadioFrequencyAM(frequency);
         getFrequencyAM();
     }
 

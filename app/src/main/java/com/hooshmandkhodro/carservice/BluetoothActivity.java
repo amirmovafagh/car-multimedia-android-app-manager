@@ -12,7 +12,7 @@ import android.support.v7.app.AppCompatActivity;
 import android.util.Log;
 import android.view.MenuItem;
 
-import com.hooshmandkhodro.carservice.app.PrefManager;
+import com.hooshmandkhodro.carservice.app.SharedPreference;
 import com.hooshmandkhodro.carservice.app.ToolBar_ResideMenu;
 import com.hooshmandkhodro.carservice.bluetoothFragments.MediaFragment;
 import com.hooshmandkhodro.carservice.bluetoothFragments.SettingsFragment;
@@ -31,7 +31,7 @@ public class BluetoothActivity extends AppCompatActivity {
     private Handler handler;
     private Runnable runnable;
     public static GpioUart connectGpioUartBt;
-    private PrefManager prefManager;
+    private SharedPreference sharedPreference;
 
 
     @Override
@@ -42,10 +42,10 @@ public class BluetoothActivity extends AppCompatActivity {
 
             connectGpioUartBt = new GpioUart(1);
 
-        prefManager = new PrefManager(getBaseContext());
+        sharedPreference = new SharedPreference(getBaseContext());
         //new ConnectUsbService(BluetoothActivity.this);
         //toolbarInit
-        toolBarResideMenu = new ToolBar_ResideMenu(this, "Bluetooth", connectGpioUartBt, prefManager);
+        toolBarResideMenu = new ToolBar_ResideMenu(this, "Bluetooth", connectGpioUartBt, sharedPreference);
         //resideMenuInit
         toolBarResideMenu.resideMenuInit("Home", "Radio", "Settings",
                 R.drawable.icon_home, R.drawable.icon_home, R.drawable.icon_home,

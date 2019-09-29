@@ -8,7 +8,6 @@ import android.location.LocationListener;
 import android.location.LocationManager;
 import android.os.Build;
 import android.os.Handler;
-import android.os.Looper;
 import android.support.annotation.RequiresApi;
 import android.support.v4.app.ActivityCompat;
 import android.support.v7.app.AppCompatActivity;
@@ -24,13 +23,12 @@ import com.hooshmandkhodro.carservice.app.AudioValues;
 import com.hooshmandkhodro.carservice.app.CpuManager;
 import com.hooshmandkhodro.carservice.app.GpioUart;
 import com.hooshmandkhodro.carservice.app.MyAudioManager;
-import com.hooshmandkhodro.carservice.app.PrefManager;
+import com.hooshmandkhodro.carservice.app.SharedPreference;
 import com.hooshmandkhodro.carservice.app.ToolBar_ResideMenu;
 
 import java.io.DataOutputStream;
 import java.io.IOException;
 import java.text.SimpleDateFormat;
-import java.util.Calendar;
 import java.util.Date;
 import java.util.Locale;
 
@@ -41,7 +39,7 @@ public class MainActivity extends AppCompatActivity {
     private static final String tag = MainActivity.class.getSimpleName();
 
     private ToolBar_ResideMenu toolBarResideMenu;
-    private PrefManager pref;
+    private SharedPreference pref;
     private boolean locationUpdated = false;
     MyAudioManager myAudioManager;
     CpuManager cpuManager;
@@ -66,7 +64,7 @@ public class MainActivity extends AppCompatActivity {
         startService(new Intent(MainActivity.this, UsbService.class));
         gpioUart = new GpioUart(1);
 
-        pref = new PrefManager(MainActivity.this);
+        pref = new SharedPreference(MainActivity.this);
         audioValues = new AudioValues(pref);
         myAudioManager = new MyAudioManager(getApplicationContext());
         mLocationManager = (LocationManager) getSystemService(LOCATION_SERVICE);

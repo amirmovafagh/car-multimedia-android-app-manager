@@ -21,7 +21,7 @@ import com.hooshmandkhodro.carservice.app.AudioValues;
 import com.hooshmandkhodro.carservice.app.CustomDialog;
 import com.hooshmandkhodro.carservice.app.GpioUart;
 import com.hooshmandkhodro.carservice.app.MyAudioManager;
-import com.hooshmandkhodro.carservice.app.PrefManager;
+import com.hooshmandkhodro.carservice.app.SharedPreference;
 import com.hooshmandkhodro.carservice.app.RadioValues;
 import com.hooshmandkhodro.carservice.app.ToolBar_ResideMenu;
 import com.hooshmandkhodro.carservice.radio.DatabaseHelper;
@@ -60,7 +60,7 @@ public class RadioActivity extends AppCompatActivity implements View.OnClickList
     private ResideMenu resideMenu;
     private IndicatorSeekBar frqSeekbar;
     private Button favRadioButton, favBtn1, favBtn2, favBtn3, favBtn4, favBtn5, favBtn6;
-    private PrefManager prefManager;
+    private SharedPreference sharedPreference;
     private CustomDialog dialog;
     private Float frequencyFM;
     private int frequencyAM, handlerDelay;
@@ -84,17 +84,17 @@ public class RadioActivity extends AppCompatActivity implements View.OnClickList
         autoSearchDialog = new ProgressDialog(RadioActivity.this, R.style.AppCompatAlertDialogStyle);
 
 
-        prefManager = new PrefManager(this);
-        radioValues = new RadioValues(prefManager);
+        sharedPreference = new SharedPreference(this);
+        radioValues = new RadioValues(sharedPreference);
         getRadioMode();
-        prefManager.setRadioIsRun(true);
+        sharedPreference.setRadioIsRun(true);
 
         gpioUart = new GpioUart(1);
 
         audioManager = new MyAudioManager(this);
         audioManager.pauseHeadUnitMusicPlayer();
-        prefManager.setHeadUnitAudioIsActive(false);
-        audioValues = new AudioValues(prefManager);
+        sharedPreference.setHeadUnitAudioIsActive(false);
+        audioValues = new AudioValues(sharedPreference);
         sendData(audioValues.radioMode(), 0);
         initView();
         onLongClick();
@@ -241,18 +241,18 @@ public class RadioActivity extends AppCompatActivity implements View.OnClickList
     private void favBtnFunction(int AM, int FM) {
         if (!AMFMmode) {
             //AM
-            if (!prefManager.getFavoriteRadioFrequency(AM).equals("SAVE FREQUENCY")) {
-                frqSeekbar.setProgress(Float.valueOf(prefManager.getFavoriteRadioFrequency(AM)));
-                txtFrequency.setText(prefManager.getFavoriteRadioFrequency(AM));
-                prefManager.setRadioFrequencyAM(Integer.valueOf(prefManager.getFavoriteRadioFrequency(AM)));
+            if (!sharedPreference.getFavoriteRadioFrequency(AM).equals("SAVE FREQUENCY")) {
+                frqSeekbar.setProgress(Float.valueOf(sharedPreference.getFavoriteRadioFrequency(AM)));
+                txtFrequency.setText(sharedPreference.getFavoriteRadioFrequency(AM));
+                sharedPreference.setRadioFrequencyAM(Integer.valueOf(sharedPreference.getFavoriteRadioFrequency(AM)));
             } else
                 Toast.makeText(this, R.string.onClick_fav_radio_btn_channel_per, Toast.LENGTH_SHORT).show();
         } else {
-            if (!prefManager.getFavoriteRadioFrequency(FM).equals("SAVE FREQUENCY")) {
+            if (!sharedPreference.getFavoriteRadioFrequency(FM).equals("SAVE FREQUENCY")) {
                 //FM
-                frqSeekbar.setProgress(Float.valueOf(prefManager.getFavoriteRadioFrequency(FM)));
-                txtFrequency.setText(prefManager.getFavoriteRadioFrequency(FM));
-                prefManager.setRadioFrequencyFM(Float.valueOf(prefManager.getFavoriteRadioFrequency(FM)));
+                frqSeekbar.setProgress(Float.valueOf(sharedPreference.getFavoriteRadioFrequency(FM)));
+                txtFrequency.setText(sharedPreference.getFavoriteRadioFrequency(FM));
+                sharedPreference.setRadioFrequencyFM(Float.valueOf(sharedPreference.getFavoriteRadioFrequency(FM)));
             } else
                 Toast.makeText(this, R.string.onClick_fav_radio_btn_channel_per, Toast.LENGTH_SHORT).show();
         }
@@ -323,7 +323,7 @@ public class RadioActivity extends AppCompatActivity implements View.OnClickList
             //FM
             for (int i = 0; i < 6; i++) {
                 favRadioButton = findViewById(favBtnRadioIDs[i]);
-                favRadioButton.setText(prefManager.getFavoriteRadioFrequency(i));
+                favRadioButton.setText(sharedPreference.getFavoriteRadioFrequency(i));
             }
 
 
@@ -338,7 +338,7 @@ public class RadioActivity extends AppCompatActivity implements View.OnClickList
             readAMtableSetInRec();
             for (int i = 0; i < 6; i++) {
                 favRadioButton = findViewById(favBtnRadioIDs[i]);
-                favRadioButton.setText(prefManager.getFavoriteRadioFrequency(i + 6));
+                favRadioButton.setText(sharedPreference.getFavoriteRadioFrequency(i + 6));
             }
 
         }
@@ -466,11 +466,11 @@ public class RadioActivity extends AppCompatActivity implements View.OnClickList
     private void favBtnSaveFunction(int AM, int FM, Button favBtn) {
         if (radioValues.getMode() == 0) {
             //AM
-            prefManager.setFavoriteRadioFrequency(AM, txtFrequency.getText().toString());
-            favBtn.setText(prefManager.getFavoriteRadioFrequency(AM));
+            sharedPreference.setFavoriteRadioFrequency(AM, txtFrequency.getText().toString());
+            favBtn.setText(sharedPreference.getFavoriteRadioFrequency(AM));
         } else {
-            prefManager.setFavoriteRadioFrequency(FM, txtFrequency.getText().toString());
-            favBtn.setText(prefManager.getFavoriteRadioFrequency(FM));
+            sharedPreference.setFavoriteRadioFrequency(FM, txtFrequency.getText().toString());
+            favBtn.setText(sharedPreference.getFavoriteRadioFrequency(FM));
         }
         Toast.makeText(this, R.string.onLongClick_fav_radio_btn_channel_per, Toast.LENGTH_SHORT).show();
     }
@@ -494,7 +494,7 @@ public class RadioActivity extends AppCompatActivity implements View.OnClickList
         autoSearch.setOnClickListener(this);
 
         //toolbarInit
-        toolBarResideMenu = new ToolBar_ResideMenu(this, "Radio", gpioUart, prefManager);
+        toolBarResideMenu = new ToolBar_ResideMenu(this, "Radio", gpioUart, sharedPreference);
         //resideMenuInit
         toolBarResideMenu.resideMenuInit("Home", "Bluetooth", "Settings",
                 R.drawable.icon_home, R.drawable.icon_home, R.drawable.icon_home,
@@ -508,7 +508,7 @@ public class RadioActivity extends AppCompatActivity implements View.OnClickList
             //AM
             for (int i = 0; i < favBtnRadioIDs.length; i++) {
                 favRadioButton = findViewById(favBtnRadioIDs[i]);
-                favRadioButton.setText(prefManager.getFavoriteRadioFrequency(i + 6));
+                favRadioButton.setText(sharedPreference.getFavoriteRadioFrequency(i + 6));
                 favRadioButton.setOnClickListener(this);
             }
 
@@ -519,7 +519,7 @@ public class RadioActivity extends AppCompatActivity implements View.OnClickList
             modeSwitch.setImageResource(R.drawable.fm_mode_96);
             for (int i = 0; i < favBtnRadioIDs.length; i++) {
                 favRadioButton = findViewById(favBtnRadioIDs[i]);
-                favRadioButton.setText(prefManager.getFavoriteRadioFrequency(i));
+                favRadioButton.setText(sharedPreference.getFavoriteRadioFrequency(i));
                 favRadioButton.setOnClickListener(this);
             }
         }
@@ -544,11 +544,11 @@ public class RadioActivity extends AppCompatActivity implements View.OnClickList
         frqSeekbar.setMax(max);// need for problem in set period min to max
         if (!b) {
 
-            frequencyAM = prefManager.getRadioFrequencyAM();
+            frequencyAM = sharedPreference.getRadioFrequencyAM();
             txtFrequency.setText(String.valueOf(frequencyAM));
             frqSeekbar.setProgress(frequencyAM);
         } else {
-            frequencyFM = prefManager.getRadioFrequencyFM();
+            frequencyFM = sharedPreference.getRadioFrequencyFM();
             txtFrequency.setText(String.valueOf(frequencyFM));
             frqSeekbar.setProgress(frequencyFM);
         }
@@ -566,21 +566,21 @@ public class RadioActivity extends AppCompatActivity implements View.OnClickList
     }
 
     private void checkVoiceChannel() {
-        boolean bt = prefManager.getBluetoothPlayerState();
-        boolean hu = prefManager.getHeadUnitAudioIsActive();
+        boolean bt = sharedPreference.getBluetoothPlayerState();
+        boolean hu = sharedPreference.getHeadUnitAudioIsActive();
         if (hu || bt) {
             if (hu) {
                 audioManager.pauseHeadUnitMusicPlayer();
             }
 
             sendData(audioValues.radioMode(), 10);
-            prefManager.setBluetoothPlayerState(false);
-            prefManager.setHeadUnitAudioIsActive(false);
+            sharedPreference.setBluetoothPlayerState(false);
+            sharedPreference.setHeadUnitAudioIsActive(false);
         }
     }
 
     private void amplifireState() {
-        if (prefManager.getAmplifireState()) {
+        if (sharedPreference.getAmplifireState()) {
 
 
             sendData("oth-amp-001?", 500);
@@ -599,7 +599,7 @@ public class RadioActivity extends AppCompatActivity implements View.OnClickList
 
         sendData(radioValues.getRadioManualSearchValues(), 700);
         Log.i(tag, "onStart");
-        prefManager.setRadioIsRun(true);
+        sharedPreference.setRadioIsRun(true);
     }
 
     @Override
@@ -607,11 +607,11 @@ public class RadioActivity extends AppCompatActivity implements View.OnClickList
         super.onResume();
         RadioSoundChannelActivity = true;
         audioManager.pauseHeadUnitMusicPlayer();
-        prefManager.setHeadUnitAudioIsActive(false);
+        sharedPreference.setHeadUnitAudioIsActive(false);
         sendData(audioValues.radioMode(), 1500);
         Log.i(tag, "onResume");
         amplifireState();
-        prefManager.setRadioIsRun(true);
+        sharedPreference.setRadioIsRun(true);
     }
 
     @Override
@@ -627,7 +627,7 @@ public class RadioActivity extends AppCompatActivity implements View.OnClickList
     protected void onStop() {
         super.onStop();
         Log.i(tag, "onStop");
-        prefManager.setRadioIsRun(true);
+        sharedPreference.setRadioIsRun(true);
     }
 
     @Override
@@ -636,14 +636,14 @@ public class RadioActivity extends AppCompatActivity implements View.OnClickList
         sendData(audioValues.androidBTMode(), 300);
         sendData("oth-amp-000?", 400);
         Log.i(tag, "onDESTROy");
-        prefManager.setRadioIsRun(false);
+        sharedPreference.setRadioIsRun(false);
 
     }
 
     @Override
     public void onBackPressed() {
         super.onBackPressed();
-        prefManager.setRadioIsRun(false);
+        sharedPreference.setRadioIsRun(false);
         Log.i(tag, "BACK");
         //this.finish();
     }

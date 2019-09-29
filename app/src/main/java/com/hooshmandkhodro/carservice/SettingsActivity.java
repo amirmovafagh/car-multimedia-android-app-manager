@@ -20,7 +20,7 @@ import android.widget.Toast;
 
 
 import com.hooshmandkhodro.carservice.app.AudioValues;
-import com.hooshmandkhodro.carservice.app.PrefManager;
+import com.hooshmandkhodro.carservice.app.SharedPreference;
 import com.hooshmandkhodro.carservice.app.ToolBar_ResideMenu;
 
 import abak.tr.com.boxedverticalseekbar.BoxedVertical;
@@ -40,7 +40,7 @@ public class SettingsActivity extends AppCompatActivity implements View.OnTouchL
     private ViewGroup relativeLayout = null;
     private Rect relativeLayoutRect = null;
     private boolean isCoordinatesInit_Level1 = false;
-    private PrefManager prefManager;
+    private SharedPreference sharedPreference;
     private ImageButton balanceUpBtn, balanceDownBtn, balanceRightBtn, balanceLeftBtn;
     private Handler handlerSetSpeakersData;
     private SwitchCompat loudSwitch, amplifire, soundLimitSwitch;
@@ -75,19 +75,19 @@ public class SettingsActivity extends AppCompatActivity implements View.OnTouchL
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_settings);
         initObjectsView();
-        prefManager = new PrefManager(SettingsActivity.this);
-        audioValues = new AudioValues(prefManager);
+        sharedPreference = new SharedPreference(SettingsActivity.this);
+        audioValues = new AudioValues(sharedPreference);
 
             gpioUart = new GpioUart(1);
 
 
-        toolBarResideMenu = new ToolBar_ResideMenu(SettingsActivity.this, "Audio Settings", gpioUart, prefManager);
+        toolBarResideMenu = new ToolBar_ResideMenu(SettingsActivity.this, "Audio Settings", gpioUart, sharedPreference);
         toolBarResideMenu.resideMenuInit("Home", "Bluetooth", "Radio",
                 R.drawable.icon_home, R.drawable.icon_home, R.drawable.icon_home, MainActivity.class
                 , BluetoothActivity.class, RadioActivity.class, "Settings");
-        basSeekbar.setValue(prefManager.getVolumeValue(5));
-        trebleSeekbar.setValue(prefManager.getVolumeValue(6));
-        gainSeekbar.setValue(prefManager.getVolumeValue(8));
+        basSeekbar.setValue(sharedPreference.getVolumeValue(5));
+        trebleSeekbar.setValue(sharedPreference.getVolumeValue(6));
+        gainSeekbar.setValue(sharedPreference.getVolumeValue(8));
         //checkResolution();
         initAudioEQsettings();
     }
@@ -164,12 +164,12 @@ public class SettingsActivity extends AppCompatActivity implements View.OnTouchL
                     .y(defaultY)
                     .setDuration(0)
                     .start();
-            prefManager.setXYcordinates(defaultX, defaultY);
+            sharedPreference.setXYcordinates(defaultX, defaultY);
 
             speakersInit(100, 100, 100, 100);
         } else {
             calculateBalanceData(getX, getY);
-            prefManager.setXYcordinates(getX, getY);
+            sharedPreference.setXYcordinates(getX, getY);
         }
     }
 
@@ -183,7 +183,7 @@ public class SettingsActivity extends AppCompatActivity implements View.OnTouchL
                     .setDuration(0)
                     .start();
             calculateBalanceData(getX, getY);
-            prefManager.setXYcordinates(getX, getY);
+            sharedPreference.setXYcordinates(getX, getY);
         }
     }
 
@@ -353,10 +353,10 @@ public class SettingsActivity extends AppCompatActivity implements View.OnTouchL
 
     private void setSound() {
 
-        if (prefManager.getAUXAudioIsActive()) {
+        if (sharedPreference.getAUXAudioIsActive()) {
             sendData(audioValues.auxMode());
             return;
-        } else if (prefManager.getRadioIsRun()) {
+        } else if (sharedPreference.getRadioIsRun()) {
             sendData(audioValues.radioMode());
             return;
         } else sendData(audioValues.androidBTMode());
@@ -369,15 +369,15 @@ public class SettingsActivity extends AppCompatActivity implements View.OnTouchL
             @Override
             public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
                 if (isChecked) {
-                    prefManager.setVolumeValue(13,55);
-                }else prefManager.setVolumeValue(13,63);
+                    sharedPreference.setVolumeValue(13,55);
+                }else sharedPreference.setVolumeValue(13,63);
             }
         });
 
         amplifire.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
             @Override
             public void onCheckedChanged(CompoundButton compoundButton, boolean b) {
-                prefManager.setAmplifireState(b);
+                sharedPreference.setAmplifireState(b);
                 if (!b)
                     sendData("oth-amp-000?");
             }
@@ -389,8 +389,8 @@ public class SettingsActivity extends AppCompatActivity implements View.OnTouchL
                 audioValues.loudState(b);
                 setSound();
 
-                if (prefManager.getDebugModeState())
-                    Toast.makeText(SettingsActivity.this, "" + prefManager.getVolumeValue(11), Toast.LENGTH_SHORT).show();
+                if (sharedPreference.getDebugModeState())
+                    Toast.makeText(SettingsActivity.this, "" + sharedPreference.getVolumeValue(11), Toast.LENGTH_SHORT).show();
 
 
             }
@@ -400,13 +400,13 @@ public class SettingsActivity extends AppCompatActivity implements View.OnTouchL
         loudSwitch.setOnLongClickListener(new View.OnLongClickListener() {
             @Override
             public boolean onLongClick(View view) {
-                boolean i = prefManager.getDebugModeState();
+                boolean i = sharedPreference.getDebugModeState();
                 if (i) {
                     Toast.makeText(SettingsActivity.this, "Debug Off", Toast.LENGTH_SHORT).show();
-                    prefManager.setDebugModeState(false);
+                    sharedPreference.setDebugModeState(false);
                 } else {
                     Toast.makeText(SettingsActivity.this, "Debug On", Toast.LENGTH_SHORT).show();
-                    prefManager.setDebugModeState(true);
+                    sharedPreference.setDebugModeState(true);
                 }
                 return false;
             }
@@ -425,8 +425,8 @@ public class SettingsActivity extends AppCompatActivity implements View.OnTouchL
 
             @Override
             public void onStopTrackingTouch(BoxedVertical boxedVertical) {
-                if (prefManager.getDebugModeState())
-                    Toast.makeText(SettingsActivity.this, "" + prefManager.getVolumeValue(11), Toast.LENGTH_SHORT).show();
+                if (sharedPreference.getDebugModeState())
+                    Toast.makeText(SettingsActivity.this, "" + sharedPreference.getVolumeValue(11), Toast.LENGTH_SHORT).show();
 
             }
         });
@@ -445,8 +445,8 @@ public class SettingsActivity extends AppCompatActivity implements View.OnTouchL
 
             @Override
             public void onStopTrackingTouch(BoxedVertical boxedVertical) {
-                if (prefManager.getDebugModeState())
-                    Toast.makeText(SettingsActivity.this, "" + prefManager.getVolumeValue(11), Toast.LENGTH_SHORT).show();
+                if (sharedPreference.getDebugModeState())
+                    Toast.makeText(SettingsActivity.this, "" + sharedPreference.getVolumeValue(11), Toast.LENGTH_SHORT).show();
 
             }
         });
@@ -465,8 +465,8 @@ public class SettingsActivity extends AppCompatActivity implements View.OnTouchL
 
             @Override
             public void onStopTrackingTouch(BoxedVertical boxedVertical) {
-                if (prefManager.getDebugModeState())
-                    Toast.makeText(SettingsActivity.this, "" + prefManager.getVolumeValue(11), Toast.LENGTH_SHORT).show();
+                if (sharedPreference.getDebugModeState())
+                    Toast.makeText(SettingsActivity.this, "" + sharedPreference.getVolumeValue(11), Toast.LENGTH_SHORT).show();
 
             }
         });
@@ -516,25 +516,25 @@ public class SettingsActivity extends AppCompatActivity implements View.OnTouchL
         balanceUpBtn.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                changeStateOfImageBalanceWithDirectionalButtons(prefManager.getXcordinate(), prefManager.getYcordinate() - step);
+                changeStateOfImageBalanceWithDirectionalButtons(sharedPreference.getXcordinate(), sharedPreference.getYcordinate() - step);
             }
         });
         balanceDownBtn.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                changeStateOfImageBalanceWithDirectionalButtons(prefManager.getXcordinate(), prefManager.getYcordinate() + step);
+                changeStateOfImageBalanceWithDirectionalButtons(sharedPreference.getXcordinate(), sharedPreference.getYcordinate() + step);
             }
         });
         balanceRightBtn.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                changeStateOfImageBalanceWithDirectionalButtons(prefManager.getXcordinate() - step, prefManager.getYcordinate());
+                changeStateOfImageBalanceWithDirectionalButtons(sharedPreference.getXcordinate() - step, sharedPreference.getYcordinate());
             }
         });
         balanceLeftBtn.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                changeStateOfImageBalanceWithDirectionalButtons(prefManager.getXcordinate() + step, prefManager.getYcordinate());
+                changeStateOfImageBalanceWithDirectionalButtons(sharedPreference.getXcordinate() + step, sharedPreference.getYcordinate());
             }
         });
 
@@ -548,7 +548,7 @@ public class SettingsActivity extends AppCompatActivity implements View.OnTouchL
                 .setDuration(0)
                 .start();
         calculateBalanceData(getX, getY);
-        prefManager.setXYcordinates(getX, getY);
+        sharedPreference.setXYcordinates(getX, getY);
 
     }
 
@@ -568,25 +568,25 @@ public class SettingsActivity extends AppCompatActivity implements View.OnTouchL
     @Override
     protected void onStart() {
         super.onStart();
-        if (prefManager.getVolumeValue(7) != 0)
+        if (sharedPreference.getVolumeValue(7) != 0)
             loudSwitch.setChecked(true);
         else
             loudSwitch.setChecked(false);
 
-        if (prefManager.getAmplifireState())
+        if (sharedPreference.getAmplifireState())
             amplifire.setChecked(true);
         else
             amplifire.setChecked(false);
 
-        if (prefManager.getVolumeValue(13) == 55)
+        if (sharedPreference.getVolumeValue(13) == 55)
             soundLimitSwitch.setChecked(true);
         else soundLimitSwitch.setChecked(false);
 
 
         //checkResolution();
         audioBalanceImg.animate()
-                .x(prefManager.getXcordinate())
-                .y(prefManager.getYcordinate())
+                .x(sharedPreference.getXcordinate())
+                .y(sharedPreference.getYcordinate())
                 .setDuration(100)
                 .start();
     }

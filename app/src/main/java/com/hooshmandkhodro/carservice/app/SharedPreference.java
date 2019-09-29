@@ -11,8 +11,8 @@ import static com.hooshmandkhodro.carservice.SettingsActivity.defaultY;
  * Created by hirad on 4/4/18.
  */
 
-public class PrefManager {
-    private static final String TAG = PrefManager.class.getSimpleName();
+public class SharedPreference {
+    private static final String TAG = SharedPreference.class.getSimpleName();
 
     SharedPreferences pref;
     SharedPreferences.Editor editor;
@@ -56,7 +56,7 @@ public class PrefManager {
     private static final String BLUETOOTH_AUTOCONNECT = "btAutoConnect";
     private static final String BLUETOOTH_AUTOANSWER ="btAutoAnswer";
 
-    public PrefManager(Context context) {
+    public SharedPreference(Context context) {
 
         this._context = context;
         pref = _context.getSharedPreferences(PREF_NAME, PRIVATE_MODE);
