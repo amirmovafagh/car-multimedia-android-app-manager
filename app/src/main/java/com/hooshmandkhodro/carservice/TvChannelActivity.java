@@ -7,30 +7,34 @@ import android.view.MotionEvent;
 
 import com.hooshmandkhodro.carservice.app.AudioValues;
 import com.hooshmandkhodro.carservice.app.MyAudioManager;
-import com.hooshmandkhodro.carservice.app.SharedPreference;
-
+import com.hooshmandkhodro.carservice.app.PrefManager;
 
 
 import com.hooshmandkhodro.carservice.app.GpioUart;
+import com.hooshmandkhodro.carservice.app.dagger.App;
+
+import javax.inject.Inject;
 
 
 public class TvChannelActivity extends AppCompatActivity {
+    @Inject
+    PrefManager prefManager;
     private GpioUart gpioUart;
     private MyAudioManager myAudioManager;
-    private SharedPreference pref;
+
     private AudioValues audioValues;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_tv_channel);
-
+        ((App)getApplicationContext()).getComponent().inject(this);
 
         gpioUart = new GpioUart(1);
 
         myAudioManager = new MyAudioManager(getApplicationContext());
-        pref = new SharedPreference(getApplicationContext());
-        audioValues = new AudioValues(pref);
+
+        audioValues = new AudioValues(prefManager);
 
 
     }
@@ -39,9 +43,9 @@ public class TvChannelActivity extends AppCompatActivity {
         gpioUart.sendData("oth-cnl-001?");
         myAudioManager.pauseHeadUnitMusicPlayer();
         sendData(audioValues.auxMode(), 100);
-        pref.setAUXAudioIsActive(true);
-        pref.setHeadUnitAudioIsActive(false);
-        pref.setRadioIsRun(false);
+        prefManager.setAUXAudioIsActive(true);
+        prefManager.setHeadUnitAudioIsActive(false);
+        prefManager.setRadioIsRun(false);
         sendData(audioValues.auxMode(), 500);
     }
 
@@ -50,9 +54,9 @@ public class TvChannelActivity extends AppCompatActivity {
 
         gpioUart.sendData(audioValues.androidBTMode());
         sendData(audioValues.androidBTMode(), 200);
-        pref.setHeadUnitAudioIsActive(true);
-        pref.setAUXAudioIsActive(false);
-        pref.setRadioIsRun(false);
+        prefManager.setHeadUnitAudioIsActive(true);
+        prefManager.setAUXAudioIsActive(false);
+        prefManager.setRadioIsRun(false);
         sendData(audioValues.androidBTMode(), 500);
     }
 

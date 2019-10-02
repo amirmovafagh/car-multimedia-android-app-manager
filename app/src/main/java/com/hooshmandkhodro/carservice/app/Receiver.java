@@ -1,5 +1,6 @@
 package com.hooshmandkhodro.carservice.app;
 
+import android.app.Application;
 import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
@@ -9,6 +10,9 @@ import android.widget.Toast;
 
 import com.hooshmandkhodro.carservice.AudioStreamVolumeObserver;
 import com.hooshmandkhodro.carservice.UsbService;
+import com.hooshmandkhodro.carservice.app.dagger.App;
+
+import javax.inject.Inject;
 
 
 /**
@@ -23,7 +27,10 @@ public class Receiver extends BroadcastReceiver {
     private static final String USB_DEVICE_ATTACHED = "android.hardware.usb.action.USB_DEVICE_ATTACHED";
     public static boolean timeWasSet = false;
     GpioUart gpioUart;
-    SharedPreference sharedPreference;
+    @Inject
+    PrefManager prefManager;
+    /*@Inject
+    Application application;*/
     AudioValues audioValues;
     ArmRTC armRTC;
 
@@ -37,26 +44,26 @@ public class Receiver extends BroadcastReceiver {
 
     @Override
     public void onReceive(Context context, Intent intent) {
-
+        ((App)context.getApplicationContext()).getComponent().inject(this);
         //boot device do this method
         if (intent.getAction().equals(BOOT_COMPLETED) || intent.getAction().equals(QUICKBOOT_POWERON)) {
             gpioUart = new GpioUart(1);
             armRTC = new ArmRTC(gpioUart);
-            sharedPreference = new SharedPreference(context);
-            audioValues   = new AudioValues(sharedPreference);
+
+            audioValues   = new AudioValues(prefManager);
             context.startService(new Intent(context, UsbService.class));
             Toast.makeText(context, "سرویس مولتی مدیا راه اندازی شد", Toast.LENGTH_SHORT).show();
             Intent i = new Intent();
-            i.setClassName("com.hooshmandkhodro.carservice", "MainActivity");
+            i.setClassName("com.hooshmandkhodro.carservice", "com.hooshmandkhodro.carservice.MainActivity");
             i.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
             context.startActivity(i);
             Settings.System.putInt(context.getContentResolver(),
                     Settings.System.SCREEN_OFF_TIMEOUT, 9999999);
 
             gpioUart.sendData(audioValues.androidBTMode());
-            sharedPreference.setHeadUnitAudioIsActive(true);
-            sharedPreference.setAUXAudioIsActive(false);
-            sharedPreference.setRadioIsRun(false);
+            prefManager.setHeadUnitAudioIsActive(true);
+            prefManager.setAUXAudioIsActive(false);
+            prefManager.setRadioIsRun(false);
 
 
             /*cpuManager = new CpuManager();

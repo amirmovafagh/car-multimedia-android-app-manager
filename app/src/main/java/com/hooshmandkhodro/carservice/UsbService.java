@@ -19,7 +19,8 @@ import com.hooshmandkhodro.carservice.app.CpuManager;
 import com.hooshmandkhodro.carservice.app.GpioUart;
 import com.hooshmandkhodro.carservice.app.MyAudioManager;
 import com.hooshmandkhodro.carservice.app.ObservableInteger;
-import com.hooshmandkhodro.carservice.app.SharedPreference;
+import com.hooshmandkhodro.carservice.app.PrefManager;
+import com.hooshmandkhodro.carservice.app.dagger.App;
 import com.hooshmandkhodro.carservice.bluetoothFragments.contacts.PkgTelephoneActivity.PkgPhoneDialerFragment.PhoneDialerFragment;
 import com.hooshmandkhodro.carservice.steeringWheelController.ProvidedModelOps;
 import com.hooshmandkhodro.carservice.steeringWheelController.SteeringWheelControllerModel;
@@ -31,6 +32,8 @@ import java.util.List;
 import com.hooshmandkhodro.carservice.steeringWheelController.Pojo.ControllerOption;
 import com.hooshmandkhodro.carservice.steeringWheelController.Pojo.Options;
 
+import javax.inject.Inject;
+
 import static com.hooshmandkhodro.carservice.RadioActivity.RadioSoundChannelActivity;
 
 /**
@@ -40,13 +43,15 @@ import static com.hooshmandkhodro.carservice.RadioActivity.RadioSoundChannelActi
 public class UsbService extends Service {
     private static final String tag = UsbService.class.getSimpleName();
 
+    @Inject
+    PrefManager prefManager;
     public static final int MESSAGE_FROM_GPIO_UART_TTYS1 = 1;
     private static int ONGOING_NOTIFICATION_ID = 1;
     AudioStreamVolumeObserver mAudioStreamVolumeObserver;
     private ProvidedModelOps modelOps;
     private List<ControllerOption> options;
 
-    private SharedPreference sharedPreference;
+
     private MyAudioManager audioManager;
     private GpioUart gpioUart;
     private ArmRTC armRTC;
@@ -82,6 +87,7 @@ public class UsbService extends Service {
      */
     @Override
     public void onCreate() {
+        ((App)getApplicationContext()).getComponent().inject(this);
         this.context = this;
         gpioUart = new GpioUart(1);
         armRTC = new ArmRTC(gpioUart);
@@ -104,7 +110,6 @@ public class UsbService extends Service {
         //logger = new Logger();
 
         audioManager = new MyAudioManager(context);
-        sharedPreference = new SharedPreference(context);
         brightness = new Brightness(context);
         obsInit = new ObservableInteger();
 
@@ -117,12 +122,12 @@ public class UsbService extends Service {
         CheckCallStatus();
         //startService(new Intent(getBaseContext(), SteeringWheelControllerService.class));
 
-        audioValues = new AudioValues(sharedPreference);
+        audioValues = new AudioValues(prefManager);
 
         obsInit.setOnIntegerChangeListener(new ObservableInteger.OnIntegerChangeListener() {
             @Override
             public void onIntegerChanged(final int newValue) {
-                if (newValue != sharedPreference.getBrightnessValue()) {
+                if (newValue != prefManager.getBrightnessValue()) {
 
                     /*new Timer().schedule(new TimerTask() {
                         @Override
@@ -133,7 +138,7 @@ public class UsbService extends Service {
                     }, 250);*/
                     sendData_delay("oth-brg-" + (newValue / 3) + "?", 250);
 
-                    sharedPreference.setBrightnessValue(newValue);
+                    prefManager.setBrightnessValue(newValue);
                 }
             }
         });
@@ -179,7 +184,7 @@ public class UsbService extends Service {
                                     mAudioStreamVolumeObserver.increaseVolumeSWC();
                                     /*
 
-                                    int vol = sharedPreference.getVolumeValue(0);
+                                    int vol = prefManager.getVolumeValue(0);
                                     if (vol < 51 && vol >= 0) {
                                         audioValues.setVolume(vol + 5);
                                         write(audioValues.getVolumeValue().getBytes());
@@ -197,7 +202,7 @@ public class UsbService extends Service {
                                     mAudioStreamVolumeObserver.decreaseVolumeSWC();
                                     /*disableCheckCallStatus();
 
-                                    int vold = sharedPreference.getVolumeValue(0);
+                                    int vold = prefManager.getVolumeValue(0);
                                     if (vold <= 55 && vold > 5) {
                                         audioValues.setVolume(vold - 5);
                                         write(audioValues.getVolumeValue().getBytes());
@@ -214,16 +219,16 @@ public class UsbService extends Service {
 
                                     Log.i(tag, "#mute" + MyHandler.steeringWheelData);
                                     mAudioStreamVolumeObserver.muteSWC();
-                                    /*int lastVal = sharedPreference.getVolumeValue(0);
+                                    /*int lastVal = prefManager.getVolumeValue(0);
                                     if (lastVal != 0) {
 
-                                        sharedPreference.setVolumeValue(12, lastVal);
+                                        prefManager.setVolumeValue(12, lastVal);
                                         audioValues.setVolume(0);
                                         write(audioValues.getVolumeValue().getBytes());
                                         sendData(audioValues.getVolumeValue(), 40);
                                     } else {
                                         Log.i(tag, "#unmute" + steeringWheelData);
-                                        audioValues.setVolume(sharedPreference.getVolumeValue(12));
+                                        audioValues.setVolume(prefManager.getVolumeValue(12));
                                         write(audioValues.getVolumeValue().getBytes());
                                         sendData(audioValues.getVolumeValue(), 40);
                                     }*/
@@ -232,7 +237,7 @@ public class UsbService extends Service {
                                 case OPT6:
                                     disableCheckCallStatus();
                                     Log.i(tag, "#play" + MyHandler.steeringWheelData);
-                                    if (sharedPreference.getBluetoothPlayerState()) {
+                                    if (prefManager.getBluetoothPlayerState()) {
                                         sendData_delay("blt-mus-ppp?", 300);
                                         Log.i("AMIR", "ppp");
                                     } else
@@ -242,7 +247,7 @@ public class UsbService extends Service {
                                 case OPT7:
                                     disableCheckCallStatus();
                                     Log.i(tag, "#back" + MyHandler.steeringWheelData);
-                                    if (sharedPreference.getBluetoothPlayerState()) {
+                                    if (prefManager.getBluetoothPlayerState()) {
                                         sendData_delay("blt-mus-bwd?", 300);
                                         Log.i("AMIR", "bwd");
                                     } else
@@ -252,7 +257,7 @@ public class UsbService extends Service {
                                 case OPT8:
 
                                     Log.i(tag, "#next" + MyHandler.steeringWheelData);
-                                    if (sharedPreference.getBluetoothPlayerState()) {
+                                    if (prefManager.getBluetoothPlayerState()) {
                                         sendData_delay("blt-mus-fwd?", 300);
                                         Log.i("AMIR", "fwd");
                                     } else
@@ -484,68 +489,68 @@ public class UsbService extends Service {
                 isPlayMusic = true;
                 isStopMusic = false;
                 Log.i(tag, "0.1");
-                if (sharedPreference.getAmplifireState()) {
+                if (prefManager.getAmplifireState()) {
                     sendData_delay("oth-amp-001?", 100);
 
-                    if (sharedPreference.getDebugModeState())
+                    if (prefManager.getDebugModeState())
                         Toast.makeText(context, "<<--amplifire is on-->>0.1", Toast.LENGTH_SHORT).show();
                 }
             }
 
             //Log.i(tag, "1");
-            /*if (sharedPreference.getBluetoothPlayerState()) {
+            /*if (prefManager.getBluetoothPlayerState()) {
                 write("blt-mus-stp?".getBytes());
                 sendData("blt-mus-stp?", 300);
                 //  Log.i(tag, "1.1");
-                if (sharedPreference.getDebugModeState())
+                if (prefManager.getDebugModeState())
                     Toast.makeText(context, "<<--send stop bluetooth command-->>1.1", Toast.LENGTH_SHORT).show();
                 //delayTimer("mod-pin?");
 
 
-                sharedPreference.setBluetoothPlayerState(false);
+                prefManager.setBluetoothPlayerState(false);
             }
 
-            if (!sharedPreference.getHeadUnitAudioIsActive() && sharedPreference.getBluetoothPlayerState()) {
+            if (!prefManager.getHeadUnitAudioIsActive() && prefManager.getBluetoothPlayerState()) {
                 //delayTimer("mod-pin?");
                 sendData("blt-mus-stp?", 300);
-                if (sharedPreference.getDebugModeState())
+                if (prefManager.getDebugModeState())
                     Toast.makeText(context, "<<--send stop bluetooth command-->>1.2", Toast.LENGTH_SHORT).show();
 
                 // Log.i(tag, "1.2");
-                sharedPreference.setHeadUnitAudioIsActive(true);
-                sharedPreference.setBluetoothPlayerState(false);
+                prefManager.setHeadUnitAudioIsActive(true);
+                prefManager.setBluetoothPlayerState(false);
             }*/
 
-            if (!sharedPreference.getHeadUnitAudioIsActive() && sharedPreference.getRadioIsRun() && !RadioSoundChannelActivity) { //if radio is run switch channnel to the headUnit
+            if (!prefManager.getHeadUnitAudioIsActive() && prefManager.getRadioIsRun() && !RadioSoundChannelActivity) { //if radio is run switch channnel to the headUnit
                 sendData_delay(audioValues.androidBTMode(), 250);
                 Log.i(tag, "1.3");
-                if (sharedPreference.getDebugModeState())
+                if (prefManager.getDebugModeState())
                     Toast.makeText(context, "<<--set sound channel from RADIO to HU-->>1.3", Toast.LENGTH_SHORT).show();
-                sharedPreference.setHeadUnitAudioIsActive(true);
-                sharedPreference.setRadioIsRun(false);
+                prefManager.setHeadUnitAudioIsActive(true);
+                prefManager.setRadioIsRun(false);
             }
 
-            if (!sharedPreference.getHeadUnitAudioIsActive() && sharedPreference.getAUXAudioIsActive() && !AUXActivity.auxSoundChannelActivity) { //if AUX is ACTIVATE switch channnel to the headUnit
+            if (!prefManager.getHeadUnitAudioIsActive() && prefManager.getAUXAudioIsActive() && !AUXActivity.auxSoundChannelActivity) { //if AUX is ACTIVATE switch channnel to the headUnit
                 sendData_delay(audioValues.androidBTMode(), 150);
                 Log.i(tag, "1.4");
-                if (sharedPreference.getDebugModeState())
+                if (prefManager.getDebugModeState())
                     Toast.makeText(context, "<<--set sound channel from AUX to HU-->>1.4", Toast.LENGTH_SHORT).show();
 
-                sharedPreference.setAUXAudioIsActive(false);
+                prefManager.setAUXAudioIsActive(false);
             }
 
 
-            sharedPreference.setHeadUnitAudioIsActive(true);
+            prefManager.setHeadUnitAudioIsActive(true);
 
         } else {
-            sharedPreference.setHeadUnitAudioIsActive(false);
+            prefManager.setHeadUnitAudioIsActive(false);
             if (!isStopMusic) {
                 isPlayMusic = false;
                 isStopMusic = true;
                 Log.i(tag, "0.2");
-                if (sharedPreference.getAmplifireState() && !sharedPreference.getBluetoothPlayerState() && !sharedPreference.getRadioIsRun()) {
+                if (prefManager.getAmplifireState() && !prefManager.getBluetoothPlayerState() && !prefManager.getRadioIsRun()) {
                     sendData_delay("oth-amp-000?", 200);
-                    if (sharedPreference.getDebugModeState())
+                    if (prefManager.getDebugModeState())
                         Toast.makeText(context, "<<--amplifire is off-->>0.2", Toast.LENGTH_SHORT).show();
                 }
 

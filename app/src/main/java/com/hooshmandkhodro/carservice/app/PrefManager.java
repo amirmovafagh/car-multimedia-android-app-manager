@@ -4,6 +4,8 @@ import android.content.Context;
 import android.content.SharedPreferences;
 import android.util.Log;
 
+import javax.inject.Inject;
+
 import static com.hooshmandkhodro.carservice.SettingsActivity.defaultX;
 import static com.hooshmandkhodro.carservice.SettingsActivity.defaultY;
 
@@ -11,18 +13,19 @@ import static com.hooshmandkhodro.carservice.SettingsActivity.defaultY;
  * Created by hirad on 4/4/18.
  */
 
-public class SharedPreference {
-    private static final String TAG = SharedPreference.class.getSimpleName();
+public class PrefManager {
+    private static final String TAG = PrefManager.class.getSimpleName();
 
-    SharedPreferences pref;
+    private SharedPreferences pref;
     SharedPreferences.Editor editor;
     Context _context;
+
 
     // shared pref mode
     int PRIVATE_MODE = 0;
 
     // Shared preferences file name
-    private static final String PREF_NAME = "PreferenceManager";
+    private static final String PREF_NAME = "PrefManager";
 
     private static final String IS_FIRST_TIME_LAUNCH = "IsFirstTimeLaunch";
 
@@ -56,10 +59,9 @@ public class SharedPreference {
     private static final String BLUETOOTH_AUTOCONNECT = "btAutoConnect";
     private static final String BLUETOOTH_AUTOANSWER ="btAutoAnswer";
 
-    public SharedPreference(Context context) {
-
-        this._context = context;
-        pref = _context.getSharedPreferences(PREF_NAME, PRIVATE_MODE);
+    @Inject
+    public PrefManager(SharedPreferences pref) {
+        this.pref = pref;
         editor = pref.edit();
     }
 

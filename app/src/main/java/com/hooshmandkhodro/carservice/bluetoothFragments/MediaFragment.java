@@ -24,14 +24,19 @@ import static com.hooshmandkhodro.carservice.BluetoothActivity.connectGpioUartBt
 import static com.hooshmandkhodro.carservice.MyHandler.buffer;
 
 import com.hooshmandkhodro.carservice.app.GpioUart;
-import com.hooshmandkhodro.carservice.app.SharedPreference;
+import com.hooshmandkhodro.carservice.app.PrefManager;
+import com.hooshmandkhodro.carservice.app.dagger.App;
+
+import javax.inject.Inject;
 
 public class MediaFragment extends Fragment implements View.OnClickListener {
+
+    @Inject
+    PrefManager prefManager;
     private View view;
     private ImageView imgDisk;
     private ImageButton previous, next, play, pause, stop, decVolume, incVolume;
     private GpioUart gpioUart;
-    private SharedPreference sharedPreference;
     private MyAudioManager audioManager;
     private AudioValues audioValues;
 
@@ -46,17 +51,18 @@ public class MediaFragment extends Fragment implements View.OnClickListener {
     @Override
     public void onActivityCreated(@Nullable Bundle savedInstanceState) {
         super.onActivityCreated(savedInstanceState);
+
         gpioUart = connectGpioUartBt;
-        sharedPreference = new SharedPreference(getContext());
-        audioValues = new AudioValues(sharedPreference);
+
+        audioValues = new AudioValues(prefManager);
         audioManager = new MyAudioManager(getContext());
         handler = new Handler();
 
         audioManager.pauseHeadUnitMusicPlayer();
-        sharedPreference.setHeadUnitAudioIsActive(false);
-        sharedPreference.setBluetoothPlayerState(true);
+        prefManager.setHeadUnitAudioIsActive(false);
+        prefManager.setBluetoothPlayerState(true);
         startHandlerMusicPlayerState();
-        if (sharedPreference.getBluetoothPlayerState()) {
+        if (prefManager.getBluetoothPlayerState()) {
             playWhithOutCMD();
         }
 
@@ -129,6 +135,7 @@ public class MediaFragment extends Fragment implements View.OnClickListener {
     @Override
     public void onAttach(Context context) {
         super.onAttach(context);
+        ((App)context.getApplicationContext()).getComponent().inject(this);
 
     }
 
@@ -148,7 +155,7 @@ public class MediaFragment extends Fragment implements View.OnClickListener {
                 gpioUart.sendData("blt-mus-fwd?");
                 return;
             case R.id.img_btn_play:
-                if (sharedPreference.getBluetoothPlayerState())
+                if (prefManager.getBluetoothPlayerState())
                     play();
                 else
                     pause();
@@ -166,7 +173,7 @@ public class MediaFragment extends Fragment implements View.OnClickListener {
     }
 
     private void amplifireState() {
-        if (sharedPreference.getAmplifireState()) {
+        if (prefManager.getAmplifireState()) {
             gpioUart.sendData("oth-amp-001?");
             sendData("oth-amp-001?", 100);
         } else {
@@ -178,7 +185,7 @@ public class MediaFragment extends Fragment implements View.OnClickListener {
     @Override
     public void onStart() {
         super.onStart();
-        sharedPreference.setBluetoothPlayerState(true);
+        prefManager.setBluetoothPlayerState(true);
         checkVoiceChannel();
     }
 
@@ -199,7 +206,7 @@ public class MediaFragment extends Fragment implements View.OnClickListener {
     public void onDestroy() {
         super.onDestroy();
         gpioUart.sendData("oth-amp-000?");
-        sharedPreference.setBluetoothPlayerState(false);
+        prefManager.setBluetoothPlayerState(false);
         handler.removeCallbacksAndMessages(null);
 
     }
@@ -207,7 +214,7 @@ public class MediaFragment extends Fragment implements View.OnClickListener {
     @Override
     public void onResume() {
         super.onResume();
-        sharedPreference.setBluetoothPlayerState(true);
+        prefManager.setBluetoothPlayerState(true);
         amplifireState();
         checkVoiceChannel();
         handler.postDelayed(runnable, 100);
@@ -216,7 +223,7 @@ public class MediaFragment extends Fragment implements View.OnClickListener {
     }
 
     private void stopWithoutCommand() {
-        //sharedPreference.setBluetoothPlayerState(false);
+        //prefManager.setBluetoothPlayerState(false);
         play.setImageResource(R.drawable.play);
 
         imgDisk.clearAnimation();
@@ -225,7 +232,7 @@ public class MediaFragment extends Fragment implements View.OnClickListener {
     }
 
     private void stop() {
-        //sharedPreference.setBluetoothPlayerState(false);
+        //prefManager.setBluetoothPlayerState(false);
         play.setImageResource(R.drawable.play);
         gpioUart.sendData("blt-mus-stp?");
         imgDisk.clearAnimation();
@@ -235,7 +242,7 @@ public class MediaFragment extends Fragment implements View.OnClickListener {
     }
 
     private void pause() {
-        //sharedPreference.setBluetoothPlayerState(false);
+        //prefManager.setBluetoothPlayerState(false);
         play.setImageResource(R.drawable.play);
         gpioUart.sendData("blt-mus-ppp?");
         imgDisk.clearAnimation();
@@ -243,21 +250,21 @@ public class MediaFragment extends Fragment implements View.OnClickListener {
     }
 
     private void pauseWhithOutCMD() {
-        //sharedPreference.setBluetoothPlayerState(false);
+        //prefManager.setBluetoothPlayerState(false);
         play.setImageResource(R.drawable.play);
         imgDisk.clearAnimation();
 
     }
 
     private void play() {
-        //sharedPreference.setBluetoothPlayerState(true);
+        //prefManager.setBluetoothPlayerState(true);
         if (audioManager.isMusicPlay()) {
             //sendData("mod-rad?");
             audioManager.pauseHeadUnitMusicPlayer();
         }
         gpioUart.sendData("blt-mus-ppp?");
 
-        //sharedPreference.setBluetoothPlayerState(true);
+        //prefManager.setBluetoothPlayerState(true);
         setAnimateMusicLogo(imgDisk);
         play = view.findViewById(R.id.img_btn_play);
         play.setImageResource(R.drawable.pause);
@@ -267,7 +274,7 @@ public class MediaFragment extends Fragment implements View.OnClickListener {
 
     private void playWhithOutCMD() {
 
-        //sharedPreference.setBluetoothPlayerState(true);
+        //prefManager.setBluetoothPlayerState(true);
         setAnimateMusicLogo(imgDisk);
         play = view.findViewById(R.id.img_btn_play);
         play.setImageResource(R.drawable.pause);
@@ -284,9 +291,9 @@ public class MediaFragment extends Fragment implements View.OnClickListener {
     }
 
     private void checkVoiceChannel() {
-        if (sharedPreference.getRadioIsRun()) {
+        if (prefManager.getRadioIsRun()) {
             gpioUart.sendData(audioValues.androidBTMode());
-            sharedPreference.setRadioIsRun(false);
+            prefManager.setRadioIsRun(false);
         }
     }
 

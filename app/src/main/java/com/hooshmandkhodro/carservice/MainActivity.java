@@ -1,7 +1,10 @@
 package com.hooshmandkhodro.carservice;
 
 import android.Manifest;
+import android.app.Application;
+import android.content.Context;
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.content.pm.PackageManager;
 import android.location.Location;
 import android.location.LocationListener;
@@ -23,8 +26,9 @@ import com.hooshmandkhodro.carservice.app.AudioValues;
 import com.hooshmandkhodro.carservice.app.CpuManager;
 import com.hooshmandkhodro.carservice.app.GpioUart;
 import com.hooshmandkhodro.carservice.app.MyAudioManager;
-import com.hooshmandkhodro.carservice.app.SharedPreference;
+import com.hooshmandkhodro.carservice.app.PrefManager;
 import com.hooshmandkhodro.carservice.app.ToolBar_ResideMenu;
+import com.hooshmandkhodro.carservice.app.dagger.App;
 
 import java.io.DataOutputStream;
 import java.io.IOException;
@@ -32,14 +36,19 @@ import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.Locale;
 
+import javax.inject.Inject;
+
 import static com.hooshmandkhodro.carservice.MyHandler.buffer;
 
 
 public class MainActivity extends AppCompatActivity {
+
+    @Inject
+    PrefManager prefManager;
+
     private static final String tag = MainActivity.class.getSimpleName();
 
     private ToolBar_ResideMenu toolBarResideMenu;
-    private SharedPreference pref;
     private boolean locationUpdated = false;
     MyAudioManager myAudioManager;
     CpuManager cpuManager;
@@ -61,11 +70,17 @@ public class MainActivity extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
+
+        // assign singleton instances to fields
+        // We need to cast to `App` in order to get the right method
+        ((App)getApplicationContext()).getComponent().inject(this);
+
+
         startService(new Intent(MainActivity.this, UsbService.class));
         gpioUart = new GpioUart(1);
 
-        pref = new SharedPreference(MainActivity.this);
-        audioValues = new AudioValues(pref);
+
+        audioValues = new AudioValues(prefManager);
         myAudioManager = new MyAudioManager(getApplicationContext());
         mLocationManager = (LocationManager) getSystemService(LOCATION_SERVICE);
         if (ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED && ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_COARSE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
@@ -86,7 +101,7 @@ public class MainActivity extends AppCompatActivity {
         armRTC = new ArmRTC(gpioUart);
 
         //toolbarInit
-        toolBarResideMenu = new ToolBar_ResideMenu(this, "Multi Media", gpioUart, pref);
+        toolBarResideMenu = new ToolBar_ResideMenu(this, "Multi Media", gpioUart, prefManager);
         //resideMenuInit
         toolBarResideMenu.resideMenuInit("Bluetooth", "Radio", "Settings",
                 R.drawable.icon_home, R.drawable.icon_home, R.drawable.icon_home,
@@ -170,9 +185,9 @@ public class MainActivity extends AppCompatActivity {
                 gpioUart.sendData("oth-cnl-001?");
                 myAudioManager.pauseHeadUnitMusicPlayer();
                 sendData(audioValues.auxMode(), 100);
-                pref.setAUXAudioIsActive(true);
-                pref.setHeadUnitAudioIsActive(false);
-                pref.setRadioIsRun(false);
+                prefManager.setAUXAudioIsActive(true);
+                prefManager.setHeadUnitAudioIsActive(false);
+                prefManager.setRadioIsRun(false);
                 startActivity(new Intent(MainActivity.this, TvChannelActivity.class));
 
 
@@ -206,9 +221,9 @@ public class MainActivity extends AppCompatActivity {
 
                 gpioUart.sendData(audioValues.auxMode());
                 myAudioManager.pauseHeadUnitMusicPlayer();
-                pref.setAUXAudioIsActive(true);
-                pref.setHeadUnitAudioIsActive(false);
-                pref.setRadioIsRun(false);
+                prefManager.setAUXAudioIsActive(true);
+                prefManager.setHeadUnitAudioIsActive(false);
+                prefManager.setRadioIsRun(false);
                 startActivity(new Intent(MainActivity.this, AUXActivity.class));
             }
         });

@@ -12,40 +12,44 @@ import android.support.v7.app.AppCompatActivity;
 import android.util.Log;
 import android.view.MenuItem;
 
-import com.hooshmandkhodro.carservice.app.SharedPreference;
+import com.hooshmandkhodro.carservice.app.PrefManager;
 import com.hooshmandkhodro.carservice.app.ToolBar_ResideMenu;
+import com.hooshmandkhodro.carservice.app.dagger.App;
 import com.hooshmandkhodro.carservice.bluetoothFragments.MediaFragment;
 import com.hooshmandkhodro.carservice.bluetoothFragments.SettingsFragment;
 import com.hooshmandkhodro.carservice.bluetoothFragments.contacts.PkgTelephoneActivity.PkgPhoneDialerFragment.PhoneDialerFragment;
 
 
-
 import com.hooshmandkhodro.carservice.app.GpioUart;
+
+import javax.inject.Inject;
 
 import static com.hooshmandkhodro.carservice.MyHandler.buffer;
 
 
 public class BluetoothActivity extends AppCompatActivity {
     private final String tag = BluetoothActivity.class.getSimpleName();
+
+    @Inject
+    PrefManager prefManager;
     private ToolBar_ResideMenu toolBarResideMenu;
     private Handler handler;
     private Runnable runnable;
     public static GpioUart connectGpioUartBt;
-    private SharedPreference sharedPreference;
 
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_bluetooth);
+        ((App) getApplicationContext()).getComponent().inject(this);
+
+        connectGpioUartBt = new GpioUart(1);
 
 
-            connectGpioUartBt = new GpioUart(1);
-
-        sharedPreference = new SharedPreference(getBaseContext());
         //new ConnectUsbService(BluetoothActivity.this);
         //toolbarInit
-        toolBarResideMenu = new ToolBar_ResideMenu(this, "Bluetooth", connectGpioUartBt, sharedPreference);
+        toolBarResideMenu = new ToolBar_ResideMenu(this, "Bluetooth", connectGpioUartBt, prefManager);
         //resideMenuInit
         toolBarResideMenu.resideMenuInit("Home", "Radio", "Settings",
                 R.drawable.icon_home, R.drawable.icon_home, R.drawable.icon_home,
@@ -128,7 +132,6 @@ public class BluetoothActivity extends AppCompatActivity {
     @Override
     protected void onDestroy() {
         super.onDestroy();
-
 
 
     }

@@ -10,36 +10,41 @@ import android.view.View;
 
 import com.hooshmandkhodro.carservice.app.AudioValues;
 import com.hooshmandkhodro.carservice.app.MyAudioManager;
-import com.hooshmandkhodro.carservice.app.SharedPreference;
+import com.hooshmandkhodro.carservice.app.PrefManager;
 
 import abak.tr.com.boxedverticalseekbar.BoxedVertical;
 
 
 import com.hooshmandkhodro.carservice.app.GpioUart;
+import com.hooshmandkhodro.carservice.app.dagger.App;
+
+import javax.inject.Inject;
 
 public class AUXActivity extends AppCompatActivity {
+    @Inject
+    PrefManager prefManager;
     public static boolean auxSoundChannelActivity = true;
     private GpioUart gpioUart;
     private AudioValues audioValues;
     private BoxedVertical soundModule;
-    private SharedPreference pref;
     MyAudioManager myAudioManager;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_aux);
+        ((App)getApplicationContext()).getComponent().inject(this);
         Toolbar toolbar = findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
 
             gpioUart = new GpioUart(1);
 
-        pref = new SharedPreference(AUXActivity.this);
-        audioValues = new AudioValues(pref);
+//        pref = new PrefManager(AUXActivity.this);
+        audioValues = new AudioValues(prefManager);
         myAudioManager = new MyAudioManager(getApplicationContext());
         soundModule = findViewById(R.id.sound_module_seekbar_aux);
-        soundModule.setValue(pref.getVolumeValue(0));
-        soundModule.setMax(pref.getVolumeValue(13));
+        soundModule.setValue(prefManager.getVolumeValue(0));
+        soundModule.setMax(prefManager.getVolumeValue(13));
         FloatingActionButton fab = findViewById(R.id.fab);
         fab.setSize(3);
 
@@ -113,19 +118,19 @@ public class AUXActivity extends AppCompatActivity {
     private void closeActivity() {
 
         gpioUart.sendData(audioValues.androidBTMode());
-        pref.setRadioIsRun(false);
-        pref.setAUXAudioIsActive(false);
-        pref.setHeadUnitAudioIsActive(true);
+        prefManager.setRadioIsRun(false);
+        prefManager.setAUXAudioIsActive(false);
+        prefManager.setHeadUnitAudioIsActive(true);
     }
 
     private void runActivity() {
 
         gpioUart.sendData(audioValues.auxMode());
         myAudioManager.pauseHeadUnitMusicPlayer();
-        pref.setAUXAudioIsActive(true);
-        pref.setHeadUnitAudioIsActive(false);
-        pref.setRadioIsRun(false);
+        prefManager.setAUXAudioIsActive(true);
+        prefManager.setHeadUnitAudioIsActive(false);
+        prefManager.setRadioIsRun(false);
         if (soundModule != null)
-            soundModule.setValue(pref.getVolumeValue(0));
+            soundModule.setValue(prefManager.getVolumeValue(0));
     }
 }
