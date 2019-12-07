@@ -1,5 +1,7 @@
 package com.hooshmandkhodro.carservice.app;
 
+import com.hooshmandkhodro.carservice.app.dagger.App;
+
 /**
  * this class make a string value for pushing the audio
  * values to sound module PT2313 and set Output volume

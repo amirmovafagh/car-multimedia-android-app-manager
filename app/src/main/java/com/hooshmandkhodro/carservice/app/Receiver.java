@@ -26,6 +26,8 @@ public class Receiver extends BroadcastReceiver {
     private static final String TIME_SET = "android.intent.action.TIME_SET";
     private static final String USB_DEVICE_ATTACHED = "android.hardware.usb.action.USB_DEVICE_ATTACHED";
     public static boolean timeWasSet = false;
+
+    @Inject
     GpioUart gpioUart;
     @Inject
     PrefManager prefManager;
@@ -47,7 +49,6 @@ public class Receiver extends BroadcastReceiver {
         ((App)context.getApplicationContext()).getComponent().inject(this);
         //boot device do this method
         if (intent.getAction().equals(BOOT_COMPLETED) || intent.getAction().equals(QUICKBOOT_POWERON)) {
-            gpioUart = new GpioUart(1);
             armRTC = new ArmRTC(gpioUart);
 
             audioValues   = new AudioValues(prefManager);
@@ -79,8 +80,6 @@ public class Receiver extends BroadcastReceiver {
         }
 
         if (intent.getAction().equals(TIME_SET) && !timeWasSet) {
-
-            gpioUart = new GpioUart(1);
             armRTC = new ArmRTC(gpioUart);
             armRTC.setTimeOnARM();
         }

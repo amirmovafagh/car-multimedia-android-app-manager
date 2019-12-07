@@ -32,7 +32,7 @@ import com.hooshmandkhodro.carservice.bluetoothFragments.contacts.Pojo.Audience;
 import com.hooshmandkhodro.carservice.bluetoothFragments.contacts.Pojo.PhoneNumber;
 import com.miguelcatalan.materialsearchview.MaterialSearchView;
 
-
+import javax.inject.Inject;
 
 
 public class TelephoneActivity extends AppCompatActivity implements RequiredViewOps
@@ -48,7 +48,8 @@ public class TelephoneActivity extends AppCompatActivity implements RequiredView
 
     ProvidedPresenterOps presenterOps = new TelephonePresenter(this, this);
 
-    public static GpioUart connectGpioUart;
+    @Inject
+    GpioUart gpioUart;
     private AddUserFragment addUserFragment;
     private InfluenceOfActivityToPhoneLogOps toPhoneLogOps;
     private InfluenceOfActivityToAudienceInfoOps toAudienceInfoOps;
@@ -60,9 +61,6 @@ public class TelephoneActivity extends AppCompatActivity implements RequiredView
         super.onCreate(savedInstanceState);
         MyHandler.telephoneActivityIsOpen = true;
         setContentView(R.layout.activity_telephone);
-
-            connectGpioUart  = new GpioUart(1);
-
 
         Toolbar tbTelephoneActivity = findViewById(R.id.tb_telephone_activity);
         setSupportActionBar(tbTelephoneActivity);

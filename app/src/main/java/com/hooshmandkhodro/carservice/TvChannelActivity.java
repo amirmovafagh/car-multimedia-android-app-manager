@@ -19,7 +19,7 @@ import javax.inject.Inject;
 public class TvChannelActivity extends AppCompatActivity {
     @Inject
     PrefManager prefManager;
-    private GpioUart gpioUart;
+    @Inject GpioUart gpioUart;
     private MyAudioManager myAudioManager;
 
     private AudioValues audioValues;
@@ -30,7 +30,7 @@ public class TvChannelActivity extends AppCompatActivity {
         setContentView(R.layout.activity_tv_channel);
         ((App)getApplicationContext()).getComponent().inject(this);
 
-        gpioUart = new GpioUart(1);
+
 
         myAudioManager = new MyAudioManager(getApplicationContext());
 

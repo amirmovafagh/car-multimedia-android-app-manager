@@ -1,10 +1,7 @@
 package com.hooshmandkhodro.carservice;
 
 import android.Manifest;
-import android.app.Application;
-import android.content.Context;
 import android.content.Intent;
-import android.content.SharedPreferences;
 import android.content.pm.PackageManager;
 import android.location.Location;
 import android.location.LocationListener;
@@ -45,7 +42,8 @@ public class MainActivity extends AppCompatActivity {
 
     @Inject
     PrefManager prefManager;
-
+    @Inject
+    GpioUart gpioUart;
     private static final String tag = MainActivity.class.getSimpleName();
 
     private ToolBar_ResideMenu toolBarResideMenu;
@@ -56,14 +54,12 @@ public class MainActivity extends AppCompatActivity {
     ArmRTC armRTC;
 
 
-
     private AudioValues audioValues;
 
     private String[] parts = {"", "", "", "", "", ""};
 
     private ImageButton aux, bluetooth, radio, tv, audioSettings, map, swc;
 
-    private GpioUart gpioUart;
 
     @RequiresApi(api = Build.VERSION_CODES.N)
     @Override
@@ -73,12 +69,9 @@ public class MainActivity extends AppCompatActivity {
 
         // assign singleton instances to fields
         // We need to cast to `App` in order to get the right method
-        ((App)getApplicationContext()).getComponent().inject(this);
-
+        ((App) getApplicationContext()).getComponent().inject(this);
 
         startService(new Intent(MainActivity.this, UsbService.class));
-        gpioUart = new GpioUart(1);
-
 
         audioValues = new AudioValues(prefManager);
         myAudioManager = new MyAudioManager(getApplicationContext());
@@ -133,99 +126,75 @@ public class MainActivity extends AppCompatActivity {
             }
         });
 
-        map.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                //changeSystemTime("2019","10","23","02","40","55"); just test
+        map.setOnClickListener(view -> {
+            //changeSystemTime("2019","10","23","02","40","55"); just test
 
-                /*if (parts[0] != null && parts[0] != "" && parts[5] != null && parts[5] != "" && locationUpdated) {
-                    changeSystemTime(parts[0], parts[1], parts[2], parts[3], parts[4], parts[5]);
-                    locationUpdated = false;
-                } else
-                    Toast.makeText(MainActivity.this, "اطلاعات موقعیت یاب به روز نیست", Toast.LENGTH_SHORT).show();*/
+            /*if (parts[0] != null && parts[0] != "" && parts[5] != null && parts[5] != "" && locationUpdated) {
+                changeSystemTime(parts[0], parts[1], parts[2], parts[3], parts[4], parts[5]);
+                locationUpdated = false;
+            } else
+                Toast.makeText(MainActivity.this, "اطلاعات موقعیت یاب به روز نیست", Toast.LENGTH_SHORT).show();*/
 
 
-
-
-
-            }
         });
 
-        audioSettings.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                //startActivity(new Intent(MainActivity.this, SettingsActivity.class));
-                sendData("oth-tmp-002?", 300);
-            }
+        audioSettings.setOnClickListener(view -> {
+            //startActivity(new Intent(MainActivity.this, SettingsActivity.class));
+            sendData("oth-tmp-002?", 300);
         });
 
-        radio.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                gpioUart.sendData("oth-rtg?");
-                if (buffer.contains("rtc-") && buffer.substring(10).equalsIgnoreCase("-") && Integer.parseInt(buffer.substring(11, 13)) != 0) {
+        radio.setOnClickListener(v -> {
+            gpioUart.sendData("oth-rtg?");
+            if (buffer.contains("rtc-") && buffer.substring(10).equalsIgnoreCase("-") && Integer.parseInt(buffer.substring(11, 13)) != 0) {
 
-                    changeSystemTime(buffer.substring(4, 6), buffer.substring(6, 8), buffer.substring(8, 10), "20" + buffer.substring(11, 13),
-                            buffer.substring(13, 15), buffer.substring(15, 17));
+                changeSystemTime(buffer.substring(4, 6), buffer.substring(6, 8), buffer.substring(8, 10), "20" + buffer.substring(11, 13),
+                        buffer.substring(13, 15), buffer.substring(15, 17));
 
-                }
-                //sendData("oth-tmp-003?", 100);
-                //startActivity(new Intent(MainActivity.this, RadioActivity.class));
-                /*connectUsbService.write(audioValues.radioMode());
-                myAudioManager.pauseHeadUnitMusicPlayer();
-                pref.setHeadUnitAudioIsActive(false);
-                pref.setAUXAudioIsActive(false);
-                pref.setRadioIsRun(true);*/
             }
+            //sendData("oth-tmp-003?", 100);
+            //startActivity(new Intent(MainActivity.this, RadioActivity.class));
+            /*connectUsbService.write(audioValues.radioMode());
+            myAudioManager.pauseHeadUnitMusicPlayer();
+            pref.setHeadUnitAudioIsActive(false);
+            pref.setAUXAudioIsActive(false);
+            pref.setRadioIsRun(true);*/
         });
 
-        tv.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                gpioUart.sendData("oth-cnl-001?");
-                myAudioManager.pauseHeadUnitMusicPlayer();
-                sendData(audioValues.auxMode(), 100);
-                prefManager.setAUXAudioIsActive(true);
-                prefManager.setHeadUnitAudioIsActive(false);
-                prefManager.setRadioIsRun(false);
-                startActivity(new Intent(MainActivity.this, TvChannelActivity.class));
+        tv.setOnClickListener(view -> {
+            gpioUart.sendData("oth-cnl-001?");
+            myAudioManager.pauseHeadUnitMusicPlayer();
+            sendData(audioValues.auxMode(), 100);
+            prefManager.setAUXAudioIsActive(true);
+            prefManager.setHeadUnitAudioIsActive(false);
+            prefManager.setRadioIsRun(false);
+            startActivity(new Intent(MainActivity.this, TvChannelActivity.class));
 
 
-            }
         });
 
-        bluetooth.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                startActivity(new Intent(MainActivity.this, BluetoothActivity.class));
-                /*connectUsbService.write(audioValues.androidBTMode());
-                pref.setHeadUnitAudioIsActive(true);
-                pref.setAUXAudioIsActive(false);
-                pref.setRadioIsRun(false);*/
+        bluetooth.setOnClickListener(v -> {
+            startActivity(new Intent(MainActivity.this, BluetoothActivity.class));
+            /*connectUsbService.write(audioValues.androidBTMode());
+            pref.setHeadUnitAudioIsActive(true);
+            pref.setAUXAudioIsActive(false);
+            pref.setRadioIsRun(false);*/
 
-            }
         });
-        bluetooth.setOnLongClickListener(new View.OnLongClickListener() {
-            @Override
-            public boolean onLongClick(View view) {
+        bluetooth.setOnLongClickListener(view -> {
 
-                /*connectUsbService.write("oth?");
-                connectUsbService.write(audioValues.auxMode());*/
-                return false;
-            }
+            /*connectUsbService.write("oth?");
+            connectUsbService.write(audioValues.auxMode());*/
+            return false;
         });
 
-        aux.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
+        aux.setOnClickListener(v -> {
 
-                gpioUart.sendData(audioValues.auxMode());
-                myAudioManager.pauseHeadUnitMusicPlayer();
-                prefManager.setAUXAudioIsActive(true);
-                prefManager.setHeadUnitAudioIsActive(false);
-                prefManager.setRadioIsRun(false);
-                startActivity(new Intent(MainActivity.this, AUXActivity.class));
-            }
+            gpioUart.sendData(audioValues.auxMode());
+            myAudioManager.pauseHeadUnitMusicPlayer();
+            prefManager.setAUXAudioIsActive(true);
+            prefManager.setHeadUnitAudioIsActive(false);
+            prefManager.setRadioIsRun(false);
+            startActivity(new Intent(MainActivity.this, AUXActivity.class));
         });
 
 
@@ -341,12 +310,9 @@ public class MainActivity extends AppCompatActivity {
 
     private void sendData(final String data, int delay) {
 
-        new Handler().postDelayed(new Runnable() {
-            @Override
-            public void run() {
+        new Handler().postDelayed(() -> {
 
-                if (gpioUart != null) gpioUart.sendData(data);
-            }
+            if (gpioUart != null) gpioUart.sendData(data);
         }, delay);
     }
 

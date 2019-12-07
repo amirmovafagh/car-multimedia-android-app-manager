@@ -1,5 +1,6 @@
 package com.hooshmandkhodro.carservice;
 
+import android.app.Application;
 import android.app.Notification;
 import android.app.PendingIntent;
 import android.app.Service;
@@ -10,6 +11,7 @@ import android.os.IBinder;
 import android.os.Looper;
 import android.provider.Settings;
 import android.util.Log;
+import android.view.KeyEvent;
 import android.widget.Toast;
 
 import com.hooshmandkhodro.carservice.app.ArmRTC;
@@ -34,6 +36,7 @@ import com.hooshmandkhodro.carservice.steeringWheelController.Pojo.Options;
 
 import javax.inject.Inject;
 
+import static com.hooshmandkhodro.carservice.MyHandler.buffer;
 import static com.hooshmandkhodro.carservice.RadioActivity.RadioSoundChannelActivity;
 
 /**
@@ -42,7 +45,8 @@ import static com.hooshmandkhodro.carservice.RadioActivity.RadioSoundChannelActi
 
 public class UsbService extends Service {
     private static final String tag = UsbService.class.getSimpleName();
-
+    @Inject
+    GpioUart gpioUart;
     @Inject
     PrefManager prefManager;
     public static final int MESSAGE_FROM_GPIO_UART_TTYS1 = 1;
@@ -53,7 +57,7 @@ public class UsbService extends Service {
 
 
     private MyAudioManager audioManager;
-    private GpioUart gpioUart;
+
     private ArmRTC armRTC;
 
     private ObservableInteger obsInit;
@@ -87,9 +91,8 @@ public class UsbService extends Service {
      */
     @Override
     public void onCreate() {
-        ((App)getApplicationContext()).getComponent().inject(this);
+        ((App) getApplicationContext()).getComponent().inject(this);
         this.context = this;
-        gpioUart = new GpioUart(1);
         armRTC = new ArmRTC(gpioUart);
         cpu = new CpuManager();
         cpu.InitTouchConfig();
@@ -99,12 +102,9 @@ public class UsbService extends Service {
         audioStreamHandler = new Handler(Looper.getMainLooper());
 
         checkCpuTempHandler = new Handler(Looper.getMainLooper());
-        checkCpuTempRunnable = new Runnable() {
-            @Override
-            public void run() {
-                checkCpuTemp();
-                checkCpuTempHandler.postDelayed(checkCpuTempRunnable, 10000);
-            }
+        checkCpuTempRunnable = () -> {
+            checkCpuTemp();
+            checkCpuTempHandler.postDelayed(checkCpuTempRunnable, 10000);
         };
         checkCpuTempHandler.postDelayed(checkCpuTempRunnable, 2000);
         //logger = new Logger();
@@ -116,7 +116,7 @@ public class UsbService extends Service {
         armRTC.setTimeOnHeadUnit();
 
 
-        myHandler = new MyHandler(context);
+        myHandler = new MyHandler(context, prefManager);
         setHandler(myHandler);
         foregroundNotification();
         CheckCallStatus();
@@ -124,22 +124,19 @@ public class UsbService extends Service {
 
         audioValues = new AudioValues(prefManager);
 
-        obsInit.setOnIntegerChangeListener(new ObservableInteger.OnIntegerChangeListener() {
-            @Override
-            public void onIntegerChanged(final int newValue) {
-                if (newValue != prefManager.getBrightnessValue()) {
+        obsInit.setOnIntegerChangeListener(newValue -> {
+            if (newValue != prefManager.getBrightnessValue()) {
 
-                    /*new Timer().schedule(new TimerTask() {
-                        @Override
-                        public void run() {
-                            //Do something after 100ms
+                /*new Timer().schedule(new TimerTask() {
+                    @Override
+                    public void run() {
+                        //Do something after 100ms
 
-                        }
-                    }, 250);*/
-                    sendData_delay("oth-brg-" + (newValue / 3) + "?", 250);
+                    }
+                }, 250);*/
+                sendData_delay("oth-brg-" + (newValue / 3) + "?", 250);
 
-                    prefManager.setBrightnessValue(newValue);
-                }
+                prefManager.setBrightnessValue(newValue);
             }
         });
 
@@ -148,159 +145,179 @@ public class UsbService extends Service {
         this.getContentResolver().registerContentObserver(Settings.System.CONTENT_URI, true, mAudioStreamVolumeObserver);
 
 
-        carSteeringWheelRunnable = new Runnable() {
-            @Override
-            public void run() {
+        carSteeringWheelRunnable = () -> {
+            //Log.i("AMIR", "" + buffer);
 
-                options = modelOps.getAllControllerOptions();
-                for (ControllerOption co : options) {
-                    if (co.getValue() != null) {
-
-                        int i = co.getValue();
-                        if (i - 3 <= MyHandler.steeringWheelData && MyHandler.steeringWheelData <= i + 3) {
-                            Options id = co.getId();
-                            mAudioStreamVolumeObserver.swcDelayOn();
-                            swcDelay = true;
-                            switch (id) {
-                                case OPT0:
-                                    Log.i(tag, "#power" + MyHandler.steeringWheelData);
-
-                                    break;
-                                case OPT1:
-                                    Log.i(tag, "#SRC" + MyHandler.steeringWheelData);
-                                    Intent dialogIntent = new Intent(getApplicationContext(), MainActivity.class);
-                                    dialogIntent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
-                                    startActivity(dialogIntent);
-                                    break;
-                                case OPT2:
-                                    Log.i(tag, "#gps" + MyHandler.steeringWheelData);
-                                    Intent launchIntent = getPackageManager().getLaunchIntentForPackage("com.sygic.aura");
-                                    if (launchIntent != null) {
-                                        startActivity(launchIntent);//null pointer check in case package name was not found
-                                    }
-                                    break;
-                                case OPT3:
-                                    Log.i(tag, "#upVolume" + MyHandler.steeringWheelData);
-                                    mAudioStreamVolumeObserver.increaseVolumeSWC();
-                                    /*
-
-                                    int vol = prefManager.getVolumeValue(0);
-                                    if (vol < 51 && vol >= 0) {
-                                        audioValues.setVolume(vol + 5);
-                                        write(audioValues.getVolumeValue().getBytes());
-                                        sendData(audioValues.getVolumeValue(), 40);
-                                    } else if (vol >= 51) {
-                                        audioValues.setVolume(55);//max size
-                                        write(audioValues.getVolumeValue().getBytes());
-                                        sendData(audioValues.getVolumeValue(), 40);
-                                    }
-                                    */
-
-                                    break;
-                                case OPT4:
-                                    Log.i(tag, "#downVolume" + MyHandler.steeringWheelData);
-                                    mAudioStreamVolumeObserver.decreaseVolumeSWC();
-                                    /*disableCheckCallStatus();
-
-                                    int vold = prefManager.getVolumeValue(0);
-                                    if (vold <= 55 && vold > 5) {
-                                        audioValues.setVolume(vold - 5);
-                                        write(audioValues.getVolumeValue().getBytes());
-                                        sendData(audioValues.getVolumeValue(), 40);
-                                    } else if (vold <= 5) {
-                                        audioValues.setVolume(0);//max size
-                                        write(audioValues.getVolumeValue().getBytes());
-                                        sendData(audioValues.getVolumeValue(), 40);
-                                    }
-                                    */
-
-                                    break;
-                                case OPT5:
-
-                                    Log.i(tag, "#mute" + MyHandler.steeringWheelData);
-                                    mAudioStreamVolumeObserver.muteSWC();
-                                    /*int lastVal = prefManager.getVolumeValue(0);
-                                    if (lastVal != 0) {
-
-                                        prefManager.setVolumeValue(12, lastVal);
-                                        audioValues.setVolume(0);
-                                        write(audioValues.getVolumeValue().getBytes());
-                                        sendData(audioValues.getVolumeValue(), 40);
-                                    } else {
-                                        Log.i(tag, "#unmute" + steeringWheelData);
-                                        audioValues.setVolume(prefManager.getVolumeValue(12));
-                                        write(audioValues.getVolumeValue().getBytes());
-                                        sendData(audioValues.getVolumeValue(), 40);
-                                    }*/
-
-                                    break;
-                                case OPT6:
-                                    disableCheckCallStatus();
-                                    Log.i(tag, "#play" + MyHandler.steeringWheelData);
-                                    if (prefManager.getBluetoothPlayerState()) {
-                                        sendData_delay("blt-mus-ppp?", 300);
-                                        Log.i("AMIR", "ppp");
-                                    } else
-                                        audioManager.playHeadUnitMusicPlayer();
-
-                                    break;
-                                case OPT7:
-                                    disableCheckCallStatus();
-                                    Log.i(tag, "#back" + MyHandler.steeringWheelData);
-                                    if (prefManager.getBluetoothPlayerState()) {
-                                        sendData_delay("blt-mus-bwd?", 300);
-                                        Log.i("AMIR", "bwd");
-                                    } else
-                                        audioManager.previousHeadUnitMusicPlayer();
-
-                                    break;
-                                case OPT8:
-
-                                    Log.i(tag, "#next" + MyHandler.steeringWheelData);
-                                    if (prefManager.getBluetoothPlayerState()) {
-                                        sendData_delay("blt-mus-fwd?", 300);
-                                        Log.i("AMIR", "fwd");
-                                    } else
-                                        audioManager.nextHeadUnitMusicPlayer();
-
-                                    break;
-                                case OPT10:
-                                    Log.i(tag, "#<--" + MyHandler.steeringWheelData);
-                                    break;
-                                case OPT11:
-                                    Log.i(tag, "#-->" + MyHandler.steeringWheelData);
-                                    break;
-                                case OPT12:
-                                    Log.i(tag, "#answer" + MyHandler.steeringWheelData);
-                                    if (MyHandler.telephoneActivityIsOpen) {
-                                        sendData_delay("blt-cll-ans?", 50);
-                                    } else {
-                                        Intent intent = new Intent(context, TelephoneActivity.class);
-                                        intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
-                                        context.startActivity(intent);
-                                    }
-
-                                    break;
-                                case OPT13:
-                                    Log.i(tag, "#end" + MyHandler.steeringWheelData);
-                                    sendData_delay("blt-cll-end?", 50);
-                                    break;
-
-                            }
-                            MyHandler.steeringWheelData = 999;
-                            swcDelay = false;
-                        }
-                    }
-                    //Log.i(tag, "Dynamic Array Index #" + num.getId() );
+            if( MyHandler.touchBtnPanelData != 999){
+                switch (MyHandler.touchBtnPanelData) {
+                    case 1:
+                        //Log.i("AMIR", " G");
+                        mAudioStreamVolumeObserver.muteSWC();
+                        break;
+                    case 2:
+                        mAudioStreamVolumeObserver.increaseVolumeSWC();
+                        //Log.i("AMIR", " UP");
+                        break;
+                    case 3:
+                        mAudioStreamVolumeObserver.decreaseVolumeSWC();
+                        //Log.i("AMIR", " down");
+                        break;
+                    case 4:
+                        Intent startMain = new Intent(Intent.ACTION_MAIN);
+                        startMain.addCategory(Intent.CATEGORY_HOME);
+                        startMain.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+                        startActivity(startMain);
+                        break;
                 }
+                MyHandler.touchBtnPanelData = 999;
             }
+            options = modelOps.getAllControllerOptions();
+            for (ControllerOption co : options) {
+                if (co.getValue() != null) {
+
+                    int i = co.getValue();
+                    if (i - 3 <= MyHandler.steeringWheelData && MyHandler.steeringWheelData <= i + 3) {
+                        Options id = co.getId();
+                        mAudioStreamVolumeObserver.swcDelayOn();
+                        swcDelay = true;
+                        switch (id) {
+                            case OPT0:
+                                Log.i(tag, "#power" + MyHandler.steeringWheelData);
+
+                                break;
+                            case OPT1:
+                                Log.i(tag, "#SRC" + MyHandler.steeringWheelData);
+                                Intent dialogIntent = new Intent(getApplicationContext(), MainActivity.class);
+                                dialogIntent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+                                startActivity(dialogIntent);
+                                break;
+                            case OPT2:
+                                Log.i(tag, "#gps" + MyHandler.steeringWheelData);
+                                Intent launchIntent = getPackageManager().getLaunchIntentForPackage("com.sygic.aura");
+                                if (launchIntent != null) {
+                                    startActivity(launchIntent);//null pointer check in case package name was not found
+                                }
+                                break;
+                            case OPT3:
+                                Log.i(tag, "#upVolume" + MyHandler.steeringWheelData);
+                                mAudioStreamVolumeObserver.increaseVolumeSWC();
+                                /*
+
+                                int vol = prefManager.getVolumeValue(0);
+                                if (vol < 51 && vol >= 0) {
+                                    audioValues.setVolume(vol + 5);
+                                    write(audioValues.getVolumeValue().getBytes());
+                                    sendData(audioValues.getVolumeValue(), 40);
+                                } else if (vol >= 51) {
+                                    audioValues.setVolume(55);//max size
+                                    write(audioValues.getVolumeValue().getBytes());
+                                    sendData(audioValues.getVolumeValue(), 40);
+                                }
+                                */
+
+                                break;
+                            case OPT4:
+                                Log.i(tag, "#downVolume" + MyHandler.steeringWheelData);
+                                mAudioStreamVolumeObserver.decreaseVolumeSWC();
+                                /*disableCheckCallStatus();
+
+                                int vold = prefManager.getVolumeValue(0);
+                                if (vold <= 55 && vold > 5) {
+                                    audioValues.setVolume(vold - 5);
+                                    write(audioValues.getVolumeValue().getBytes());
+                                    sendData(audioValues.getVolumeValue(), 40);
+                                } else if (vold <= 5) {
+                                    audioValues.setVolume(0);//max size
+                                    write(audioValues.getVolumeValue().getBytes());
+                                    sendData(audioValues.getVolumeValue(), 40);
+                                }
+                                */
+
+                                break;
+                            case OPT5:
+
+                                Log.i(tag, "#mute" + MyHandler.steeringWheelData);
+                                mAudioStreamVolumeObserver.muteSWC();
+                                /*int lastVal = prefManager.getVolumeValue(0);
+                                if (lastVal != 0) {
+
+                                    prefManager.setVolumeValue(12, lastVal);
+                                    audioValues.setVolume(0);
+                                    write(audioValues.getVolumeValue().getBytes());
+                                    sendData(audioValues.getVolumeValue(), 40);
+                                } else {
+                                    Log.i(tag, "#unmute" + steeringWheelData);
+                                    audioValues.setVolume(prefManager.getVolumeValue(12));
+                                    write(audioValues.getVolumeValue().getBytes());
+                                    sendData(audioValues.getVolumeValue(), 40);
+                                }*/
+
+                                break;
+                            case OPT6:
+                                disableCheckCallStatus();
+                                Log.i(tag, "#play" + MyHandler.steeringWheelData);
+                                if (prefManager.getBluetoothPlayerState()) {
+                                    sendData_delay("blt-mus-ppp?", 300);
+                                    Log.i("AMIR", "ppp");
+                                } else
+                                    audioManager.playHeadUnitMusicPlayer();
+
+                                break;
+                            case OPT7:
+                                disableCheckCallStatus();
+                                Log.i(tag, "#back" + MyHandler.steeringWheelData);
+                                if (prefManager.getBluetoothPlayerState()) {
+                                    sendData_delay("blt-mus-bwd?", 300);
+                                    Log.i("AMIR", "bwd");
+                                } else
+                                    audioManager.previousHeadUnitMusicPlayer();
+
+                                break;
+                            case OPT8:
+
+                                Log.i(tag, "#next" + MyHandler.steeringWheelData);
+                                if (prefManager.getBluetoothPlayerState()) {
+                                    sendData_delay("blt-mus-fwd?", 300);
+                                    Log.i("AMIR", "fwd");
+                                } else
+                                    audioManager.nextHeadUnitMusicPlayer();
+
+                                break;
+                            case OPT10:
+                                Log.i(tag, "#<--" + MyHandler.steeringWheelData);
+                                break;
+                            case OPT11:
+                                Log.i(tag, "#-->" + MyHandler.steeringWheelData);
+                                break;
+                            case OPT12:
+                                Log.i(tag, "#answer" + MyHandler.steeringWheelData);
+                                if (MyHandler.telephoneActivityIsOpen) {
+                                    sendData_delay("blt-cll-ans?", 50);
+                                } else {
+                                    Intent intent = new Intent(context, TelephoneActivity.class);
+                                    intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+                                    context.startActivity(intent);
+                                }
+
+                                break;
+                            case OPT13:
+                                Log.i(tag, "#end" + MyHandler.steeringWheelData);
+                                sendData_delay("blt-cll-end?", 50);
+                                break;
+
+                        }
+
+                        MyHandler.steeringWheelData = 999;
+                        swcDelay = false;
+                    }
+                }
+                //Log.i(tag, "Dynamic Array Index #" + num.getId() );
+            }
+            MyHandler.touchBtnPanelData = 999;
         };
-        uartReadDataRunnable = new Runnable() {
-            @Override
-            public void run() {
-                if (mHandler != null)
-                    mHandler.obtainMessage(MESSAGE_FROM_GPIO_UART_TTYS1, gpioUart.readData()).sendToTarget();
-            }
+        uartReadDataRunnable = () -> {
+            if (mHandler != null)
+                mHandler.obtainMessage(MESSAGE_FROM_GPIO_UART_TTYS1, gpioUart.readData()).sendToTarget();
         };
         performOnBackgroundThreadSteeringWheel(carSteeringWheelRunnable);
         performOnBackgroundThreadReadDataUart(uartReadDataRunnable);
@@ -409,7 +426,7 @@ public class UsbService extends Service {
                 //Log.i(tag, " fan on");
 
 
-            } else if (temp > middleTemp && !emergencyTempOn  && threadStatus) {
+            } else if (temp > middleTemp && !emergencyTempOn && threadStatus) {
                 sendData_delay("oth-tmp-001?", 300);
             } else if (temp < minTemp) {
                 emergencyTempOn = false;
@@ -436,7 +453,7 @@ public class UsbService extends Service {
 
     private void checkMCUstate() {
 
-        if (MyHandler.buffer.equalsIgnoreCase("RUN")) {
+        if (buffer.equalsIgnoreCase("RUN")) {
             cpu.InitTouchConfig();
             //gotoMainScreen();
             maxTemp = 68;
@@ -457,9 +474,9 @@ public class UsbService extends Service {
             //sendData(audioValues.getAudioValues(), 100);
             //sendData(audioValues.getAudioValues(), 400);
             //cpu.cpuOnlineStateConfig(3,1);
-            MyHandler.buffer = "";
+            buffer = "";
         }
-        if (MyHandler.buffer.equalsIgnoreCase("OFF")) {
+        if (buffer.equalsIgnoreCase("OFF")) {
             cpu.deInitTouchConfig();
             gotoMainScreen();
             minTemp = 59;
@@ -470,7 +487,7 @@ public class UsbService extends Service {
             cpu.cpuGoverner("powersave");
             Settings.System.putInt(getApplicationContext().getContentResolver(),
                     Settings.System.SCREEN_OFF_TIMEOUT, 15000);
-            MyHandler.buffer = "";
+            buffer = "";
             //cpu.cpuOnlineStateConfig(3,0);
             if (audioManager.isMusicPlay())
                 audioManager.pauseHeadUnitMusicPlayer();

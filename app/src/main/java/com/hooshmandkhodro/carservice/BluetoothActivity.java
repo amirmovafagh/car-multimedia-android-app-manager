@@ -35,7 +35,8 @@ public class BluetoothActivity extends AppCompatActivity {
     private ToolBar_ResideMenu toolBarResideMenu;
     private Handler handler;
     private Runnable runnable;
-    public static GpioUart connectGpioUartBt;
+    @Inject
+    GpioUart gpioUart;
 
 
     @Override
@@ -44,12 +45,12 @@ public class BluetoothActivity extends AppCompatActivity {
         setContentView(R.layout.activity_bluetooth);
         ((App) getApplicationContext()).getComponent().inject(this);
 
-        connectGpioUartBt = new GpioUart(1);
+
 
 
         //new ConnectUsbService(BluetoothActivity.this);
         //toolbarInit
-        toolBarResideMenu = new ToolBar_ResideMenu(this, "Bluetooth", connectGpioUartBt, prefManager);
+        toolBarResideMenu = new ToolBar_ResideMenu(this, "Bluetooth", gpioUart, prefManager);
         //resideMenuInit
         toolBarResideMenu.resideMenuInit("Home", "Radio", "Settings",
                 R.drawable.icon_home, R.drawable.icon_home, R.drawable.icon_home,

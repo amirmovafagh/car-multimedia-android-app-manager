@@ -38,9 +38,10 @@ public class SettingsActivity extends AppCompatActivity implements View.OnTouchL
     private static final String TAG = SettingsActivity.class.getSimpleName();
     @Inject
     PrefManager prefManager;
-
+    @Inject
+    GpioUart gpioUart;
     private ImageView audioBalanceImg;
-    private GpioUart gpioUart;
+
     private BoxedVertical basSeekbar, trebleSeekbar, gainSeekbar;
     private ViewGroup relativeLayout = null;
     private Rect relativeLayoutRect = null;
@@ -80,13 +81,11 @@ public class SettingsActivity extends AppCompatActivity implements View.OnTouchL
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_settings);
 
-        ((App)getApplicationContext()).getComponent().inject(this);
+        ((App) getApplicationContext()).getComponent().inject(this);
 
         initObjectsView();
 //
         audioValues = new AudioValues(prefManager);
-
-            gpioUart = new GpioUart(1);
 
 
         toolBarResideMenu = new ToolBar_ResideMenu(SettingsActivity.this, "Audio Settings", gpioUart, prefManager);
@@ -377,8 +376,8 @@ public class SettingsActivity extends AppCompatActivity implements View.OnTouchL
             @Override
             public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
                 if (isChecked) {
-                    prefManager.setVolumeValue(13,55);
-                }else prefManager.setVolumeValue(13,63);
+                    prefManager.setVolumeValue(13, 55);
+                } else prefManager.setVolumeValue(13, 63);
             }
         });
 

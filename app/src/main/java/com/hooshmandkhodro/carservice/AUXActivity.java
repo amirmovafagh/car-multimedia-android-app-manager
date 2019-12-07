@@ -24,7 +24,8 @@ public class AUXActivity extends AppCompatActivity {
     @Inject
     PrefManager prefManager;
     public static boolean auxSoundChannelActivity = true;
-    private GpioUart gpioUart;
+    @Inject
+    GpioUart gpioUart;
     private AudioValues audioValues;
     private BoxedVertical soundModule;
     MyAudioManager myAudioManager;
@@ -37,7 +38,7 @@ public class AUXActivity extends AppCompatActivity {
         Toolbar toolbar = findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
 
-            gpioUart = new GpioUart(1);
+
 
 //        pref = new PrefManager(AUXActivity.this);
         audioValues = new AudioValues(prefManager);

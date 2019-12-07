@@ -18,9 +18,6 @@ import com.hooshmandkhodro.carservice.R;
 import com.hooshmandkhodro.carservice.app.AudioValues;
 import com.hooshmandkhodro.carservice.app.MyAudioManager;
 
-
-
-import static com.hooshmandkhodro.carservice.BluetoothActivity.connectGpioUartBt;
 import static com.hooshmandkhodro.carservice.MyHandler.buffer;
 
 import com.hooshmandkhodro.carservice.app.GpioUart;
@@ -33,10 +30,12 @@ public class MediaFragment extends Fragment implements View.OnClickListener {
 
     @Inject
     PrefManager prefManager;
+    @Inject
+    GpioUart gpioUart;
     private View view;
     private ImageView imgDisk;
     private ImageButton previous, next, play, pause, stop, decVolume, incVolume;
-    private GpioUart gpioUart;
+
     private MyAudioManager audioManager;
     private AudioValues audioValues;
 
@@ -51,8 +50,6 @@ public class MediaFragment extends Fragment implements View.OnClickListener {
     @Override
     public void onActivityCreated(@Nullable Bundle savedInstanceState) {
         super.onActivityCreated(savedInstanceState);
-
-        gpioUart = connectGpioUartBt;
 
         audioValues = new AudioValues(prefManager);
         audioManager = new MyAudioManager(getContext());

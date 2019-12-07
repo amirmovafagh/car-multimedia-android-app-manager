@@ -49,7 +49,8 @@ public class RadioActivity extends AppCompatActivity implements View.OnClickList
 
     @Inject
     PrefManager prefManager;
-
+    @Inject
+    GpioUart gpioUart;
     public static boolean RadioSoundChannelActivity = true;
     private List<ChannelFrequency> channelFrequenciesList = new ArrayList<>();
     private ChannelFrequency channelFrequency;
@@ -77,7 +78,6 @@ public class RadioActivity extends AppCompatActivity implements View.OnClickList
     final int[] favBtnRadioIDs = {R.id.fav_radio_btn1, R.id.fav_radio_btn2, R.id.fav_radio_btn3, R.id.fav_radio_btn4,
             R.id.fav_radio_btn5, R.id.fav_radio_btn6};
 
-    private GpioUart gpioUart;
 
 
     @Override
@@ -95,7 +95,7 @@ public class RadioActivity extends AppCompatActivity implements View.OnClickList
         getRadioMode();
         prefManager.setRadioIsRun(true);
 
-        gpioUart = new GpioUart(1);
+
 
         audioManager = new MyAudioManager(this);
         audioManager.pauseHeadUnitMusicPlayer();

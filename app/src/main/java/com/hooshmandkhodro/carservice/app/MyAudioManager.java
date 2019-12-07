@@ -34,7 +34,7 @@ public class MyAudioManager {
     public MyAudioManager(Context context) {
         this.context = context;
         audioManager = (AudioManager) context.getSystemService(Context.AUDIO_SERVICE);
-        eventtime= SystemClock.uptimeMillis();
+        eventtime = SystemClock.uptimeMillis();
     }
 
     public boolean isMusicPlay() {

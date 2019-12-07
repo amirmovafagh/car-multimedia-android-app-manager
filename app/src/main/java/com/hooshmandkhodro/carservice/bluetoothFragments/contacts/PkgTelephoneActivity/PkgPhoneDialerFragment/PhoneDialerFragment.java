@@ -18,6 +18,7 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 import com.hooshmandkhodro.carservice.R;
+import com.hooshmandkhodro.carservice.app.dagger.App;
 import com.skyfishjy.library.RippleBackground;
 
 import java.util.Timer;
@@ -28,8 +29,10 @@ import java.util.TimerTask;
 import com.hooshmandkhodro.carservice.app.GpioUart;
 import com.hooshmandkhodro.carservice.app.MyAudioManager;
 
+import javax.inject.Inject;
+
 import static com.hooshmandkhodro.carservice.MyHandler.buffer;
-import static com.hooshmandkhodro.carservice.TelephoneActivity.connectGpioUart;
+
 import static com.hooshmandkhodro.carservice.UsbService.threadStatus;
 import static com.hooshmandkhodro.carservice.UsbService.handlerDelay;
 
@@ -39,7 +42,8 @@ public class PhoneDialerFragment extends Fragment implements RequiredViewOps, Vi
     public static boolean dialFragmentIsRun = false;
     private Context ctx;
     private ProvidedPresenterOps presenterOps;
-
+    @Inject
+    GpioUart gpioUart;
     private View view, dialpadView;
     private RippleBackground rippleBackground;
     private ImageView imageView;
@@ -48,7 +52,7 @@ public class PhoneDialerFragment extends Fragment implements RequiredViewOps, Vi
     private ImageButton upVolume, downVolume, mute, btConnection, backSpaceBtn, imgBtnDialPad;
     private boolean checkCall, isVisible = false;
     private long startTime = 0;
-    private GpioUart gpioUart;
+
     private Handler callStatusHandler, handlerData, handlerMakeCall;
     private Runnable runnableCallStatus;
     boolean checkCallGetNumber = false;
@@ -66,7 +70,7 @@ public class PhoneDialerFragment extends Fragment implements RequiredViewOps, Vi
     @Override
     public void onAttach(Context context) {
         super.onAttach(context);
-        gpioUart = connectGpioUart;
+        ((App) context.getApplicationContext()).getComponent().inject(this);
         dialFragmentIsRun = true;
         ctx = getContext();
         presenterOps = new PhoneDialerPresenter(ctx, this);

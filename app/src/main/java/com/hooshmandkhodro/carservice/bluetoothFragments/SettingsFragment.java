@@ -20,10 +20,9 @@ import com.hooshmandkhodro.carservice.app.PrefManager;
 import com.hooshmandkhodro.carservice.app.dagger.App;
 import com.skyfishjy.library.RippleBackground;
 
-
 import com.hooshmandkhodro.carservice.app.GpioUart;
 
-import static com.hooshmandkhodro.carservice.BluetoothActivity.connectGpioUartBt;
+import javax.inject.Inject;
 
 import static com.hooshmandkhodro.carservice.UsbService.threadStatus;
 
@@ -34,12 +33,13 @@ public class SettingsFragment extends Fragment {
     private RippleBackground rippleBackground;
     private ImageView imageView, connectedPhoneImg;
     private Button enterPairBtn, cancelPairBtn;
-    private GpioUart gpioUart;
+    @Inject
+    GpioUart gpioUart;
+    @Inject PrefManager prefManager;
     private ToggleButton autoAnswerTbtn, autoConnectTbtn;
     private BluetoothService bluetoothService;
     private Handler handler;
-    private Runnable runnable;
-    private PrefManager prefManager;
+
 
 
     public SettingsFragment() {
@@ -58,7 +58,7 @@ public class SettingsFragment extends Fragment {
     @Override
     public void onActivityCreated(@Nullable Bundle savedInstanceState) {
         super.onActivityCreated(savedInstanceState);
-        gpioUart = connectGpioUartBt;
+
         bluetoothService = new BluetoothService(getActivity());
         connectionStatus();
 

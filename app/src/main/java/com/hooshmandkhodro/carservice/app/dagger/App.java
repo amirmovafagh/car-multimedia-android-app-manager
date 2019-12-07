@@ -16,7 +16,7 @@ public class App extends Application {
                 // list of modules that are part of this component need to be created here too
                 .appModule(new AppModule(this)) //This also corresponds to the name of your module: %component_name%Module
                 .sharedPreferencesModule(new SharedPreferencesModule())
-                //.gpioUartModule(new GpioUartModule(new GpioUart(1)))
+                .gpioUartModule(new GpioUartModule(new GpioUart(1)))
                 .build();
 
         // If a Dagger 2 component does not have any constructor arguments for any of its modules,

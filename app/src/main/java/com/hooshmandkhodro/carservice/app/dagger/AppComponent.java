@@ -13,6 +13,7 @@ import com.hooshmandkhodro.carservice.UsbService;
 import com.hooshmandkhodro.carservice.app.Receiver;
 import com.hooshmandkhodro.carservice.bluetoothFragments.MediaFragment;
 import com.hooshmandkhodro.carservice.bluetoothFragments.SettingsFragment;
+import com.hooshmandkhodro.carservice.bluetoothFragments.contacts.PkgTelephoneActivity.PkgPhoneDialerFragment.PhoneDialerFragment;
 
 import javax.inject.Singleton;
 
@@ -40,6 +41,8 @@ public interface AppComponent {
     void inject(SettingsFragment settingsFragment);
 
     void inject(Receiver receiver);
+
+    void inject(PhoneDialerFragment phoneDialerFragment);
 
 
 }
